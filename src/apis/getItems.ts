@@ -1,0 +1,28 @@
+import API_URL from "./API_URL";
+import myAxios from "./myAxios";
+
+export interface ItemReqParams {
+  page: number;
+  size: number;
+}
+
+export interface Item {
+  itemId: number;
+  name: string;
+  level: number;
+  craftingPrice: number;
+  materials: {
+    name: string;
+    base: boolean;
+    count: number;
+  }[];
+}
+
+export interface ItemGetResponseBody {
+  content: Item[];
+  totalElements: number;
+}
+
+export function getItems(params: ItemReqParams) {
+  return myAxios.get<ItemGetResponseBody>(API_URL.ITEM, { params });
+}
