@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useResultMutation } from "../../queries/useResultMutation";
-import { Button, Container } from "@mui/material";
+import { Button, Container, Stack } from "@mui/material";
 import { CreateItem } from "../CreateItem";
 
 export function Manage() {
@@ -9,13 +9,17 @@ export function Manage() {
 
   return (
     <Container maxWidth='sm'>
-      <Button variant='contained' onClick={() => navigate("list")}>
-        상품 리스트
-      </Button>
-      <Button variant='contained' onClick={() => mutate()}>
-        결과 리스트 생성
-      </Button>
-      <CreateItem />
+      <Stack>
+        <Stack direction={"row"} gap='10px' style={{ padding: "5px" }}>
+          <Button variant='contained' onClick={() => navigate("list")}>
+            상품 리스트
+          </Button>
+          <Button variant='contained' onClick={() => mutate()}>
+            결과 리스트 생성
+          </Button>
+        </Stack>
+        <CreateItem />
+      </Stack>
     </Container>
   );
 }

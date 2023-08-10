@@ -1,9 +1,9 @@
 import { useQuery } from "react-query";
-import { getItems } from "../apis/getItems";
+import { ItemReqParams, getItems } from "../apis/getItems";
 
-export const useItemQuery = () =>
+export const useItemQuery = (params: ItemReqParams) =>
   useQuery({
-    queryKey: "item",
-    queryFn: () => getItems(),
+    queryKey: ["item", params],
+    queryFn: () => getItems(params),
     select: ({ data }) => data,
   });
