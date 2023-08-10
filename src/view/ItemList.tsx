@@ -14,7 +14,7 @@ export function ItemList() {
         head={[
           {
             key: "name",
-            value: "이름",
+            value: "물품명",
             props: { width: "300px" },
           },
           {

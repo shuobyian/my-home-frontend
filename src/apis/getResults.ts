@@ -11,6 +11,7 @@ export interface ResultReqParams {
 
 export interface Result {
   resultId: number;
+  createdAt: string;
   item: Item;
   name: string;
   level: number;

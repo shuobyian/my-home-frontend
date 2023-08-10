@@ -13,6 +13,7 @@ import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ResultReqParams } from "../../apis/getResults";
 import { StringUtil } from "../../util/StringUtil";
+import FiberNewIcon from "@mui/icons-material/FiberNew";
 
 export function ResultList() {
   const { control, handleSubmit } = useForm<ResultReqParams>();
@@ -99,7 +100,7 @@ export function ResultList() {
               collapse={<ResultDetail result={result} />}
             >
               <TableCell component='th' scope='row'>
-                {result.name}
+                {result.name} {result.isNew && <FiberNewIcon color='primary' />}
               </TableCell>
               <TableCell align='right'>{result.level}</TableCell>
               <TableCell align='right'>
