@@ -39,7 +39,10 @@ export function ResultDetail({ result }: ResultDetailProps) {
                 )}골드)`}
               </Typography>
             </Stack>
-            <img src='' alt='물품 사진' />
+            <img
+              src={`/home/ec2-user/myhome/${result.name}.jpg`}
+              alt='물품 사진'
+            />
           </Stack>
           <Stack gap='15px'>
             {result.item.materials.map((material) => (
