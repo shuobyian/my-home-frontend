@@ -1,25 +1,22 @@
-import {
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-} from "@mui/material";
+import { Stack, TableBody, TableCell, TableRow } from "@mui/material";
 import { useItemQuery } from "../queries/useItemQuery";
+import { Table } from "./components/Table";
 
 export function ItemList() {
   const { data: itemList } = useItemQuery();
   return (
-    <Table sx={{ minWidth: 650 }} aria-label='simple table'>
-      <TableHead>
-        <TableRow>
-          <TableCell>이름</TableCell>
-          <TableCell align='right'>레벨</TableCell>
-          <TableCell align='right'>크래프팅 가격</TableCell>
-          <TableCell align='right'>재료</TableCell>
-        </TableRow>
-      </TableHead>
+    <Table
+      head={[
+        { key: "name", value: "이름" },
+        { key: "level", value: "레벨", props: { align: "right" } },
+        {
+          key: "craftingPrice",
+          value: "크래프팅 가격",
+          props: { align: "right" },
+        },
+        { key: "materials", value: "재료", props: { align: "right" } },
+      ]}
+    >
       <TableBody>
         {itemList?.map((item) => (
           <TableRow
