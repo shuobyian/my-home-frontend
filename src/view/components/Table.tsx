@@ -45,7 +45,11 @@ export function Table({
       {pagination && (
         <Pagination
           style={{ marginTop: "10px" }}
-          count={Math.floor(pagination.total / pagination.size)}
+          count={Math.floor(
+            pagination.total % pagination.size === 0
+              ? pagination.total / pagination.size
+              : pagination.total / pagination.size + 1
+          )}
           page={pagination.page + 1}
           color='primary'
           onChange={(_, page) => pagination.onChange(page - 1)}
