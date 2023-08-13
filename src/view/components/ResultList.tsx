@@ -8,7 +8,7 @@ import {
 } from "@mui/material";
 import { ResultReqParams } from "apis/getResults";
 import { useResultQuery } from "queries/useResultQuery";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StringUtil } from "util/StringUtil";
 import { ResultDetail } from "./ResultDetail";
@@ -16,6 +16,8 @@ import { Row } from "./Row";
 import { Table } from "./Table";
 
 export function ResultList() {
+  const buttonRef = useRef<HTMLButtonElement>(null);
+
   const { control, handleSubmit } = useForm<ResultReqParams>();
   const [params, setParams] = useState<ResultReqParams>({
     page: 0,
@@ -28,6 +30,12 @@ export function ResultList() {
 
   const onSubmit = (formData: ResultReqParams) => {
     setParams((prev) => ({ ...prev, ...formData, page: 0 }));
+  };
+
+  const keyPressEnter = (
+    e: React.KeyboardEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    if (e.key === "Enter") buttonRef.current?.click();
   };
 
   return (
@@ -51,6 +59,9 @@ export function ResultList() {
               placeholder='물품명 입력'
               value={field.value}
               onChange={field.onChange}
+              inputProps={{
+                onKeyDown: (e) => keyPressEnter(e),
+              }}
             />
           )}
         />
@@ -65,11 +76,19 @@ export function ResultList() {
               placeholder='물품 개수 입력'
               value={field.value}
               onChange={field.onChange}
-              inputProps={{ inputMode: "numeric", pattern: "[0-9]*" }}
+              inputProps={{
+                onKeyDown: (e) => keyPressEnter(e),
+                inputMode: "numeric",
+                pattern: "[0-9]*",
+              }}
             />
           )}
         />
-        <Button variant='contained' onClick={handleSubmit(onSubmit)}>
+        <Button
+          ref={buttonRef}
+          variant='contained'
+          onClick={handleSubmit(onSubmit)}
+        >
           검색
         </Button>
       </Stack>
