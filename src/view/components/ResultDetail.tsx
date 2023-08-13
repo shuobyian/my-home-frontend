@@ -24,7 +24,11 @@ export function ResultDetail({ result }: ResultDetailProps) {
               <Typography>{result.name}</Typography>
             </Stack>
             <Stack direction={"row"} gap='10px'>
-              <Typography fontWeight={700}>필요 레벨</Typography>
+              <Typography fontWeight={700}>
+                {result.name.includes("미미")
+                  ? "필요 미미 호감도"
+                  : "필요 레벨"}
+              </Typography>
               <Typography>Lv.{result.level} 이상</Typography>
             </Stack>
             <Stack direction={"row"} gap='10px'>
@@ -39,7 +43,12 @@ export function ResultDetail({ result }: ResultDetailProps) {
                 )}골드)`}
               </Typography>
             </Stack>
-            <img src={`public/images/${result.name}.jpg`} alt='물품 사진' />
+            <img
+              src={`${process.env.PUBLIC_URL}/images/${result.name}.jpg`}
+              width='300'
+              height='300'
+              alt='물품 사진'
+            />
           </Stack>
           <Stack gap='15px'>
             {result.item.materials.map((material) => (
