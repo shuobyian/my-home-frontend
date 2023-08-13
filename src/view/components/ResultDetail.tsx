@@ -1,7 +1,7 @@
 import { Stack, TableCell, TableRow, Typography } from "@mui/material";
-import { Result } from "../../apis/getResults";
-import { Table } from "./Table";
-import { StringUtil } from "../../util/StringUtil";
+import { Result } from "apis/getResults";
+import { StringUtil } from "util/StringUtil";
+import { Table } from "view/components/Table";
 
 interface ResultDetailProps {
   result: Result;
@@ -39,10 +39,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
                 )}골드)`}
               </Typography>
             </Stack>
-            <img
-              src={`/home/ec2-user/myhome/${result.name}.jpg`}
-              alt='물품 사진'
-            />
+            <img src={`public/images/${result.name}.jpg`} alt='물품 사진' />
           </Stack>
           <Stack gap='15px'>
             {result.item.materials.map((material) => (

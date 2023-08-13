@@ -1,6 +1,6 @@
+import { ResultReqParams, getResults } from "apis/getResults";
 import { differenceInDays } from "date-fns";
 import { useQuery } from "react-query";
-import { ResultReqParams, getResults } from "../apis/getResults";
 
 export const useResultQuery = (params: ResultReqParams) =>
   useQuery({

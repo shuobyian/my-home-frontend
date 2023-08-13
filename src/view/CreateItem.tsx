@@ -9,8 +9,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Item, useItemMutation } from "queries/useItemMutation";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
-import { Item, useItemMutation } from "../queries/useItemMutation";
 
 export function CreateItem() {
   const { control, handleSubmit } = useForm<Item>();

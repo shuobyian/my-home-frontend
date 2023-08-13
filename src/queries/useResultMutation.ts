@@ -1,5 +1,5 @@
+import { postResult } from "apis/postResult";
 import { useMutation } from "react-query";
-import { postResult } from "../apis/postResult";
 
 export const useResultMutation = () =>
   useMutation({

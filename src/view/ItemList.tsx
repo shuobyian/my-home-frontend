@@ -1,8 +1,8 @@
 import { Container, Stack, TableCell, TableRow } from "@mui/material";
+import { useItemQuery } from "queries/useItemQuery";
 import { useState } from "react";
-import { useItemQuery } from "../queries/useItemQuery";
-import { Table } from "./components/Table";
-import { StringUtil } from "../util/StringUtil";
+import { StringUtil } from "util/StringUtil";
+import { Table } from "view/components/Table";
 
 export function ItemList() {
   const [params, setParams] = useState({ page: 0, size: 5 });

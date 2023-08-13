@@ -1,5 +1,5 @@
+import { postItem } from "apis/postItem";
 import { useMutation } from "react-query";
-import { postItem } from "../apis/postItem";
 
 export interface Item {
   name: string;

@@ -8,13 +8,13 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { Market } from "apis/putMarkets";
+import { useMarketMutation } from "queries/useMarketMutation";
+import { useMarketQuery } from "queries/useMarketQuery";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Market } from "../apis/getMarkets";
-import { useMarketMutation } from "../queries/useMarketMutation";
-import { useMarketQuery } from "../queries/useMarketQuery";
-import { Table } from "./components/Table";
 import { useQueryClient } from "react-query";
+import { Table } from "./components/Table";
 
 export function MarketList() {
   const queryClient = useQueryClient();

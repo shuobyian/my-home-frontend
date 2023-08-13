@@ -10,11 +10,11 @@ import {
   Stack,
   TextField,
 } from "@mui/material";
+import { useLoginMutation } from "queries/useLoginMutation";
+import { useResultMutation } from "queries/useResultMutation";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../../queries/useLoginMutation";
-import { useResultMutation } from "../../queries/useResultMutation";
-import { CreateItem } from "../CreateItem";
+import { CreateItem } from "view/CreateItem";
 
 export function Manage() {
   const navigate = useNavigate();

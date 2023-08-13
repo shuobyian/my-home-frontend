@@ -1,5 +1,5 @@
+import { putMarkets } from "apis/putMarkets";
 import { useMutation } from "react-query";
-import { putMarkets } from "../apis/putMarkets";
 
 export const useMarketMutation = () =>
   useMutation({

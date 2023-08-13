@@ -1,8 +1,8 @@
 import { Outlet, Route, Routes } from "react-router-dom";
-import { Home } from "../Home";
-import { ItemList } from "../ItemList";
-import { Manage } from "./Manage";
-import { MarketList } from "../MarketList";
+import { Home } from "view/Home";
+import { ItemList } from "view/ItemList";
+import { MarketList } from "view/MarketList";
+import { Manage } from "view/pages/Manage";
 
 export function Router() {
   return (
