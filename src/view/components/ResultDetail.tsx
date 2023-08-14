@@ -1,6 +1,7 @@
 import { Stack, TableCell, TableRow, Typography } from "@mui/material";
 import { Result } from "apis/getResults";
 import { StringUtil } from "util/StringUtil";
+import { InfoRow } from "view/components/InfoRow";
 import { Table } from "view/components/Table";
 
 interface ResultDetailProps {
@@ -17,47 +18,46 @@ export function ResultDetail({ result }: ResultDetailProps) {
       }}
     >
       <Stack gap='20px'>
-        <Stack direction={"row"} gap='20px' justifyContent={"space-between"}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            gap: "20px",
+            flexWrap: "wrap",
+          }}
+        >
           <Stack gap='15px'>
-            <Stack direction={"row"} gap='10px'>
-              <Typography fontWeight={700}>물품명</Typography>
-              <Typography>{result.name}</Typography>
-            </Stack>
-            <Stack direction={"row"} gap='10px'>
-              <Typography fontWeight={700}>
-                {result.name.includes("미미")
-                  ? "필요 미미 호감도"
-                  : "필요 레벨"}
-              </Typography>
-              <Typography>Lv.{result.level} 이상</Typography>
-            </Stack>
-            <Stack direction={"row"} gap='10px'>
-              <Typography fontWeight={700}>필요 금액</Typography>
-              <Typography>
-                {`${StringUtil.numberWithCommas(
-                  result.totalPrice + result.craftingPrice
-                )}골드 (물품비: ${StringUtil.numberWithCommas(
-                  result.totalPrice
-                )}골드 + 제작비: ${StringUtil.numberWithCommas(
-                  result.craftingPrice
-                )}골드)`}
-              </Typography>
-            </Stack>
+            <InfoRow title='물품명' value={result.name} />
+            <InfoRow
+              title={
+                result.name.includes("미미") ? "필요 미미 호감도" : "필요 레벨"
+              }
+              value={`Lv.${result.level} 이상`}
+            />
+            <InfoRow
+              title='필요 금액'
+              value={`${StringUtil.numberWithCommas(
+                result.totalPrice + result.craftingPrice
+              )}골드 (물품비: ${StringUtil.numberWithCommas(
+                result.totalPrice
+              )}골드 + 제작비: ${StringUtil.numberWithCommas(
+                result.craftingPrice
+              )}골드)`}
+            />
             <img
               src={`${process.env.PUBLIC_URL}/images/${result.name}.jpg`}
               width='300'
-              height='300'
               alt='물품 사진'
             />
           </Stack>
-          <Stack gap='15px'>
+          <Stack gap='10px'>
             {result.item.materials.map((material) => (
               <Typography key={material.name}>
                 {material.name} {material.count}개
               </Typography>
             ))}
           </Stack>
-        </Stack>
+        </div>
         <Stack>
           <Typography fontWeight={700}>기초 재료</Typography>
           <Table

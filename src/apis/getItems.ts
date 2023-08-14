@@ -7,7 +7,7 @@ export interface ItemReqParams {
 }
 
 export interface Item {
-  itemId: number;
+  id: number;
   name: string;
   level: number;
   craftingPrice: number;

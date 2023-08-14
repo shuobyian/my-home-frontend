@@ -1,4 +1,3 @@
-import FiberNewIcon from "@mui/icons-material/FiberNew";
 import {
   Button,
   CircularProgress,
@@ -10,10 +9,9 @@ import { ResultReqParams } from "apis/getResults";
 import { useResultQuery } from "queries/useResultQuery";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { StringUtil } from "util/StringUtil";
-import { Table } from "view/components/Table";
-import { Row } from "view/components/Row";
 import { ResultDetail } from "view/components/ResultDetail";
+import { Row } from "view/components/Row";
+import { Table } from "view/components/Table";
 
 export function ResultList() {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -93,18 +91,13 @@ export function ResultList() {
         </Button>
       </Stack>
       {isLoading ? (
-        <CircularProgress color='inherit' />
+        <CircularProgress style={{ marginTop: "20vh" }} color='inherit' />
       ) : (
         <Table
           head={[
-            { key: "", value: "" },
+            { key: "select", value: "" },
             { key: "name", value: "물품명" },
             { key: "level", value: "레벨", props: { align: "right" } },
-            {
-              key: "craftingPrice",
-              value: "크래프팅 가격",
-              props: { align: "right" },
-            },
           ]}
           pagination={{
             page: params.page,
@@ -114,17 +107,11 @@ export function ResultList() {
           }}
         >
           {results?.content.map((result) => (
-            <Row
-              key={result.resultId}
-              collapse={<ResultDetail result={result} />}
-            >
+            <Row key={result.id} collapse={<ResultDetail result={result} />}>
               <TableCell component='th' scope='row'>
-                {result.name} {result.isNew && <FiberNewIcon color='primary' />}
+                {result.name}
               </TableCell>
               <TableCell align='right'>{result.level}</TableCell>
-              <TableCell align='right'>
-                {StringUtil.numberWithCommas(result.craftingPrice)}골드
-              </TableCell>
             </Row>
           ))}
         </Table>

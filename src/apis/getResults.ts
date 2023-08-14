@@ -10,7 +10,7 @@ export interface ResultReqParams {
 }
 
 export interface Result {
-  resultId: number;
+  id: number;
   createdAt: string;
   item: Item;
   name: string;

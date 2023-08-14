@@ -20,7 +20,7 @@ export function MarketList() {
   const queryClient = useQueryClient();
   const { control, handleSubmit, reset } = useForm<Market[]>();
   const { data: marketList } = useMarketQuery();
-  const { mutate } = useMarketMutation();
+  const { isLoading, mutate } = useMarketMutation();
 
   const [message, setMessage] = useState<string>();
 
@@ -45,10 +45,12 @@ export function MarketList() {
       <Snackbar
         open={!!message}
         onClose={() => setMessage(undefined)}
+        autoHideDuration={1000}
         message='수정되었습니다.'
       />
       <Button
         variant='outlined'
+        disabled={isLoading}
         onClick={handleSubmit(onSubmit)}
         style={{ float: "right", margin: "10px" }}
       >

@@ -1,5 +1,4 @@
 import { ResultReqParams, getResults } from "apis/getResults";
-import { differenceInDays } from "date-fns";
 import { useQuery } from "react-query";
 
 export const useResultQuery = (params: ResultReqParams) =>
@@ -10,7 +9,6 @@ export const useResultQuery = (params: ResultReqParams) =>
       ...data,
       content: data.content.map((c) => ({
         ...c,
-        isNew: differenceInDays(new Date(c.createdAt), new Date()) < 7,
       })),
     }),
   });
