@@ -1,6 +1,6 @@
 import { Container } from "@mui/material";
-import { Header } from "./components/Header";
-import { ResultList } from "./components/ResultList";
+import { Header } from "view/components/Header";
+import { ResultList } from "view/components/ResultList";
 
 export function Home() {
   return (

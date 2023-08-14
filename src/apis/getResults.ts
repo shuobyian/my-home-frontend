@@ -1,6 +1,6 @@
-import API_URL from "./API_URL";
-import { Item } from "./getItems";
-import myAxios from "./myAxios";
+import API_URL from "apis/API_URL";
+import { Item } from "apis/getItems";
+import myAxios from "apis/myAxios";
 
 export interface ResultReqParams {
   page: number;

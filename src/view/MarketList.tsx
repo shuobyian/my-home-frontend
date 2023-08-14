@@ -14,7 +14,7 @@ import { useMarketQuery } from "queries/useMarketQuery";
 import { useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
-import { Table } from "./components/Table";
+import { Table } from "view/components/Table";
 
 export function MarketList() {
   const queryClient = useQueryClient();

@@ -11,9 +11,9 @@ import { useResultQuery } from "queries/useResultQuery";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { StringUtil } from "util/StringUtil";
-import { ResultDetail } from "./ResultDetail";
-import { Row } from "./Row";
-import { Table } from "./Table";
+import { Table } from "view/components/Table";
+import { Row } from "view/components/Row";
+import { ResultDetail } from "view/components/ResultDetail";
 
 export function ResultList() {
   const buttonRef = useRef<HTMLButtonElement>(null);

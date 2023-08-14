@@ -23,7 +23,10 @@ export function Manage() {
           onClose={() => setOpen(false)}
           message='결과가 생성되었습니다.'
         />
-        <Button variant='contained' onClick={() => mutate()}>
+        <Button
+          variant='contained'
+          onClick={() => mutate(undefined, { onSuccess: () => setOpen(true) })}
+        >
           결과 리스트 생성
         </Button>
       </Stack>
