@@ -30,7 +30,7 @@ export function Table({
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
-      <MuiTable sx={{ minWidth: 650 }} {...props}>
+      <MuiTable {...props}>
         <TableHead>
           <TableRow>
             {head.map(({ key, value, props }) => (

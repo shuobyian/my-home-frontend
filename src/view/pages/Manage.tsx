@@ -6,7 +6,7 @@ import { CreateItem } from "view/CreateItem";
 
 export function Manage() {
   const navigate = useNavigate();
-  const { mutate } = useResultMutation();
+  const { isLoading, mutate } = useResultMutation();
   const [open, setOpen] = useState(false);
 
   return (
@@ -21,9 +21,14 @@ export function Manage() {
         <Snackbar
           open={open}
           onClose={() => setOpen(false)}
+          autoHideDuration={1000}
           message='결과가 생성되었습니다.'
         />
-        <Button variant='contained' onClick={() => mutate()}>
+        <Button
+          variant='contained'
+          disabled={isLoading}
+          onClick={() => mutate(undefined, { onSuccess: () => setOpen(true) })}
+        >
           결과 리스트 생성
         </Button>
       </Stack>
