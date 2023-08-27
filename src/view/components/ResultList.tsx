@@ -1,11 +1,14 @@
 import {
   Button,
   CircularProgress,
+  MenuItem,
+  Select,
   Stack,
   TableCell,
   TextField,
 } from "@mui/material";
 import { ResultReqParams } from "apis/getResults";
+import { ToolList, getToolLabel } from "apis/type/Tool";
 import { useResultQuery } from "queries/useResultQuery";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -13,20 +16,30 @@ import { ResultDetail } from "view/components/ResultDetail";
 import { Row } from "view/components/Row";
 import { Table } from "view/components/Table";
 
+interface ResultForm extends Omit<ResultReqParams, "tool"> {
+  tool: ResultReqParams["tool"] | "ALL";
+}
+
 export function ResultList() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const { control, handleSubmit } = useForm<ResultReqParams>();
-  const [params, setParams] = useState<ResultReqParams>({
+  const { control, handleSubmit } = useForm<ResultForm>({
+    defaultValues: { tool: "ALL" },
+  });
+  const [params, setParams] = useState<ResultForm>({
     page: 0,
     size: 10,
     name: undefined,
     count: undefined,
+    tool: "ALL",
   });
 
-  const { data: results, isLoading } = useResultQuery(params);
+  const { data: results, isLoading } = useResultQuery({
+    ...params,
+    tool: params.tool === "ALL" ? undefined : params.tool,
+  });
 
-  const onSubmit = (formData: ResultReqParams) => {
+  const onSubmit = (formData: ResultForm) => {
     setParams((prev) => ({ ...prev, ...formData, page: 0 }));
   };
 
@@ -82,6 +95,21 @@ export function ResultList() {
             />
           )}
         />
+        <Controller
+          name='tool'
+          control={control}
+          render={({ field }) => (
+            <Select size='small' value={field.value} onChange={field.onChange}>
+              {[{ value: "ALL", label: "전체" }, ...ToolList].map(
+                ({ value, label }) => (
+                  <MenuItem key={value} value={value}>
+                    {label}
+                  </MenuItem>
+                )
+              )}
+            </Select>
+          )}
+        />
         <Button
           ref={buttonRef}
           variant='contained'
@@ -97,6 +125,7 @@ export function ResultList() {
           head={[
             { key: "select", value: "" },
             { key: "name", value: "물품명" },
+            { key: "tool", value: "제작 도구", props: { align: "right" } },
             { key: "level", value: "레벨", props: { align: "right" } },
           ]}
           pagination={{
@@ -110,6 +139,9 @@ export function ResultList() {
             <Row key={result.id} collapse={<ResultDetail result={result} />}>
               <TableCell component='th' scope='row'>
                 {result.name}
+              </TableCell>
+              <TableCell align='right'>
+                {getToolLabel(result.item.tool)}
               </TableCell>
               <TableCell align='right'>{result.level}</TableCell>
             </Row>
