@@ -19,7 +19,7 @@ export function Header() {
           </Typography>
           <Typography>빈칸 입력 시 모든 물품 확인이 가능합니다.</Typography>
           <Typography marginTop='10px' fontWeight={700}>
-            사진 제공: 루나밈 님, 떵히쭈 님
+            사진 제공: 루나응애 님, 떵히쭈 님
           </Typography>
         </div>
         <div />
