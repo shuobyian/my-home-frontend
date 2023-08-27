@@ -18,6 +18,9 @@ export function Header() {
             물품 이름과 수량을 입력해주세요. 기초 재료를 확인하실 수 있습니다.
           </Typography>
           <Typography>빈칸 입력 시 모든 물품 확인이 가능합니다.</Typography>
+          <Typography marginTop='10px' fontWeight={700}>
+            사진 제공: 루나밈 님, 떵히쭈 님
+          </Typography>
         </div>
         <div />
       </div>
