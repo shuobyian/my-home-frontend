@@ -1,4 +1,5 @@
 import { Container, Stack, TableCell, TableRow } from "@mui/material";
+import { getToolLabel } from "apis/type/Tool";
 import { useItemQuery } from "queries/useItemQuery";
 import { useState } from "react";
 import { StringUtil } from "util/StringUtil";
@@ -16,6 +17,11 @@ export function ItemList() {
             key: "name",
             value: "물품명",
             props: { width: "300px" },
+          },
+          {
+            key: "tool",
+            value: "제작 도구",
+            props: { width: "200px", align: "right" },
           },
           {
             key: "level",
@@ -48,6 +54,7 @@ export function ItemList() {
             <TableCell component='th' scope='row'>
               {item.name}
             </TableCell>
+            <TableCell align='right'>{getToolLabel(item.tool)}</TableCell>
             <TableCell align='right'>{item.level}</TableCell>
             <TableCell align='right'>
               {StringUtil.numberWithCommas(item.craftingPrice)}골드

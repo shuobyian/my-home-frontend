@@ -1,12 +1,14 @@
 import API_URL from "apis/API_URL";
 import { Item } from "apis/getItems";
 import myAxios from "apis/myAxios";
+import { Tool } from "apis/type/Tool";
 
 export interface ResultReqParams {
   page: number;
   size: number;
   name?: string;
   count?: number;
+  tool?: Tool;
 }
 
 export interface Result {

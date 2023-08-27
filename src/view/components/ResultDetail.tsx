@@ -38,13 +38,14 @@ export function ResultDetail({ result }: ResultDetailProps) {
               title='필요 금액'
               value={`${StringUtil.numberWithCommas(
                 result.totalPrice + result.craftingPrice
-              )}골드 (물품비: ${StringUtil.numberWithCommas(
+              )}골드 (재료비: ${StringUtil.numberWithCommas(
                 result.totalPrice
               )}골드 + 제작비: ${StringUtil.numberWithCommas(
                 result.craftingPrice
               )}골드)`}
             />
             <img
+              style={{ marginTop: "30px" }}
               src={`${process.env.PUBLIC_URL}/images/${result.name}.jpg`}
               width='300'
               alt='물품 사진'
@@ -52,7 +53,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
           </Stack>
           <Stack gap='10px'>
             {result.item.materials.map((material) => (
-              <Typography key={material.name}>
+              <Typography key={material.name} color='blue' fontWeight={700}>
                 {material.name} {material.count}개
               </Typography>
             ))}
