@@ -14,7 +14,7 @@ myAxios.interceptors.request.use(async (config) => {
   const baseURL =
     process.env.REACT_APP_PROFILE === "DEV"
       ? "http://localhost:8123"
-      : "http://15.165.231.197:8123";
+      : "http://43.200.90.33:8123";
   const currentUrl = new URL(`${baseURL}${config.url}`);
 
   Object.entries(config.pathParams || {}).forEach(([k, v]) => {
