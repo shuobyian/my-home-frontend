@@ -1,6 +1,9 @@
-import { Typography } from "@mui/material";
+import { Button, Typography } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
 export function Header() {
+  const navigate = useNavigate();
+
   return (
     <div style={{ display: "fixed", top: 0, padding: "10px" }}>
       <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -22,7 +25,15 @@ export function Header() {
             사진 제공: 루나응애 님, 떵히쭈 님
           </Typography>
         </div>
-        <div />
+        <div>
+          <Button
+            variant='outlined'
+            onClick={() => navigate("free")}
+            style={{ float: "right", margin: "10px" }}
+          >
+            자유 모드
+          </Button>
+        </div>
       </div>
     </div>
   );
