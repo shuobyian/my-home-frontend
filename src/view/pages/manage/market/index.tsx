@@ -1,31 +1,25 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  Button,
-  Container,
-  Snackbar,
-  TableCell,
-  TableRow,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Container, Snackbar } from "@mui/material";
 import { IMarket } from "apis/putMarkets";
 import { useMarketMutation } from "queries/useMarketMutation";
-import { useMarketQuery } from "queries/useMarketQuery";
-import { useEffect, useState } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useState } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
-import { Table } from "view/components/Table";
+import { MarketList } from "view/components/shared/MarketList";
 
 export function Market() {
   const queryClient = useQueryClient();
-  const { control, handleSubmit, reset } = useForm<IMarket[]>();
-  const { data: marketList } = useMarketQuery();
   const { isLoading, mutate } = useMarketMutation();
+
+  const form = useForm<{ markets: IMarket[] }>({
+    defaultValues: { markets: [] },
+  });
+  const { handleSubmit } = form;
 
   const [message, setMessage] = useState<string>();
 
-  const onSubmit = (formData: IMarket[]) => {
-    mutate(formData, {
+  const onSubmit = ({ markets }: { markets: IMarket[] }) => {
+    mutate(markets, {
       onSuccess: () => {
         setMessage("수정되었습니다.");
         queryClient.invalidateQueries("market");
@@ -35,10 +29,6 @@ export function Market() {
       },
     });
   };
-
-  useEffect(() => {
-    reset(marketList);
-  }, [marketList]);
 
   return (
     <Container maxWidth='lg'>
@@ -56,59 +46,9 @@ export function Market() {
       >
         수정
       </Button>
-      <Table
-        head={[
-          {
-            key: "name",
-            value: "물품명",
-            props: { width: "250px" },
-          },
-          {
-            key: "price",
-            value: "시세",
-            props: { width: "250px" },
-          },
-        ]}
-      >
-        {marketList?.map((market, i) => (
-          <TableRow
-            key={market.name}
-            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-          >
-            <TableCell component='th' scope='row'>
-              <Controller
-                name={`${i}.name`}
-                control={control}
-                render={({ field }) => (
-                  <TextField size='small' value={field.value} />
-                )}
-              />
-            </TableCell>
-            <TableCell
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "5px",
-              }}
-            >
-              <Controller
-                name={`${i}.price`}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    type='number'
-                    size='small'
-                    value={field.value}
-                    onChange={field.onChange}
-                  />
-                )}
-              />
-              <Typography>골드</Typography>
-            </TableCell>
-          </TableRow>
-        ))}
-      </Table>
+      <FormProvider {...form}>
+        <MarketList isUsedLocalStorage={false} />
+      </FormProvider>
     </Container>
   );
 }
