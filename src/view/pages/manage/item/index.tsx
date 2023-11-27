@@ -5,7 +5,7 @@ import { useState } from "react";
 import { StringUtil } from "util/StringUtil";
 import { Table } from "view/components/Table";
 
-export function ItemList() {
+export function Item() {
   const [params, setParams] = useState({ page: 0, size: 5 });
   const { data: items } = useItemQuery(params);
 

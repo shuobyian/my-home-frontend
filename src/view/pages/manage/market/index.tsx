@@ -8,7 +8,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { Market } from "apis/putMarkets";
+import { IMarket } from "apis/putMarkets";
 import { useMarketMutation } from "queries/useMarketMutation";
 import { useMarketQuery } from "queries/useMarketQuery";
 import { useEffect, useState } from "react";
@@ -16,15 +16,15 @@ import { Controller, useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
 import { Table } from "view/components/Table";
 
-export function MarketList() {
+export function Market() {
   const queryClient = useQueryClient();
-  const { control, handleSubmit, reset } = useForm<Market[]>();
+  const { control, handleSubmit, reset } = useForm<IMarket[]>();
   const { data: marketList } = useMarketQuery();
   const { isLoading, mutate } = useMarketMutation();
 
   const [message, setMessage] = useState<string>();
 
-  const onSubmit = (formData: Market[]) => {
+  const onSubmit = (formData: IMarket[]) => {
     mutate(formData, {
       onSuccess: () => {
         setMessage("수정되었습니다.");

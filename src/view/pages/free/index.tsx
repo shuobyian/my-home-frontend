@@ -1,8 +1,8 @@
 import { Container } from "@mui/material";
 import { Header } from "view/components/Header";
-import { ResultList } from "view/components/ResultList";
+import { ResultList } from "view/components/home/ResultList";
 
-export function Home() {
+export function Free() {
   return (
     <Container maxWidth='lg' style={{ textAlign: "center" }}>
       <Header />

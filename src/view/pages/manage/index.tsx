@@ -2,7 +2,7 @@ import { Button, Container, Snackbar, Stack } from "@mui/material";
 import { useResultMutation } from "queries/useResultMutation";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { CreateItem } from "view/CreateItem";
+import { CreateItem } from "view/components/manage/CreateItem";
 
 export function Manage() {
   const navigate = useNavigate();

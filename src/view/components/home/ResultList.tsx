@@ -12,7 +12,7 @@ import { ToolList, getToolLabel } from "apis/type/Tool";
 import { useResultQuery } from "queries/useResultQuery";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ResultDetail } from "view/components/ResultDetail";
+import { ResultDetail } from "view/components/home/ResultDetail";
 import { Row } from "view/components/Row";
 import { Table } from "view/components/Table";
 
