@@ -31,7 +31,6 @@ export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
           render={({ field }) => <Input value={field.value} disabled={true} />}
         />
       ),
-      width: 400,
     },
     {
       title: "시세",

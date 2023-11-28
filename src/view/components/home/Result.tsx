@@ -48,6 +48,7 @@ export function Result() {
           borderRadius: "10px",
           gap: "10px",
           width: "100%",
+          flexWrap: "wrap",
         }}
       >
         <Controller

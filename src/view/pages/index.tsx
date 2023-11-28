@@ -13,7 +13,11 @@ export function Router() {
       <Route
         path=''
         element={
-          <Layout style={{ padding: "10px 100px", width: "100vw" }}>
+          <Layout
+            style={{
+              padding: window.outerWidth > 500 ? "10px 100px" : "10px",
+            }}
+          >
             <Outlet />
           </Layout>
         }

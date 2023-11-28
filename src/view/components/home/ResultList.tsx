@@ -1,3 +1,4 @@
+import { Tooltip } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { Result } from "apis/getResults";
 import { getToolLabel } from "apis/type/Tool";
@@ -8,12 +9,14 @@ const columns: ColumnsType<Result> = [
     title: "",
     dataIndex: "select",
     key: "select",
-    width: 150,
+    width: 30,
   },
   {
     title: "물품명",
     dataIndex: "name",
     key: "name",
+    render: (name) => <Tooltip title={name}>{name}</Tooltip>,
+    ellipsis: true,
   },
   {
     title: "제작 도구",
@@ -21,14 +24,14 @@ const columns: ColumnsType<Result> = [
     key: "tool",
     align: "right",
     render: (tool) => getToolLabel(tool),
-    width: 200,
+    width: 100,
   },
   {
     title: "레벨",
     dataIndex: "level",
     key: "level",
     align: "right",
-    width: 150,
+    width: 80,
   },
 ];
 
