@@ -1,40 +1,65 @@
-import { TableCell } from "@mui/material";
+import Table, { ColumnsType } from "antd/es/table";
 import { Result } from "apis/getResults";
 import { getToolLabel } from "apis/type/Tool";
 import { ResultDetail } from "view/components/home/ResultDetail";
-import { Row } from "view/components/Row";
-import { Table } from "view/components/Table";
+
+const columns: ColumnsType<Result> = [
+  {
+    title: "",
+    dataIndex: "select",
+    key: "select",
+    width: 150,
+  },
+  {
+    title: "물품명",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "제작 도구",
+    dataIndex: "tool",
+    key: "tool",
+    align: "right",
+    render: (tool) => getToolLabel(tool),
+    width: 200,
+  },
+  {
+    title: "레벨",
+    dataIndex: "level",
+    key: "level",
+    align: "right",
+    width: 150,
+  },
+];
 
 interface IResultListProps {
+  loading: boolean;
   pagination?: {
     page: number;
-    size: number;
+    pageSize: number;
     total: number;
     onChange: (page: number) => void;
   };
   contents: Result[];
 }
 
-export function ResultList({ pagination, contents }: IResultListProps) {
+export function ResultList({
+  loading,
+  pagination,
+  contents,
+}: IResultListProps) {
   return (
     <Table
-      head={[
-        { key: "select", value: "" },
-        { key: "name", value: "물품명" },
-        { key: "tool", value: "제작 도구", props: { align: "right" } },
-        { key: "level", value: "레벨", props: { align: "right" } },
-      ]}
-      pagination={pagination}
-    >
-      {contents.map((content) => (
-        <Row key={content.id} collapse={<ResultDetail result={content} />}>
-          <TableCell component='th' scope='row'>
-            {content.name}
-          </TableCell>
-          <TableCell align='right'>{getToolLabel(content.item.tool)}</TableCell>
-          <TableCell align='right'>{content.level}</TableCell>
-        </Row>
-      ))}
-    </Table>
+      loading={loading}
+      columns={columns}
+      dataSource={contents}
+      pagination={{ ...pagination, showSizeChanger: false }}
+      expandable={{
+        expandedRowRender: (record) => (
+          <p style={{ margin: 0 }}>{<ResultDetail result={record} />}</p>
+        ),
+        rowExpandable: (record) => record.name !== "Not Expandable",
+      }}
+    />
   );
 }

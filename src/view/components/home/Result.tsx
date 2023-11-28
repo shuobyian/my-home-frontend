@@ -1,11 +1,4 @@
-import {
-  Button,
-  CircularProgress,
-  MenuItem,
-  Select,
-  Stack,
-  TextField,
-} from "@mui/material";
+import { Button, Input, InputNumber, Select, Space } from "antd";
 import { ResultReqParams } from "apis/getResults";
 import { ToolList } from "apis/type/Tool";
 import { useResultQuery } from "queries/useResultQuery";
@@ -48,28 +41,23 @@ export function Result() {
 
   return (
     <>
-      <Stack
+      <Space
         style={{
           padding: "10px",
           border: "1px solid #eeeeee",
           borderRadius: "10px",
+          gap: "10px",
         }}
-        direction={"row"}
-        gap='10px'
       >
         <Controller
           name='name'
           control={control}
           render={({ field }) => (
-            <TextField
-              variant='outlined'
-              size='small'
+            <Input
               placeholder='물품명 입력'
               value={field.value}
               onChange={field.onChange}
-              inputProps={{
-                onKeyDown: (e) => keyPressEnter(e),
-              }}
+              onPressEnter={keyPressEnter}
             />
           )}
         />
@@ -77,18 +65,14 @@ export function Result() {
           name='count'
           control={control}
           render={({ field }) => (
-            <TextField
-              variant='outlined'
+            <InputNumber
               type='number'
-              size='small'
+              style={{ width: "120px" }}
               placeholder='물품 개수 입력'
               value={field.value}
               onChange={field.onChange}
-              inputProps={{
-                onKeyDown: (e) => keyPressEnter(e),
-                inputMode: "numeric",
-                pattern: "[0-9]*",
-              }}
+              onPressEnter={keyPressEnter}
+              pattern='[0-9]*'
             />
           )}
         />
@@ -96,38 +80,28 @@ export function Result() {
           name='tool'
           control={control}
           render={({ field }) => (
-            <Select size='small' value={field.value} onChange={field.onChange}>
-              {[{ value: "ALL", label: "전체" }, ...ToolList].map(
-                ({ value, label }) => (
-                  <MenuItem key={value} value={value}>
-                    {label}
-                  </MenuItem>
-                )
-              )}
-            </Select>
+            <Select
+              style={{ width: "120px" }}
+              value={field.value}
+              onChange={field.onChange}
+              options={[{ value: "ALL", label: "전체" }, ...ToolList]}
+            />
           )}
         />
-        <Button
-          ref={buttonRef}
-          variant='contained'
-          onClick={handleSubmit(onSubmit)}
-        >
+        <Button type='primary' ref={buttonRef} onClick={handleSubmit(onSubmit)}>
           검색
         </Button>
-      </Stack>
-      {isLoading ? (
-        <CircularProgress style={{ marginTop: "20vh" }} color='inherit' />
-      ) : (
-        <ResultList
-          pagination={{
-            page: params.page,
-            size: params.size,
-            total: results?.totalElements ?? 0,
-            onChange: (page) => setParams((prev) => ({ ...prev, page })),
-          }}
-          contents={results?.content ?? []}
-        />
-      )}
+      </Space>
+      <ResultList
+        loading={isLoading}
+        pagination={{
+          page: params.page,
+          pageSize: params.size,
+          total: results?.totalElements ?? 0,
+          onChange: (page) => setParams((prev) => ({ ...prev, page })),
+        }}
+        contents={results?.content ?? []}
+      />
     </>
   );
 }

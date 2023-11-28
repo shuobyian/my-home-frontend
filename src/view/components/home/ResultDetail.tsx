@@ -1,8 +1,30 @@
-import { Stack, TableCell, TableRow, Typography } from "@mui/material";
+import { Space, Typography } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
 import { Result } from "apis/getResults";
 import { StringUtil } from "util/StringUtil";
 import { InfoRow } from "view/components/InfoRow";
-import { Table } from "view/components/Table";
+
+const columns: ColumnsType<Result["basic"][0]> = [
+  {
+    title: "재료",
+    dataIndex: "name",
+    key: "name",
+  },
+  {
+    title: "개수",
+    dataIndex: "count",
+    key: "count",
+    render: (count) => `${StringUtil.numberWithCommas(count)}개`,
+    align: "right",
+  },
+  {
+    title: "골드",
+    dataIndex: "price",
+    key: "price",
+    render: (price) => `${StringUtil.numberWithCommas(price)}골드`,
+    align: "right",
+  },
+];
 
 interface ResultDetailProps {
   result: Result;
@@ -12,21 +34,21 @@ export function ResultDetail({ result }: ResultDetailProps) {
   return (
     <div
       style={{
-        border: "1px solid gray",
-        borderRadius: "10px",
-        padding: "10px",
+        width: "100%",
       }}
     >
-      <Stack gap='20px'>
-        <div
+      <Space style={{ gap: "20px", width: "100%" }} direction='vertical'>
+        <Space
           style={{
+            width: "100%",
             display: "flex",
             justifyContent: "space-between",
+            alignItems: "baseline",
             gap: "20px",
             flexWrap: "wrap",
           }}
         >
-          <Stack gap='15px'>
+          <Space style={{ gap: "15px" }} direction='vertical'>
             <InfoRow title='물품명' value={result.name} />
             <InfoRow
               title={
@@ -50,49 +72,24 @@ export function ResultDetail({ result }: ResultDetailProps) {
               width='300'
               alt='물품 사진'
             />
-          </Stack>
-          <Stack gap='10px'>
+          </Space>
+          <Space style={{ gap: "10px" }} direction='vertical'>
             {result.item.materials.map((material) => (
-              <Typography key={material.name} color='blue' fontWeight={700}>
+              <Typography.Text key={material.name} style={{ color: "blue" }}>
                 {material.name} {material.count}개
-              </Typography>
+              </Typography.Text>
             ))}
-          </Stack>
-        </div>
-        <Stack>
-          <Typography fontWeight={700}>기초 재료</Typography>
+          </Space>
+        </Space>
+        <Space direction='vertical' style={{ width: "100%" }}>
+          <Typography.Text strong>기초 재료</Typography.Text>
           <Table
-            style={{
-              border: "1px solid #dddddd",
-              borderRadius: "10px",
-              padding: "10px",
-            }}
-            head={[
-              { key: "name", value: "재료" },
-              { key: "count", value: "개수", props: { align: "right" } },
-              { key: "price", value: "골드", props: { align: "right" } },
-            ]}
             size='small'
-          >
-            {result.basic?.map((item) => (
-              <TableRow
-                key={item.name}
-                sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-              >
-                <TableCell component='th' scope='row'>
-                  {item.name}
-                </TableCell>
-                <TableCell align='right'>
-                  {StringUtil.numberWithCommas(item.count)}개
-                </TableCell>
-                <TableCell align='right'>
-                  {StringUtil.numberWithCommas(item.price)}골드
-                </TableCell>
-              </TableRow>
-            ))}
-          </Table>
-        </Stack>
-      </Stack>
+            columns={columns}
+            dataSource={result.basic || []}
+          />
+        </Space>
+      </Space>
     </div>
   );
 }

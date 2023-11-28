@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Container, Snackbar } from "@mui/material";
+import { Button, Layout, message } from "antd";
 import { IMarket } from "apis/putMarkets";
 import { useMarketMutation } from "queries/useMarketMutation";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
 import { MarketList } from "view/components/shared/MarketList";
@@ -16,30 +15,21 @@ export function Market() {
   });
   const { handleSubmit } = form;
 
-  const [message, setMessage] = useState<string>();
-
   const onSubmit = ({ markets }: { markets: IMarket[] }) => {
     mutate(markets, {
       onSuccess: () => {
-        setMessage("수정되었습니다.");
+        message.success("수정되었습니다.");
         queryClient.invalidateQueries("market");
       },
       onError: () => {
-        setMessage("실패했습니다.");
+        message.error("실패했습니다.");
       },
     });
   };
 
   return (
-    <Container maxWidth='lg'>
-      <Snackbar
-        open={!!message}
-        onClose={() => setMessage(undefined)}
-        autoHideDuration={1000}
-        message='수정되었습니다.'
-      />
+    <Layout>
       <Button
-        variant='outlined'
         disabled={isLoading}
         onClick={handleSubmit(onSubmit)}
         style={{ float: "right", margin: "10px" }}
@@ -49,6 +39,6 @@ export function Market() {
       <FormProvider {...form}>
         <MarketList isUsedLocalStorage={false} />
       </FormProvider>
-    </Container>
+    </Layout>
   );
 }
