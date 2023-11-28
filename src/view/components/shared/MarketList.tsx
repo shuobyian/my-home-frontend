@@ -1,17 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import {
-  Button,
-  TableCell,
-  TableRow,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Input, InputNumber } from "antd";
+import Table, { ColumnsType } from "antd/es/table";
 import { IMarket } from "apis/putMarkets";
 import { useMarketQuery } from "queries/useMarketQuery";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";
-import { Table } from "view/components/Table";
 
 const MARKET_LIST = localStorage.getItem(MARKET);
 
@@ -24,6 +18,41 @@ export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
   const { control, reset, getValues } = form;
 
   const { data } = useMarketQuery();
+
+  const columns: ColumnsType<IMarket> = [
+    {
+      title: "물품명",
+      dataIndex: "name",
+      key: "name",
+      render: (_, __, i) => (
+        <Controller
+          name={`markets.${i}.name`}
+          control={control}
+          render={({ field }) => <Input value={field.value} disabled={true} />}
+        />
+      ),
+      width: 400,
+    },
+    {
+      title: "시세",
+      dataIndex: "price",
+      key: "price",
+      render: (_, __, i) => (
+        <Controller
+          name={`markets.${i}.price`}
+          control={control}
+          render={({ field }) => (
+            <InputNumber
+              value={field.value}
+              onChange={field.onChange}
+              pattern='[0-9]*'
+              addonAfter='골드'
+            />
+          )}
+        />
+      ),
+    },
+  ];
 
   const resetData = () => {
     reset({ markets: data });
@@ -38,66 +67,14 @@ export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
 
   return (
     <div style={{ textAlign: "left" }}>
-      <Button variant='outlined' onClick={resetData} style={{ margin: "10px" }}>
+      <Button onClick={resetData} style={{ margin: "10px" }}>
         시세 불러오기
       </Button>
       <Table
-        head={[
-          {
-            key: "name",
-            value: "물품명",
-            props: { width: "250px" },
-          },
-          {
-            key: "price",
-            value: "시세",
-            props: { width: "250px" },
-          },
-        ]}
-      >
-        {getValues("markets")?.map((market, i) => (
-          <TableRow
-            key={market.name}
-            sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
-          >
-            <TableCell component='th' scope='row'>
-              <Controller
-                name={`markets.${i}.name`}
-                control={control}
-                render={({ field }) => (
-                  <TextField size='small' value={field.value} disabled={true} />
-                )}
-              />
-            </TableCell>
-            <TableCell
-              style={{
-                display: "flex",
-                flexDirection: "row",
-                alignItems: "center",
-                gap: "5px",
-              }}
-            >
-              <Controller
-                name={`markets.${i}.price`}
-                control={control}
-                render={({ field }) => (
-                  <TextField
-                    type='number'
-                    size='small'
-                    value={field.value}
-                    onChange={field.onChange}
-                    inputProps={{
-                      inputMode: "numeric",
-                      pattern: "[0-9]*",
-                    }}
-                  />
-                )}
-              />
-              <Typography>골드</Typography>
-            </TableCell>
-          </TableRow>
-        ))}
-      </Table>
+        columns={columns}
+        dataSource={getValues("markets") || []}
+        pagination={false}
+      />
     </div>
   );
 }

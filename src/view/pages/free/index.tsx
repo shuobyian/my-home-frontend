@@ -1,4 +1,4 @@
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Layout, Typography } from "antd";
 import { IMarket } from "apis/putMarkets";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
@@ -27,7 +27,7 @@ export function Free() {
   };
 
   return (
-    <Container maxWidth='lg' style={{ textAlign: "right" }}>
+    <Layout style={{ textAlign: "right", padding: "20px 100px" }}>
       <div>
         <div
           style={{
@@ -37,21 +37,21 @@ export function Free() {
             padding: "20px",
           }}
         >
-          <Typography variant='h6'>
+          <Typography.Title level={5}>
             자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.
-          </Typography>
-          <Typography variant='h6'>
+          </Typography.Title>
+          <Typography.Title level={5}>
             입력한 시세에 따라 계산된 결과를 확인할 수 있습니다.
-          </Typography>
-          <Typography>
+          </Typography.Title>
+          <Typography.Text>
             1. 시세 불러오기 버튼을 클릭하면 기본 시세 셋을 불러올 수 있습니다.
-          </Typography>
-          <Typography>
+          </Typography.Text>
+          <Typography.Text>
             2. 시세 입력 후 결과 만들기 클릭하면 결과를 확인할 수 있습니다.
-          </Typography>
+          </Typography.Text>
         </div>
         <Button
-          variant='contained'
+          type='primary'
           disabled={isLoading}
           onClick={handleSubmit(onSubmit)}
           style={{ margin: "10px" }}
@@ -62,6 +62,6 @@ export function Free() {
       <FormProvider {...form}>
         <MarketList isUsedLocalStorage={true} />
       </FormProvider>
-    </Container>
+    </Layout>
   );
 }

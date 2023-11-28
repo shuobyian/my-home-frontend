@@ -6,6 +6,11 @@ function numberWithCommas(number?: number | null) {
   return `${numberString.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`;
 }
 
+function numberWithCommasAndMoney(number: number) {
+  return `${numberWithCommas(number)}원`;
+}
+
 export const StringUtil = {
   numberWithCommas,
+  numberWithCommasAndMoney,
 };

@@ -1,11 +1,4 @@
-import {
-  Button,
-  CircularProgress,
-  Container,
-  Stack,
-  TextField,
-  Typography,
-} from "@mui/material";
+import { Button, Input, Layout, Space, Typography } from "antd";
 import { Result } from "apis/getResults";
 import { IMarket } from "apis/putMarkets";
 import { useCalculatorQuery } from "queries/useCalculatorQuery";
@@ -47,44 +40,40 @@ export function FreeResult() {
   }, [data]);
 
   return (
-    <Container maxWidth='lg' style={{ textAlign: "right" }}>
-      <Button variant='outlined' onClick={onSave} style={{ margin: "10px" }}>
-        로컬에 저장하기
-      </Button>
-      <div style={{ padding: "20px", textAlign: "center" }}>
-        <Typography variant='h6'>
+    <Layout style={{ textAlign: "center", padding: "20px 100px" }}>
+      <Space direction='vertical'>
+        <Button
+          type='primary'
+          onClick={onSave}
+          style={{ float: "right", margin: "10px" }}
+        >
+          로컬에 저장하기
+        </Button>
+        <Typography.Title level={5}>
           이 결과는 서버에 저장되지 않으며 현재 접속 중인 브라우저에 저장할 수
           있습니다.
-        </Typography>
-      </div>
-      <Stack
-        style={{
-          padding: "10px",
-          border: "1px solid #eeeeee",
-          borderRadius: "10px",
-        }}
-        direction={"row"}
-        gap='10px'
-      >
-        <TextField
-          variant='outlined'
-          size='small'
-          placeholder='물품명 입력'
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          inputProps={{
-            onKeyDown: (e) => keyPressEnter(e),
+        </Typography.Title>
+        <Space
+          style={{
+            padding: "10px",
+            border: "1px solid #eeeeee",
+            borderRadius: "10px",
+            gap: "10px",
+            width: "100%",
           }}
-        />
-        <Button ref={buttonRef} variant='contained' onClick={onSubmit}>
-          검색
-        </Button>
-      </Stack>
-      {isLoading ? (
-        <CircularProgress style={{ marginTop: "20vh" }} color='inherit' />
-      ) : (
-        <ResultList contents={resultList || []} />
-      )}
-    </Container>
+        >
+          <Input
+            placeholder='물품명 입력'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onPressEnter={keyPressEnter}
+          />
+          <Button ref={buttonRef} onClick={onSubmit}>
+            검색
+          </Button>
+        </Space>
+        <ResultList loading={isLoading} contents={resultList || []} />
+      </Space>
+    </Layout>
   );
 }
