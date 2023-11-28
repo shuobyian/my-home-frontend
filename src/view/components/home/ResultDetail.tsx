@@ -86,7 +86,8 @@ export function ResultDetail({ result }: ResultDetailProps) {
           <Table
             size='small'
             columns={columns}
-            dataSource={result.basic || []}
+            dataSource={result.basic.map((b) => ({ ...b, key: b.name })) || []}
+            pagination={{ total: result.basic.length, showSizeChanger: true }}
           />
         </Space>
       </Space>

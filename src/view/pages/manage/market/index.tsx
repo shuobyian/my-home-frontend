@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, Layout, message } from "antd";
+import { Button, message } from "antd";
 import { IMarket } from "apis/putMarkets";
 import { useMarketMutation } from "queries/useMarketMutation";
 import { FormProvider, useForm } from "react-hook-form";
@@ -28,17 +28,18 @@ export function Market() {
   };
 
   return (
-    <Layout>
+    <div>
       <Button
+        type='primary'
         disabled={isLoading}
         onClick={handleSubmit(onSubmit)}
-        style={{ float: "right", margin: "10px" }}
+        style={{ float: "right" }}
       >
         수정
       </Button>
       <FormProvider {...form}>
         <MarketList isUsedLocalStorage={false} />
       </FormProvider>
-    </Layout>
+    </div>
   );
 }

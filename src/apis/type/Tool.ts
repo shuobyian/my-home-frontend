@@ -6,6 +6,7 @@ export const ToolType = {
   BRAZIER: "BRAZIER",
   POTTERY_WHEEL: "POTTERY_WHEEL",
   ALCHEMY_KETTLE: "ALCHEMY_KETTLE",
+  MIMI: "MIMI",
 } as const;
 export type Tool = (typeof ToolType)[keyof typeof ToolType];
 
@@ -37,6 +38,10 @@ export const ToolList = [
   {
     value: ToolType.ALCHEMY_KETTLE,
     label: "별님 연금솥",
+  },
+  {
+    value: ToolType.MIMI,
+    label: "미미 화덕",
   },
 ];
 

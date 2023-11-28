@@ -1,4 +1,4 @@
-import { Button, Layout, Space, message } from "antd";
+import { Button, Space, message } from "antd";
 import { useResultMutation } from "queries/useResultMutation";
 import { useNavigate } from "react-router-dom";
 import ItemTable from "view/components/manage/ItemTable";
@@ -8,10 +8,11 @@ export function Manage() {
   const { isLoading, mutate } = useResultMutation();
 
   return (
-    <Layout>
-      <Space style={{ padding: "5px", gap: "10px" }}>
+    <Space direction='vertical' style={{ gap: "30px" }}>
+      <Space>
         <Button onClick={() => navigate("market")}>시세 리스트</Button>
         <Button
+          type='primary'
           disabled={isLoading}
           onClick={() =>
             mutate(undefined, {
@@ -25,6 +26,6 @@ export function Manage() {
         </Button>
       </Space>
       <ItemTable />
-    </Layout>
+    </Space>
   );
 }

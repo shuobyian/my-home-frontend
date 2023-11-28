@@ -40,13 +40,14 @@ export function Result() {
   };
 
   return (
-    <>
+    <Space direction='vertical' style={{ width: "100%" }}>
       <Space
         style={{
           padding: "10px",
           border: "1px solid #eeeeee",
           borderRadius: "10px",
           gap: "10px",
+          width: "100%",
         }}
       >
         <Controller
@@ -96,12 +97,13 @@ export function Result() {
         loading={isLoading}
         pagination={{
           page: params.page,
-          pageSize: params.size,
+          size: params.size,
           total: results?.totalElements ?? 0,
-          onChange: (page) => setParams((prev) => ({ ...prev, page })),
+          onChange: (page) =>
+            setParams((prev) => ({ ...prev, page: page - 1 })),
         }}
         contents={results?.content ?? []}
       />
-    </>
+    </Space>
   );
 }

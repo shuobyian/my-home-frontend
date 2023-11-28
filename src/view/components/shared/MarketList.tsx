@@ -72,7 +72,12 @@ export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
       </Button>
       <Table
         columns={columns}
-        dataSource={getValues("markets") || []}
+        dataSource={
+          getValues("markets")?.map((market) => ({
+            ...market,
+            key: market.id,
+          })) || []
+        }
         pagination={false}
       />
     </div>

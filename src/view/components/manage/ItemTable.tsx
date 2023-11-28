@@ -14,7 +14,7 @@ import { StringUtil } from "util/StringUtil";
 import { ITEM } from "util/constant/LOCAL_STORAGE_KEY";
 import { materialColumns } from "util/constant/materialColumns";
 import { ExcelButton } from "view/components/manage/ExcelButton";
-import { ItemModal } from "view/components/manage/ItemModal";
+import { ItemModal } from "view/components/manage/modal/ItemModal";
 
 const DEFAULT_DATA = localStorage.getItem(ITEM);
 
@@ -74,10 +74,8 @@ export default function ItemTable() {
     message.success("저장되었습니다");
   };
 
-  console.log("++++", datas);
-
   return (
-    <div style={{ margin: 20 }}>
+    <>
       <div style={{ width: "100%" }}>
         <Space direction='horizontal'>
           <Button onClick={openModal}>추가</Button>
@@ -166,6 +164,6 @@ export default function ItemTable() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }

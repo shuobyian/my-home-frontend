@@ -36,7 +36,7 @@ interface IResultListProps {
   loading: boolean;
   pagination?: {
     page: number;
-    pageSize: number;
+    size: number;
     total: number;
     onChange: (page: number) => void;
   };
@@ -52,8 +52,18 @@ export function ResultList({
     <Table
       loading={loading}
       columns={columns}
-      dataSource={contents}
-      pagination={{ ...pagination, showSizeChanger: false }}
+      dataSource={contents.map((content) => ({ ...content, key: content.id }))}
+      pagination={
+        pagination
+          ? {
+              current: pagination.page + 1,
+              pageSize: pagination.size,
+              total: pagination.total,
+              onChange: pagination.onChange,
+              showSizeChanger: false,
+            }
+          : undefined
+      }
       expandable={{
         expandedRowRender: (record) => (
           <p style={{ margin: 0 }}>{<ResultDetail result={record} />}</p>

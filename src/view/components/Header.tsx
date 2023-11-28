@@ -5,7 +5,7 @@ export function Header() {
   const navigate = useNavigate();
 
   return (
-    <div style={{ display: "fixed", top: 0, padding: "10px", width: "100%" }}>
+    <div style={{ display: "fixed", top: 0, width: "100%" }}>
       <div
         style={{
           display: "flex",
@@ -17,7 +17,6 @@ export function Header() {
           style={{
             display: "flex",
             flexDirection: "column",
-            justifyContent: "center",
             width: "100%",
           }}
         >
@@ -30,6 +29,7 @@ export function Header() {
           <Typography.Text>
             빈칸 입력 시 모든 물품 확인이 가능합니다.
           </Typography.Text>
+          <Typography.Title level={5}>제작자: 늘흰</Typography.Title>
           <Typography.Text strong>
             사진 제공: 루나응애 님, 떵히쭈 님
           </Typography.Text>
