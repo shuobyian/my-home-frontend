@@ -1,4 +1,4 @@
-import { ResultReqParams, getResults } from "apis/getResults";
+import { ResultReqParams, getResults } from "apis/result/getResults";
 import { useQuery } from "react-query";
 
 export const useResultQuery = (params: ResultReqParams) =>
@@ -9,7 +9,7 @@ export const useResultQuery = (params: ResultReqParams) =>
       ...data,
       content: data.content.map((c) => ({
         ...c,
-        basic: c.basic.sort((a, b) => (a.name > b.name ? 1 : -1)),
+        materials: c.materials.sort((a, b) => (a.name > b.name ? 1 : -1)),
       })),
     }),
   });

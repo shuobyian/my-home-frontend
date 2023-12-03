@@ -1,5 +1,5 @@
 import { Button, Input, Space, Typography } from "antd";
-import { Result } from "apis/getResults";
+import { Result } from "apis/result/getResults";
 import { IMarket } from "apis/putMarkets";
 import { useCalculatorQuery } from "queries/useCalculatorQuery";
 import { useEffect, useRef, useState } from "react";

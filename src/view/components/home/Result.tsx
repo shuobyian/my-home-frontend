@@ -1,5 +1,5 @@
 import { Button, Input, InputNumber, Select, Space } from "antd";
-import { ResultReqParams } from "apis/getResults";
+import { ResultReqParams } from "apis/result/getResults";
 import { ToolList } from "apis/type/Tool";
 import { useResultQuery } from "queries/useResultQuery";
 import { useRef, useState } from "react";

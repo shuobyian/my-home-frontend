@@ -1,4 +1,4 @@
-import { CalculatorReqBody, postCalculator } from "apis/postCalculator";
+import { CalculatorReqBody, postCalculator } from "apis/result/postCalculator";
 import { useQuery } from "react-query";
 
 export const useCalculatorQuery = (body: CalculatorReqBody) =>
