@@ -1,3 +1,5 @@
+import { IErrorResponse, IMyHomeError } from "apis/lib/error/Error";
+import MyHomeError from "apis/lib/error/MyHomeError";
 import axios from "axios";
 
 declare module "axios" {
@@ -34,7 +36,12 @@ myAxios.interceptors.request.use(async (config) => {
 myAxios.interceptors.response.use(
   (response) => response,
   (error) => {
-    return Promise.reject(error);
+    return Promise.reject(
+      new MyHomeError({
+        request: error.response.request.responseURL,
+        errorResponse: error as IErrorResponse<IMyHomeError>,
+      })
+    );
   }
 );
 

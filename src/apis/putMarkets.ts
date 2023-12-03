@@ -1,5 +1,5 @@
 import API_URL from "apis/API_URL";
-import myAxios from "apis/myAxios";
+import myAxios from "apis/lib/myAxios";
 
 export interface IMarket {
   id: string;

@@ -1,10 +1,10 @@
 import { Space, Typography } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { Result } from "apis/getResults";
+import { Result } from "apis/result/getResults";
 import { StringUtil } from "util/StringUtil";
 import { InfoRow } from "view/components/InfoRow";
 
-const columns: ColumnsType<Result["basic"][0]> = [
+const columns: ColumnsType<Result["materials"][0]> = [
   {
     title: "재료",
     dataIndex: "name",
@@ -86,8 +86,13 @@ export function ResultDetail({ result }: ResultDetailProps) {
           <Table
             size='small'
             columns={columns}
-            dataSource={result.basic.map((b) => ({ ...b, key: b.name })) || []}
-            pagination={{ total: result.basic.length, showSizeChanger: true }}
+            dataSource={
+              result.materials.map((b) => ({ ...b, key: b.name })) || []
+            }
+            pagination={{
+              total: result.materials.length,
+              showSizeChanger: true,
+            }}
           />
         </Space>
       </Space>

@@ -1,6 +1,6 @@
 import { Tooltip } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { Result } from "apis/getResults";
+import { Result } from "apis/result/getResults";
 import { getToolLabel } from "apis/type/Tool";
 import { ResultDetail } from "view/components/home/ResultDetail";
 

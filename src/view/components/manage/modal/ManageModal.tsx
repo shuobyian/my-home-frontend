@@ -2,7 +2,6 @@ import { Input, Modal, Space, Typography } from "antd";
 import { useLoginMutation } from "queries/useLoginMutation";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "./index.css";
 
 export function ManageModal() {
   const navigate = useNavigate();

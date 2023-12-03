@@ -9,7 +9,9 @@ import {
 } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Item } from "apis/getItems";
-import { useState } from "react";
+import MyHomeError from "apis/lib/error/MyHomeError";
+import { useUploadItemMutation } from "queries/useUploadItemMutation";
+import { useRef, useState } from "react";
 import { StringUtil } from "util/StringUtil";
 import { ITEM } from "util/constant/LOCAL_STORAGE_KEY";
 import { materialColumns } from "util/constant/materialColumns";
@@ -21,9 +23,11 @@ const DEFAULT_DATA = localStorage.getItem(ITEM);
 const columns: ColumnsType<Item> = materialColumns;
 
 export default function ItemTable() {
-  const [datas, setDatas] = useState<Item[]>(
-    DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : []
-  );
+  const { mutate: upload } = useUploadItemMutation();
+
+  const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
+  const originalDatas = useRef<Item[]>(defaultDatas);
+  const [datas, setDatas] = useState<Item[]>(defaultDatas);
 
   const [isModalOpened, setIsModalOpened] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Item>();
@@ -46,6 +50,14 @@ export default function ItemTable() {
   };
 
   const remove = () => {
+    setDatas((prevs) =>
+      prevs.filter((prev) => !selectedRows.find((row) => row.id === prev.id))
+    );
+    setSelectedRows([]);
+    message.success("삭제되었습니다");
+  };
+
+  const onRemove = () => {
     Modal.confirm({
       title: "삭제하시겠습니까?",
       content: (
@@ -55,15 +67,7 @@ export default function ItemTable() {
           ))}
         </ul>
       ),
-      onOk: () => {
-        setDatas((prevs) =>
-          prevs.filter(
-            (prev) => !selectedRows.find((row) => row.id === prev.id)
-          )
-        );
-        setSelectedRows([]);
-        message.success("삭제되었습니다");
-      },
+      onOk: remove,
       okText: "삭제",
       cancelText: "취소",
     });
@@ -71,7 +75,48 @@ export default function ItemTable() {
 
   const save = () => {
     localStorage.setItem(ITEM, JSON.stringify(datas));
-    message.success("저장되었습니다");
+
+    upload(
+      { items: datas },
+      {
+        onSuccess: ({ data }) => {
+          Modal.info({
+            title: "저장되었습니다.",
+            content: (
+              <ul style={{ maxHeight: 400, overflow: "scroll" }}>
+                {data.map(({ id, name }) => (
+                  <li key={id}>{name}</li>
+                ))}
+              </ul>
+            ),
+            okText: "확인",
+          });
+        },
+        onError: (error) => {
+          message.error((error as MyHomeError).getErrorMessage());
+        },
+      }
+    );
+  };
+
+  const onSave = () => {
+    const changeDatas = datas.filter(
+      (data) => !originalDatas.current.find(({ name }) => name === data.name)
+    );
+
+    Modal.confirm({
+      title: "저장하시겠습니까?",
+      content: (
+        <ul style={{ maxHeight: 400, overflow: "scroll" }}>
+          {changeDatas.map(({ id, name }) => (
+            <li key={id}>{name}</li>
+          ))}
+        </ul>
+      ),
+      onOk: save,
+      okText: "확인",
+      cancelText: "취소",
+    });
   };
 
   return (
@@ -79,11 +124,11 @@ export default function ItemTable() {
       <div style={{ width: "100%" }}>
         <Space direction='horizontal'>
           <Button onClick={openModal}>추가</Button>
-          <Button onClick={remove} disabled={selectedRows.length < 1}>
+          <Button onClick={onRemove} disabled={selectedRows.length < 1}>
             삭제
           </Button>
         </Space>
-        <Button style={{ float: "right" }} onClick={save}>
+        <Button style={{ float: "right" }} onClick={onSave} type='primary'>
           저장
         </Button>
       </div>
@@ -151,7 +196,11 @@ export default function ItemTable() {
         />
       </div>
       <Divider type='horizontal' />
-      <ExcelButton datas={datas} setDatas={setDatas} />
+      <ExcelButton
+        originalDatas={originalDatas}
+        datas={datas}
+        setDatas={setDatas}
+      />
       {isModalOpened && (
         <ItemModal
           prevData={selectedRow}

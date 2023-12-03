@@ -59,6 +59,7 @@ export function ItemModal({ prevData, add, edit, ...props }: IItemModalProps) {
       {...props}
     >
       <Form form={form} style={{ margin: "30px 0" }}>
+        <Form.Item style={{ display: "none" }} name='id' />
         <Form.Item
           name='name'
           rules={[{ required: true, message: "물품명을 입력해주세요" }]}
@@ -97,7 +98,7 @@ export function ItemModal({ prevData, add, edit, ...props }: IItemModalProps) {
                   <Space direction='horizontal' key={field.name}>
                     <Form.Item
                       style={{ margin: 0 }}
-                      name={[field.name, "material"]}
+                      name={[field.name, "name"]}
                       rules={[
                         { required: true, message: "물품명을 입력해주세요" },
                       ]}
