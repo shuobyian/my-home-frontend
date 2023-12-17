@@ -8,41 +8,41 @@ import {
   message,
 } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { Item } from "apis/getItems";
+import { Product } from "apis/product/getProducts";
 import MyHomeError from "apis/lib/error/MyHomeError";
-import { useUploadItemMutation } from "queries/useUploadItemMutation";
 import { useRef, useState } from "react";
 import { StringUtil } from "util/StringUtil";
-import { ITEM } from "util/constant/LOCAL_STORAGE_KEY";
+import { PRODUCT } from "util/constant/LOCAL_STORAGE_KEY";
 import { materialColumns } from "util/constant/materialColumns";
 import { ExcelButton } from "view/components/manage/ExcelButton";
-import { ItemModal } from "view/components/manage/modal/ItemModal";
+import { ProductModal } from "view/components/manage/modal/ProductModal";
+import { useProductMutation } from "queries/product/useProductMutation";
 
-const DEFAULT_DATA = localStorage.getItem(ITEM);
+const DEFAULT_DATA = localStorage.getItem(PRODUCT);
 
-const columns: ColumnsType<Item> = materialColumns;
+const columns: ColumnsType<Product> = materialColumns;
 
-export default function ItemTable() {
-  const { mutate: upload } = useUploadItemMutation();
+export default function ProductTable() {
+  const { mutate: upload } = useProductMutation();
 
   const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
-  const originalDatas = useRef<Item[]>(defaultDatas);
-  const [datas, setDatas] = useState<Item[]>(defaultDatas);
+  const originalDatas = useRef<Product[]>(defaultDatas);
+  const [datas, setDatas] = useState<Product[]>(defaultDatas);
 
   const [isModalOpened, setIsModalOpened] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<Item>();
-  const [selectedRows, setSelectedRows] = useState<Item[]>([]);
+  const [selectedRow, setSelectedRow] = useState<Product>();
+  const [selectedRows, setSelectedRows] = useState<Product[]>([]);
 
   const openModal = () => {
     setIsModalOpened(true);
   };
 
-  const add = (data: Omit<Item, "id">) => {
+  const add = (data: Omit<Product, "id">) => {
     setDatas((prev) => [{ ...data, id: (datas.at(-1)?.id ?? 0) + 1 }, ...prev]);
     message.success("추가되었습니다");
   };
 
-  const edit = (data: Item) => {
+  const edit = (data: Product) => {
     setDatas((prevs) =>
       prevs.map((prev) => (prev.id === data.id ? data : prev))
     );
@@ -74,10 +74,10 @@ export default function ItemTable() {
   };
 
   const save = () => {
-    localStorage.setItem(ITEM, JSON.stringify(datas));
+    localStorage.setItem(PRODUCT, JSON.stringify(datas));
 
     upload(
-      { items: datas },
+      { products: datas },
       {
         onSuccess: ({ data }) => {
           Modal.info({
@@ -121,14 +121,20 @@ export default function ItemTable() {
 
   return (
     <>
-      <div style={{ width: "100%" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          width: "100%",
+        }}
+      >
         <Space direction='horizontal'>
           <Button onClick={openModal}>추가</Button>
           <Button onClick={onRemove} disabled={selectedRows.length < 1}>
             삭제
           </Button>
         </Space>
-        <Button style={{ float: "right" }} onClick={onSave} type='primary'>
+        <Button onClick={onSave} type='primary'>
           저장
         </Button>
       </div>
@@ -165,18 +171,18 @@ export default function ItemTable() {
           }}
           rowSelection={{
             type: "checkbox",
-            onSelect: (record: Item, selected: boolean) => {
+            onSelect: (record: Product, selected: boolean) => {
               if (!selected) {
                 setSelectedRows((prev) =>
                   prev.filter((p) => p.id !== record.id)
                 );
               }
             },
-            onChange: (_, records: Item[], { type }) => {
+            onChange: (_, records: Product[], { type }) => {
               if (type === "all") setSelectedRows(records);
               else {
                 setSelectedRows((prev) =>
-                  [...prev, ...records].reduce<Item[]>(
+                  [...prev, ...records].reduce<Product[]>(
                     (ac, v) =>
                       ac.find((a) => a.id === v.id) ? ac : [...ac, v],
                     []
@@ -202,7 +208,7 @@ export default function ItemTable() {
         setDatas={setDatas}
       />
       {isModalOpened && (
-        <ItemModal
+        <ProductModal
           prevData={selectedRow}
           add={add}
           edit={edit}

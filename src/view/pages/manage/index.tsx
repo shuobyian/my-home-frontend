@@ -1,7 +1,7 @@
 import { Button, Space, message } from "antd";
-import { useResultMutation } from "queries/useResultMutation";
+import { useResultMutation } from "queries/result/useResultMutation";
 import { useNavigate } from "react-router-dom";
-import ItemTable from "view/components/manage/ItemTable";
+import ProductTable from "view/components/manage/ProductTable";
 
 export function Manage() {
   const navigate = useNavigate();
@@ -25,7 +25,7 @@ export function Manage() {
           결과 리스트 생성
         </Button>
       </Space>
-      <ItemTable />
+      <ProductTable />
     </Space>
   );
 }

@@ -1,7 +1,7 @@
 import API_URL from "apis/API_URL";
 import { Result } from "apis/result/getResults";
 import myAxios from "apis/lib/myAxios";
-import { IMarket } from "apis/putMarkets";
+import { IMarket } from "apis/market/putMarkets";
 
 export interface CalculatorReqBody {
   markets: IMarket[];

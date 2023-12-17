@@ -12,20 +12,25 @@ import {
   message,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { Item } from "apis/getItems";
+import { Product } from "apis/product/getProducts";
 import { ToolList } from "apis/type/Tool";
 import { useEffect, useState } from "react";
 
-interface IItemModalProps extends ModalProps {
-  prevData?: Item;
-  add: (data: Omit<Item, "id">) => void;
-  edit: (data: Item) => void;
+interface IProductModalProps extends ModalProps {
+  prevData?: Product;
+  add: (data: Omit<Product, "id">) => void;
+  edit: (data: Product) => void;
 }
 
-export function ItemModal({ prevData, add, edit, ...props }: IItemModalProps) {
+export function ProductModal({
+  prevData,
+  add,
+  edit,
+  ...props
+}: IProductModalProps) {
   const [loading, setLoading] = useState(false);
 
-  const [form] = useForm<Item>();
+  const [form] = useForm<Product>();
   const materials = Form.useWatch("materials", form) ?? [];
 
   const onSubmit = async (
@@ -45,7 +50,7 @@ export function ItemModal({ prevData, add, edit, ...props }: IItemModalProps) {
   };
 
   useEffect(() => {
-    form.setFieldsValue(prevData ?? { materials: [{ base: true }] });
+    form.setFieldsValue(prevData ?? { materials: [{ basic: true }] });
   }, [form, prevData]);
 
   return (
@@ -107,7 +112,7 @@ export function ItemModal({ prevData, add, edit, ...props }: IItemModalProps) {
                     </Form.Item>
                     <Form.Item
                       style={{ margin: 0 }}
-                      name={[field.name, "base"]}
+                      name={[field.name, "basic"]}
                       rules={[
                         {
                           required: true,

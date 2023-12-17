@@ -1,5 +1,5 @@
 import API_URL from "apis/API_URL";
-import { Item } from "apis/getItems";
+import { Product } from "apis/product/getProducts";
 import myAxios from "apis/lib/myAxios";
 import { Tool } from "apis/type/Tool";
 
@@ -14,7 +14,7 @@ export interface ResultReqParams {
 export interface Result {
   id: number;
   createdAt: string;
-  item: Item;
+  product: Product;
   name: string;
   level: number;
   craftingPrice: number;

@@ -1,16 +1,16 @@
-const ITEM = "/item";
-const LOGIN = "/item/login";
+const PRODUCT = "/product";
+const LOGIN = "/product/login";
 const RESULT = "/result";
 const CALCULATOR = "/result/calculator";
-const UPLOAD_ITEM = "/result/upload-item";
+const UPLOAD_PRODUCT = "/result/upload-product";
 const MARKET = "/market";
 
 const API_URL = {
-  ITEM,
+  PRODUCT,
   LOGIN,
   RESULT,
   CALCULATOR,
-  UPLOAD_ITEM,
+  UPLOAD_PRODUCT,
   MARKET,
 };
 

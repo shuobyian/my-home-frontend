@@ -1,8 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Input, InputNumber } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { IMarket } from "apis/putMarkets";
-import { useMarketQuery } from "queries/useMarketQuery";
+import { IMarket } from "apis/market/putMarkets";
+import { useMarketQuery } from "queries/market/useMarketQuery";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";

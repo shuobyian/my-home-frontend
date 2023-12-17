@@ -1,4 +1,4 @@
-import { getMarkets } from "apis/getMarkets";
+import { getMarkets } from "apis/market/getMarkets";
 import { useQuery } from "react-query";
 
 export const useMarketQuery = () =>
