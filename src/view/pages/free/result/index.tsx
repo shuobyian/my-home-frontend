@@ -1,7 +1,7 @@
 import { Button, Input, Space, Typography } from "antd";
 import { Result } from "apis/result/getResults";
-import { IMarket } from "apis/putMarkets";
-import { useCalculatorQuery } from "queries/useCalculatorQuery";
+import { IMarket } from "apis/market/putMarkets";
+import { useCalculatorQuery } from "queries/result/useCalculatorQuery";
 import { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import { RESULT } from "util/constant/LOCAL_STORAGE_KEY";
@@ -16,7 +16,7 @@ export function FreeResult() {
     state: { markets },
   } = useLocation() as { state: { markets: IMarket[] } };
 
-  const { isLoading, data } = useCalculatorQuery({ markets });
+  const { isLoading, isError, data } = useCalculatorQuery({ markets });
 
   const [resultList, setResultList] = useState<Result[]>([]);
   const [name, setName] = useState("");
@@ -71,7 +71,11 @@ export function FreeResult() {
           검색
         </Button>
       </Space>
-      <ResultList loading={isLoading} contents={resultList || []} />
+      {isError ? (
+        <Typography.Text>결과를 불러올 수 없습니다.</Typography.Text>
+      ) : (
+        <ResultList loading={isLoading} contents={resultList || []} />
+      )}
     </Space>
   );
 }

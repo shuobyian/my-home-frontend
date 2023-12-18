@@ -1,13 +1,14 @@
 import { Button, Space } from "antd";
-import { Item, RawItem } from "apis/getItems";
+import { Product } from "apis/product/getProducts";
+import { Item } from "apis/type/Item";
 import { useRef } from "react";
 import { convertExcelToTable, convertTableToExcel } from "util/convertItem";
 import * as XLSX from "xlsx";
 
 interface IExcelButtonProps {
-  originalDatas: React.MutableRefObject<Item[]>;
-  datas: Item[];
-  setDatas: React.Dispatch<React.SetStateAction<Item[]>>;
+  originalDatas: React.MutableRefObject<Product[]>;
+  datas: Product[];
+  setDatas: React.Dispatch<React.SetStateAction<Product[]>>;
 }
 
 export function ExcelButton({
@@ -46,7 +47,7 @@ export function ExcelButton({
       const rawData = fileInformation.Sheets[sheetName];
       const data = XLSX.utils.sheet_to_json(rawData);
 
-      const newData = convertExcelToTable(data as RawItem[]);
+      const newData = convertExcelToTable(data as Item[]);
       if (newData) {
         setDatas(newData);
         originalDatas.current = newData;

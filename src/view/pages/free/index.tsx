@@ -1,5 +1,5 @@
 import { Button, Typography } from "antd";
-import { IMarket } from "apis/putMarkets";
+import { IMarket } from "apis/market/putMarkets";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";

@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { Button, message } from "antd";
-import { IMarket } from "apis/putMarkets";
-import { useMarketMutation } from "queries/useMarketMutation";
+import { IMarket } from "apis/market/putMarkets";
+import { useMarketMutation } from "queries/market/useMarketMutation";
 import { FormProvider, useForm } from "react-hook-form";
 import { useQueryClient } from "react-query";
 import { MarketList } from "view/components/shared/MarketList";

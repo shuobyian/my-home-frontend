@@ -74,7 +74,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
             />
           </Space>
           <Space style={{ gap: "10px" }} direction='vertical'>
-            {result.item.materials.map((material) => (
+            {result.product.materials.map((material) => (
               <Typography.Text key={material.name} style={{ color: "blue" }}>
                 {material.name} {material.count}개
               </Typography.Text>

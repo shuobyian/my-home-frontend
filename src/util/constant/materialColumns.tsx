@@ -1,10 +1,10 @@
 import { Space, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { Item } from "apis/getItems";
+import { Product } from "apis/product/getProducts";
 import { getToolLabel } from "apis/type/Tool";
 import { StringUtil } from "util/StringUtil";
 
-export const materialColumns: ColumnsType<Item> = [
+export const materialColumns: ColumnsType<Product> = [
   {
     title: "물품명",
     key: "name",
@@ -38,12 +38,12 @@ export const materialColumns: ColumnsType<Item> = [
     title: "재료",
     key: "materials",
     dataIndex: "",
-    render: (item: Item) => (
+    render: (item: Product) => (
       <Space direction='vertical'>
         {item.materials.map((m) =>
           m.name ? (
             <div key={m.name}>
-              {m.name} / {m.base ? "최하위재료" : "하위재료 O"} / {m.count}개
+              {m.name} / {m.basic ? "최하위재료" : "하위재료 O"} / {m.count}개
             </div>
           ) : (
             <></>

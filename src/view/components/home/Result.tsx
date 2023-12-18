@@ -1,7 +1,7 @@
 import { Button, Input, InputNumber, Select, Space } from "antd";
 import { ResultReqParams } from "apis/result/getResults";
 import { ToolList } from "apis/type/Tool";
-import { useResultQuery } from "queries/useResultQuery";
+import { useResultQuery } from "queries/result/useResultQuery";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { ResultList } from "view/components/home/ResultList";
