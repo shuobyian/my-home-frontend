@@ -1,33 +1,28 @@
-import {
-  Button,
-  Divider,
-  Modal,
-  Space,
-  Table,
-  Typography,
-  message,
-} from "antd";
-import { ColumnsType } from "antd/es/table";
-import { Product } from "apis/product/getProducts";
+import { Button, Modal, Typography, message } from "antd";
 import MyHomeError from "apis/lib/error/MyHomeError";
-import { useRef, useState } from "react";
-import { StringUtil } from "util/StringUtil";
-import { PRODUCT } from "util/constant/LOCAL_STORAGE_KEY";
-import { materialColumns } from "util/constant/materialColumns";
-import { ExcelButton } from "view/components/manage/ExcelButton";
-import { ProductModal } from "view/components/manage/modal/ProductModal";
-import { useProductMutation } from "queries/product/useProductMutation";
-
-const DEFAULT_DATA = localStorage.getItem(PRODUCT);
-
-const columns: ColumnsType<Product> = materialColumns;
+import { Product } from "apis/product/getProducts";
+import {
+  useDeleteProductsMutation,
+  usePostProductMutation,
+  usePutProductMutation,
+} from "queries/product/useProductMutation";
+import { useProductQuery } from "queries/product/useProductQuery";
+import { useResultMutation } from "queries/result/useResultMutation";
+import { useState } from "react";
+import { useQueryClient } from "react-query";
+import ProductTableView from "view/components/manage/ProductTableView";
 
 export default function ProductTable() {
-  const { mutate: upload } = useProductMutation();
+  const [page, setPage] = useState(0);
+  const [size, setSize] = useState(10);
 
-  const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
-  const originalDatas = useRef<Product[]>(defaultDatas);
-  const [datas, setDatas] = useState<Product[]>(defaultDatas);
+  const queryClient = useQueryClient();
+  const { data: product } = useProductQuery({ page, size });
+  const { mutate: add } = usePostProductMutation();
+  const { mutate: edit } = usePutProductMutation();
+  const { mutate: remove } = useDeleteProductsMutation();
+
+  const { isLoading, mutate: createResult } = useResultMutation();
 
   const [isModalOpened, setIsModalOpened] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Product>();
@@ -37,24 +32,28 @@ export default function ProductTable() {
     setIsModalOpened(true);
   };
 
-  const add = (data: Omit<Product, "id">) => {
-    setDatas((prev) => [{ ...data, id: (datas.at(-1)?.id ?? 0) + 1 }, ...prev]);
-    message.success("추가되었습니다");
+  const onAdd = (data: Omit<Product, "id">) => {
+    add(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("product");
+        message.success("추가되었습니다.");
+      },
+      onError: () => {
+        message.error("추가할 수 없습니다.");
+      },
+    });
   };
 
-  const edit = (data: Product) => {
-    setDatas((prevs) =>
-      prevs.map((prev) => (prev.id === data.id ? data : prev))
-    );
-    message.success("수정되었습니다");
-  };
-
-  const remove = () => {
-    setDatas((prevs) =>
-      prevs.filter((prev) => !selectedRows.find((row) => row.id === prev.id))
-    );
-    setSelectedRows([]);
-    message.success("삭제되었습니다");
+  const onEdit = (data: Product) => {
+    edit(data, {
+      onSuccess: () => {
+        queryClient.invalidateQueries("product");
+        message.success("수정되었습니다.");
+      },
+      onError: () => {
+        message.error("수정할 수 없습니다.");
+      },
+    });
   };
 
   const onRemove = () => {
@@ -67,158 +66,67 @@ export default function ProductTable() {
           ))}
         </ul>
       ),
-      onOk: remove,
+      onOk: () => {
+        remove(
+          { ids: selectedRows.map((row) => row.id) },
+          {
+            onSuccess: () => {
+              message.success("삭제되었습니다.");
+            },
+            onError: () => {
+              message.error("삭제할 수 없습니다.");
+            },
+          }
+        );
+      },
       okText: "삭제",
-      cancelText: "취소",
-    });
-  };
-
-  const save = () => {
-    localStorage.setItem(PRODUCT, JSON.stringify(datas));
-
-    upload(
-      { products: datas },
-      {
-        onSuccess: ({ data }) => {
-          Modal.info({
-            title: "저장되었습니다.",
-            content: (
-              <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-                {data.map(({ id, name }) => (
-                  <li key={id}>{name}</li>
-                ))}
-              </ul>
-            ),
-            okText: "확인",
-          });
-        },
-        onError: (error) => {
-          message.error((error as MyHomeError).getErrorMessage());
-        },
-      }
-    );
-  };
-
-  const onSave = () => {
-    const changeDatas = datas.filter(
-      (data) => !originalDatas.current.find(({ name }) => name === data.name)
-    );
-
-    Modal.confirm({
-      title: "저장하시겠습니까?",
-      content: (
-        <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-          {changeDatas.map(({ id, name }) => (
-            <li key={id}>{name}</li>
-          ))}
-        </ul>
-      ),
-      onOk: save,
-      okText: "확인",
       cancelText: "취소",
     });
   };
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Space direction='horizontal'>
-          <Button onClick={openModal}>추가</Button>
-          <Button onClick={onRemove} disabled={selectedRows.length < 1}>
-            삭제
-          </Button>
-        </Space>
-        <Button onClick={onSave} type='primary'>
-          저장
-        </Button>
-      </div>
-      <Divider type='horizontal' />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <Typography.Text strong>
-            선택된 물품 {StringUtil.numberWithCommas(selectedRows.length)}개
-          </Typography.Text>
-          <Typography.Text strong>
-            총 물품 {StringUtil.numberWithCommas(datas.length)}개
-          </Typography.Text>
-        </div>
-        <Table
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                setSelectedRow(record);
-                setIsModalOpened(true);
-              },
-            };
-          }}
-          rowSelection={{
-            type: "checkbox",
-            onSelect: (record: Product, selected: boolean) => {
-              if (!selected) {
-                setSelectedRows((prev) =>
-                  prev.filter((p) => p.id !== record.id)
-                );
-              }
+      <Button
+        style={{ float: "right" }}
+        type='primary'
+        disabled={isLoading}
+        onClick={() =>
+          createResult(undefined, {
+            onSuccess: () => {
+              message.success("결과가 생성되었습니다.");
             },
-            onChange: (_, records: Product[], { type }) => {
-              if (type === "all") setSelectedRows(records);
-              else {
-                setSelectedRows((prev) =>
-                  [...prev, ...records].reduce<Product[]>(
-                    (ac, v) =>
-                      ac.find((a) => a.id === v.id) ? ac : [...ac, v],
-                    []
-                  )
-                );
-              }
+            onError: (error) => {
+              message.error((error as MyHomeError).getErrorMessage());
             },
-          }}
-          columns={columns.map((column) => ({ ...column, ellipsis: true }))}
-          dataSource={datas.map((data) => ({
-            key: data.id,
-            ...data,
-          }))}
-          scroll={{
-            x: columns.reduce((acc, cur) => (acc += Number(cur.width)), 0),
-          }}
-        />
-      </div>
-      <Divider type='horizontal' />
-      <ExcelButton
-        originalDatas={originalDatas}
-        datas={datas}
-        setDatas={setDatas}
+          })
+        }
+      >
+        결과 리스트 생성
+      </Button>
+      <Typography.Title level={4}>물품 리스트</Typography.Title>
+      <ProductTableView
+        datas={product?.content || []}
+        total={product?.totalElements ?? 0}
+        openModal={openModal}
+        onRemove={onRemove}
+        add={onAdd}
+        edit={onEdit}
+        selectedRow={selectedRow}
+        setSelectedRow={setSelectedRow}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
+        isModalOpened={isModalOpened}
+        setIsModalOpened={setIsModalOpened}
+        pagination={{
+          current: page + 1,
+          pageSize: size,
+          total: product?.totalElements ?? 0,
+          onChange: (_page, _size) => {
+            setPage(_page);
+            setSize(_size);
+          },
+        }}
       />
-      {isModalOpened && (
-        <ProductModal
-          prevData={selectedRow}
-          add={add}
-          edit={edit}
-          open={isModalOpened}
-          onCancel={() => {
-            setIsModalOpened(false);
-            setSelectedRow(undefined);
-          }}
-        />
-      )}
     </>
   );
 }

@@ -6,6 +6,7 @@ import { FreeResult } from "view/pages/free/result";
 import { Home } from "view/pages/home";
 import { Manage } from "view/pages/manage";
 import { Market } from "view/pages/manage/market";
+import { Product } from "view/pages/manage/product";
 
 export function Router() {
   return (
@@ -25,6 +26,7 @@ export function Router() {
         <Route path={"/manage"} element={<ManageRoute />}>
           <Route index element={<Manage />} />
           <Route path={"market"} element={<Market />} />
+          <Route path={"product"} element={<Product />} />
         </Route>
         <Route path={""} element={<Home />} />
         <Route path={"free"} element={<Outlet />}>

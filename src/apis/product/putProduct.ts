@@ -4,6 +4,7 @@ import { Product } from "apis/product/getProducts";
 import { Tool } from "apis/type/Tool";
 
 export interface ProductReqBody {
+  id: number;
   name: string;
   level: number;
   craftingPrice: number;
@@ -15,6 +16,6 @@ export interface ProductReqBody {
   }[];
 }
 
-export function postProduct(body: ProductReqBody) {
-  return myAxios.post<Product>(API_URL.PRODUCT, body);
+export function putProduct(body: ProductReqBody) {
+  return myAxios.put<Product[]>(API_URL.PRODUCT, body);
 }

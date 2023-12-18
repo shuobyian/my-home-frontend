@@ -1,3 +1,4 @@
+const PRODUCT_ALL = "/product/all";
 const PRODUCT = "/product";
 const LOGIN = "/product/login";
 const RESULT = "/result";
@@ -6,6 +7,7 @@ const UPLOAD_PRODUCT = "/result/upload-product";
 const MARKET = "/market";
 
 const API_URL = {
+  PRODUCT_ALL,
   PRODUCT,
   LOGIN,
   RESULT,

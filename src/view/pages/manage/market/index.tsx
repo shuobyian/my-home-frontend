@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { Button, message } from "antd";
+import { Button, Typography, message } from "antd";
 import { IMarket } from "apis/market/putMarkets";
 import { useMarketMutation } from "queries/market/useMarketMutation";
 import { FormProvider, useForm } from "react-hook-form";
@@ -29,6 +29,7 @@ export function Market() {
 
   return (
     <div>
+      <Typography.Title level={4}>시세 리스트</Typography.Title>
       <Button
         type='primary'
         disabled={isLoading}
