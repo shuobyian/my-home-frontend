@@ -34,12 +34,12 @@ export function Header() {
             사진 제공: 루나응애 님, 떵히쭈 님
           </Typography.Text>
         </div>
-        <Button
-          onClick={() => navigate("free")}
-          style={{ float: "right", margin: "10px" }}
-        >
-          자유 모드
-        </Button>
+        <div style={{ float: "right", margin: "10px" }}>
+          <div style={{ display: "flex", gap: "10px" }}>
+            <Button onClick={() => navigate("walnut")}>호두작</Button>
+            <Button onClick={() => navigate("free")}>자유 모드</Button>
+          </div>
+        </div>
       </div>
     </div>
   );

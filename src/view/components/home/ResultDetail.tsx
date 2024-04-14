@@ -67,7 +67,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
               )}골드)`}
             />
             <img
-              style={{ marginTop: "30px" }}
+              style={{ marginTop: "10px" }}
               src={`${process.env.PUBLIC_URL}/images/${result.name}.jpg`}
               width='300'
               alt='물품 사진'
@@ -76,7 +76,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
           <Space style={{ gap: "10px" }} direction='vertical'>
             {result.product.materials.map((material) => (
               <Typography.Text key={material.name} style={{ color: "blue" }}>
-                {material.name} {material.count}개
+                {material.name} {StringUtil.numberWithCommas(material.count)}개
               </Typography.Text>
             ))}
           </Space>
