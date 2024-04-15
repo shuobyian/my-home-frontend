@@ -1,5 +1,6 @@
-import { Button, Input, Typography } from "antd";
+import { Button, Input, Typography, message } from "antd";
 import { WalnutReqParams, WalnutResBody } from "apis/experience/postWalnut";
+import MyHomeError from "apis/lib/error/MyHomeError";
 import { useWalnutMutation } from "queries/experience/useWalnutMutation";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -23,6 +24,9 @@ export function Walnut() {
       onSuccess: ({ data }) => {
         setWalnutResult(data);
       },
+      onError: (error) => {
+        message.error((error as MyHomeError).getErrorMessage());
+      },
     });
   };
 
@@ -42,8 +46,10 @@ export function Walnut() {
           }}
         >
           <Typography.Title level={4}>
-            호두작은 호두나무작을 일컫습니다.
+            호두작은 호두나무를 생단으로 1시간 이하로 만들어서 과속 생산하는
+            것을 일컫습니다.
           </Typography.Title>
+          <Typography.Text>최소 생단 86%가 필요합니다.</Typography.Text>
           <Typography.Title level={5}>
             입력한 정보에 따라 계산된 결과를 확인할 수 있습니다.
           </Typography.Title>
