@@ -122,7 +122,7 @@ export default function ProductTable() {
           pageSize: size,
           total: product?.totalElements ?? 0,
           onChange: (_page, _size) => {
-            setPage(_page);
+            setPage(_page - 1);
             setSize(_size);
           },
         }}
