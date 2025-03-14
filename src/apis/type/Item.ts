@@ -1,3 +1,4 @@
+import { Category } from "apis/type/Category";
 import { Tool } from "apis/type/Tool";
 
 export interface Item {
@@ -6,6 +7,7 @@ export interface Item {
   level: number;
   craftingPrice: number;
   tool: Tool;
+  category: Category;
   name1: string;
   base1: number;
   count1: number;

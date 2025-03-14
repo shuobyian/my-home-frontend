@@ -9,6 +9,7 @@ export function convertExcelToTable(items: Item[]): Product[] {
       level: item.level,
       craftingPrice: item.craftingPrice,
       tool: item.tool,
+      category: item.category,
       materials: [
         {
           name: item.name1,

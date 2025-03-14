@@ -2,6 +2,7 @@ import API_URL from "apis/API_URL";
 import { Product } from "apis/product/getProducts";
 import myAxios from "apis/lib/myAxios";
 import { Tool } from "apis/type/Tool";
+import { Category } from "apis/type/Category";
 
 export interface ResultReqParams {
   page: number;
@@ -9,6 +10,7 @@ export interface ResultReqParams {
   name?: string;
   count?: number;
   tool?: Tool;
+  category?: Category;
 }
 
 export interface Result {

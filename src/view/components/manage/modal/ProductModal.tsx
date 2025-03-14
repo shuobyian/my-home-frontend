@@ -13,6 +13,7 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { Product } from "apis/product/getProducts";
+import { CategoryList } from "apis/type/Category";
 import { ToolList } from "apis/type/Tool";
 import { useEffect, useState } from "react";
 
@@ -93,6 +94,12 @@ export function ProductModal({
           rules={[{ required: true, message: "도구를 선택해주세요" }]}
         >
           <Select options={ToolList} placeholder='도구' />
+        </Form.Item>
+        <Form.Item
+          name='category'
+          rules={[{ required: true, message: "카테고리를 선택해주세요" }]}
+        >
+          <Select options={CategoryList} placeholder='카테고리' />
         </Form.Item>
         <Space direction='vertical'>
           <Typography.Text>필요 재료</Typography.Text>

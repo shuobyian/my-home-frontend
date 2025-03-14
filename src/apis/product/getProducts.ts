@@ -1,5 +1,6 @@
 import API_URL from "apis/API_URL";
 import myAxios from "apis/lib/myAxios";
+import { Category } from "apis/type/Category";
 import { Tool } from "apis/type/Tool";
 
 export interface ProductReqParams {
@@ -13,6 +14,7 @@ export interface Product {
   level: number;
   craftingPrice: number;
   tool: Tool;
+  category: Category;
   materials: {
     name: string;
     basic: boolean;

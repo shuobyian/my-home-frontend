@@ -30,9 +30,6 @@ export function Header() {
             빈칸 입력 시 모든 물품 확인이 가능합니다.
           </Typography.Text>
           <Typography.Title level={5}>제작자: 늘흰</Typography.Title>
-          <Typography.Text strong>
-            사진 제공: 루나응애 님, 떵히쭈 님
-          </Typography.Text>
         </div>
         <div style={{ float: "right", margin: "10px" }}>
           <div style={{ display: "flex", gap: "10px" }}>
