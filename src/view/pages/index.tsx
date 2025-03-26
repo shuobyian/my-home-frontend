@@ -1,6 +1,7 @@
 import { Layout } from "antd";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { ManageRoute } from "view/components/manage/ManageRoute";
+import { Calculation } from "view/pages/calculation";
 import { Experience } from "view/pages/experience";
 import { Free } from "view/pages/free";
 import { FreeResult } from "view/pages/free/result";
@@ -37,6 +38,7 @@ export function Router() {
           <Route index element={<Free />} />
           <Route path={"result"} element={<FreeResult />} />
         </Route>
+        <Route path={"calculation"} element={<Calculation />} />
       </Route>
     </Routes>
   );

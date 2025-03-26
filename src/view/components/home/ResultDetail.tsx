@@ -1,30 +1,8 @@
 import { Space, Typography } from "antd";
-import Table, { ColumnsType } from "antd/es/table";
 import { Result } from "apis/result/getResults";
 import { StringUtil } from "util/StringUtil";
 import { InfoRow } from "view/components/InfoRow";
-
-const columns: ColumnsType<Result["materials"][0]> = [
-  {
-    title: "재료",
-    dataIndex: "name",
-    key: "name",
-  },
-  {
-    title: "개수",
-    dataIndex: "count",
-    key: "count",
-    render: (count) => `${StringUtil.numberWithCommas(count)}개`,
-    align: "right",
-  },
-  {
-    title: "골드",
-    dataIndex: "price",
-    key: "price",
-    render: (price) => `${StringUtil.numberWithCommas(price)}골드`,
-    align: "right",
-  },
-];
+import { MaterialTable } from "view/components/shared/MaterialTable";
 
 interface ResultDetailProps {
   result: Result;
@@ -83,17 +61,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
         </Space>
         <Space direction='vertical' style={{ width: "100%" }}>
           <Typography.Text strong>기초 재료</Typography.Text>
-          <Table
-            size='small'
-            columns={columns}
-            dataSource={
-              result.materials.map((b) => ({ ...b, key: b.name })) || []
-            }
-            pagination={{
-              total: result.materials.length,
-              showSizeChanger: true,
-            }}
-          />
+          <MaterialTable materials={result.materials} />
         </Space>
       </Space>
     </div>
