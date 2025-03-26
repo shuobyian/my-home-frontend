@@ -4,9 +4,9 @@ import { SELECTED_RESULTS } from "util/constant/LOCAL_STORAGE_KEY";
 
 export type StorageResult = { [key: number]: { item: Result; count: number } };
 
-const DEFAULT_DATA_SELECTED_RESULTS = localStorage.getItem(SELECTED_RESULTS);
-
 export const useSelectedResults = () => {
+  const DEFAULT_DATA_SELECTED_RESULTS = localStorage.getItem(SELECTED_RESULTS);
+
   const [selectedResults, setSelectedResults] = useState<StorageResult>({});
 
   useEffect(() => {
@@ -30,8 +30,7 @@ export const useSelectedResults = () => {
     [selectedResults]
   );
 
-  const set = (results: StorageResult) => {
-    setSelectedResults(results);
+  const backup = (results: StorageResult) => {
     localStorage.setItem(SELECTED_RESULTS, JSON.stringify(results));
   };
 
@@ -46,7 +45,7 @@ export const useSelectedResults = () => {
         [`${item.id}`]: { item, count: 1 },
       };
     }
-    set(_selectedResults);
+    setSelectedResults(_selectedResults);
   };
 
   const add = (id: number) => {
@@ -54,7 +53,7 @@ export const useSelectedResults = () => {
 
     _selectedResults[id].count += 1;
 
-    set(_selectedResults);
+    setSelectedResults(_selectedResults);
   };
 
   const sub = (id: number) => {
@@ -66,7 +65,7 @@ export const useSelectedResults = () => {
       _selectedResults[id].count -= 1;
     }
 
-    set(_selectedResults);
+    setSelectedResults(_selectedResults);
   };
 
   const remove = (id: number) => {
@@ -74,16 +73,17 @@ export const useSelectedResults = () => {
 
     delete _selectedResults[id];
 
-    set(_selectedResults);
+    setSelectedResults(_selectedResults);
   };
 
   const removeAll = () => {
-    set({});
+    setSelectedResults({});
   };
 
   return {
     selectedResults,
     totalCount,
+    backup,
     onChange,
     add,
     sub,

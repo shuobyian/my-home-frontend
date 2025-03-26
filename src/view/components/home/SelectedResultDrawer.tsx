@@ -12,6 +12,7 @@ interface SelectedResultDrawerProps extends DrawerProps {
   sub: (id: number) => void;
   remove: (id: number) => void;
   removeAll: () => void;
+  backup: (results: StorageResult) => void;
 }
 
 export function SelectedResultDrawer({
@@ -21,6 +22,7 @@ export function SelectedResultDrawer({
   sub,
   remove,
   removeAll,
+  backup,
   ...props
 }: SelectedResultDrawerProps) {
   const navigate = useNavigate();
@@ -84,9 +86,12 @@ export function SelectedResultDrawer({
           )}
         />
         <Button
-          onClick={() =>
-            navigate("/calculation", { state: { selectedResults, totalCount } })
-          }
+          onClick={() => {
+            navigate("/calculation", {
+              state: { selectedResults, totalCount },
+            });
+            backup(selectedResults);
+          }}
         >
           합산
         </Button>
