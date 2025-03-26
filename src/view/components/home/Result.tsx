@@ -22,7 +22,6 @@ export function Result() {
     page: 0,
     size: 10,
     name: undefined,
-    count: undefined,
     tool: "ALL",
     category: "ALL",
   });
@@ -64,21 +63,6 @@ export function Result() {
               value={field.value}
               onChange={field.onChange}
               onPressEnter={keyPressEnter}
-            />
-          )}
-        />
-        <Controller
-          name='count'
-          control={control}
-          render={({ field }) => (
-            <InputNumber
-              type='number'
-              style={{ width: "120px" }}
-              placeholder='물품 개수 입력'
-              value={field.value}
-              onChange={field.onChange}
-              onPressEnter={keyPressEnter}
-              pattern='[0-9]*'
             />
           )}
         />
