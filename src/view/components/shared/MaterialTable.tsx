@@ -17,6 +17,16 @@ const columns: ColumnsType<Result["materials"][0]> = [
     align: "right",
   },
   {
+    title: "뭉",
+    dataIndex: "count",
+    key: "count",
+    render: (count) =>
+      count >= 99
+        ? `${StringUtil.numberWithCommas(Math.floor(count / 99))}뭉`
+        : "-",
+    align: "right",
+  },
+  {
     title: "골드",
     dataIndex: "price",
     key: "price",
@@ -32,7 +42,7 @@ interface MaterialTableProps {
 export function MaterialTable({ materials }: MaterialTableProps) {
   return (
     <Table
-      size='small'
+      size="small"
       columns={columns}
       dataSource={materials.map((b) => ({ ...b, key: b.name })) || []}
       pagination={{
