@@ -15,9 +15,12 @@ import ProductTableView from "view/components/manage/ProductTableView";
 export default function ProductTable() {
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
+  const [name, setName] = useState("");
 
   const queryClient = useQueryClient();
-  const { data: product } = useProductQuery({ page, size });
+
+  const { data: product } = useProductQuery({ page, size, name });
+
   const { mutate: add } = usePostProductMutation();
   const { mutate: edit } = usePutProductMutation();
   const { mutate: remove } = useDeleteProductsMutation();
@@ -88,7 +91,7 @@ export default function ProductTable() {
     <>
       <Button
         style={{ float: "right" }}
-        type='primary'
+        type="primary"
         disabled={isLoading}
         onClick={() =>
           createResult(undefined, {
@@ -117,6 +120,8 @@ export default function ProductTable() {
         setSelectedRows={setSelectedRows}
         isModalOpened={isModalOpened}
         setIsModalOpened={setIsModalOpened}
+        name={name}
+        setName={setName}
         pagination={{
           current: page + 1,
           pageSize: size,

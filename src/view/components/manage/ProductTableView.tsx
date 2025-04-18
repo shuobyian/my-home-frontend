@@ -1,4 +1,4 @@
-import { Button, Divider, Space, Table, Typography } from "antd";
+import { Button, Divider, Input, Space, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "apis/product/getProducts";
 import { StringUtil } from "util/StringUtil";
@@ -21,6 +21,8 @@ interface IProductTableViewProps {
   setSelectedRows: React.Dispatch<React.SetStateAction<Product[]>>;
   isModalOpened: boolean;
   setIsModalOpened: React.Dispatch<React.SetStateAction<boolean>>;
+  name?: string;
+  setName?: React.Dispatch<React.SetStateAction<string>>;
   pagination?: {
     current: number;
     pageSize: number;
@@ -43,6 +45,8 @@ export default function ProductTableView({
   setSelectedRows,
   isModalOpened,
   setIsModalOpened,
+  name,
+  setName,
   pagination,
 }: IProductTableViewProps) {
   return (
@@ -54,7 +58,7 @@ export default function ProductTableView({
           width: "100%",
         }}
       >
-        <Space direction='horizontal'>
+        <Space direction="horizontal">
           <Button onClick={openModal}>추가</Button>
           {onRemove && (
             <Button onClick={onRemove} disabled={selectedRows.length < 1}>
@@ -63,12 +67,12 @@ export default function ProductTableView({
           )}
         </Space>
         {onSave && (
-          <Button onClick={onSave} type='primary'>
+          <Button onClick={onSave} type="primary">
             저장
           </Button>
         )}
       </div>
-      <Divider type='horizontal' />
+      <Divider type="horizontal" />
       <div
         style={{
           display: "flex",
@@ -76,6 +80,13 @@ export default function ProductTableView({
           gap: 10,
         }}
       >
+        {setName && (
+          <Input
+            placeholder="물품 이름"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+          />
+        )}
         <div
           style={{
             display: "flex",

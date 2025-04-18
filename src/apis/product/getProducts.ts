@@ -6,6 +6,7 @@ import { Tool } from "apis/type/Tool";
 export interface ProductReqParams {
   page: number;
   size: number;
+  name?: string;
 }
 
 export interface Product {
