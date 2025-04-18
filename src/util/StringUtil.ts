@@ -7,7 +7,7 @@ function numberWithCommas(number?: number | null) {
 }
 
 function numberWithCommasAndMoney(number: number) {
-  return `${numberWithCommas(number)}원`;
+  return `${numberWithCommas(number)}골드`;
 }
 
 export const StringUtil = {
