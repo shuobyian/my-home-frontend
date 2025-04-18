@@ -68,6 +68,14 @@ export const useSelectedResults = () => {
     setSelectedResults(_selectedResults);
   };
 
+  const update = (id: number, count: number) => {
+    const _selectedResults = { ...selectedResults };
+
+    _selectedResults[id].count = count;
+
+    setSelectedResults(_selectedResults);
+  };
+
   const remove = (id: number) => {
     const _selectedResults = { ...selectedResults };
 
@@ -87,6 +95,7 @@ export const useSelectedResults = () => {
     onChange,
     add,
     sub,
+    update,
     remove,
     removeAll,
   };

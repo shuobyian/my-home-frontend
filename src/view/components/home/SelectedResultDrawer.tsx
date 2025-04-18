@@ -1,15 +1,31 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { Avatar, Button, Drawer, DrawerProps, List, Space } from "antd";
+import {
+  Avatar,
+  Button,
+  Drawer,
+  DrawerProps,
+  InputNumber,
+  List,
+  Space,
+} from "antd";
 import { Result } from "apis/result/getResults";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import styled from "styled-components";
 import { StorageResult } from "util/hook/useSelectedResults";
+
+const StyledInputNumber = styled(InputNumber)`
+  .ant-input-number-input {
+    text-align: center;
+  }
+`;
 
 interface SelectedResultDrawerProps extends DrawerProps {
   selectedResults: StorageResult;
   totalCount: number;
   add: (id: number) => void;
   sub: (id: number) => void;
+  update: (id: number, count: number) => void;
   remove: (id: number) => void;
   removeAll: () => void;
   backup: (results: StorageResult) => void;
@@ -20,6 +36,7 @@ export function SelectedResultDrawer({
   totalCount,
   add,
   sub,
+  update,
   remove,
   removeAll,
   backup,
@@ -55,14 +72,14 @@ export function SelectedResultDrawer({
         }}
       >
         <List
-          itemLayout='horizontal'
+          itemLayout="horizontal"
           dataSource={itemList}
           renderItem={({ item, count }) => (
             <List.Item>
               <List.Item.Meta
                 avatar={
                   <Avatar
-                    size='large'
+                    size="large"
                     src={`${process.env.PUBLIC_URL}/images/${item.name}.jpg`}
                   />
                 }
@@ -73,7 +90,14 @@ export function SelectedResultDrawer({
                   >
                     <Space>
                       <Button onClick={() => sub(item.id)}>-</Button>
-                      <div>{count}</div>
+                      <StyledInputNumber
+                        value={count}
+                        onChange={(value) => {
+                          if (value) {
+                            update(item.id, Number(value));
+                          }
+                        }}
+                      />
                       <Button onClick={() => add(item.id)}>+</Button>
                     </Space>
                     <Button onClick={() => remove(item.id)}>
