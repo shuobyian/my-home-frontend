@@ -15,6 +15,7 @@ const columns: ColumnsType<Result["materials"][0]> = [
     key: "count",
     render: (count) => `${StringUtil.numberWithCommas(count)}개`,
     align: "right",
+    sorter: (a, b) => a.count - b.count,
   },
   {
     title: "뭉",
@@ -32,6 +33,7 @@ const columns: ColumnsType<Result["materials"][0]> = [
     key: "price",
     render: (price) => `${StringUtil.numberWithCommas(price)}골드`,
     align: "right",
+    sorter: (a, b) => a.price - b.price,
   },
 ];
 
