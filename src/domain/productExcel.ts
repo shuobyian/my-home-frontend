@@ -1,5 +1,5 @@
-import { Category, Tool } from "types/enums";
-import { Product } from "types/product";
+import { Category, CategoryType, Tool, ToolType } from "types/enums";
+import { Product, ProductMaterial } from "types/product";
 
 // 물품 하나에 넣을 수 있는 재료 수(엑셀 재료 슬롯 수)
 export const MAX_MATERIAL_SLOTS = 5;
@@ -13,9 +13,9 @@ export interface ProductExcelRow {
   craftingPrice: number;
   tool: Tool;
   category: Category;
-  name1: string;
-  base1: number;
-  count1: number;
+  name1?: string;
+  base1?: number;
+  count1?: number;
   name2?: string;
   base2?: number;
   count2?: number;
@@ -30,67 +30,110 @@ export interface ProductExcelRow {
   count5?: number;
 }
 
-export function excelRowsToProducts(items: ProductExcelRow[]): Product[] {
-  return items
-    .map((item) => ({
-      id: item.id,
-      name: item.name,
-      level: item.level,
-      craftingPrice: item.craftingPrice,
-      tool: item.tool,
-      category: item.category,
-      materials: [
-        {
-          name: item.name1,
-          basic: item.base1 ? false : true,
-          count: item.count1,
-        },
-        {
-          name: item.name2 || "",
-          basic: item.base2 ? false : true,
-          count: item.count2 || 0,
-        },
-        {
-          name: item.name3 || "",
-          basic: item.base3 ? false : true,
-          count: item.count3 || 0,
-        },
-        {
-          name: item.name4 || "",
-          basic: item.base4 ? false : true,
-          count: item.count4 || 0,
-        },
-        {
-          name: item.name5 || "",
-          basic: item.base5 ? false : true,
-          count: item.count5 || 0,
-        },
-      ].filter(({ name }) => !!name),
-    }))
-    .sort((a, b) => a.level - b.level);
+export interface ExcelImportResult {
+  products: Product[];
+  // 엑셀 행 번호(헤더 다음 행이 2행)를 포함한 오류 메시지
+  errors: string[];
+}
+
+const TOOLS: string[] = Object.values(ToolType);
+const CATEGORIES: string[] = Object.values(CategoryType);
+const SLOTS = [1, 2, 3, 4, 5] as const;
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+const isBlank = (value: unknown) =>
+  value === undefined || value === null || String(value).trim() === "";
+
+// 서버 규칙: 이름은 공백만 있을 수 없고 쉼표를 쓸 수 없다
+function readName(value: unknown): string | undefined {
+  const name = String(value ?? "").trim();
+  return name && !name.includes(",") ? name : undefined;
+}
+
+// 엑셀 행을 검증해 물품으로 바꾼다. 문제가 있는 행은 오류로 모으고 물품에서 뺀다.
+// category가 비어 있으면 서버 기본값(NORMAL)으로 본다. 결과는 level 오름차순.
+export function parseExcelRows(rows: unknown[]): ExcelImportResult {
+  const products: Product[] = [];
+  const errors: string[] = [];
+
+  rows.forEach((row, index) => {
+    const line = `${index + 2}행`;
+    if (!isRecord(row)) {
+      errors.push(`${line}: 형식이 올바르지 않습니다.`);
+      return;
+    }
+
+    const rowErrors: string[] = [];
+    const name = readName(row.name);
+    if (!name) rowErrors.push("물품명이 비었거나 쉼표가 있습니다");
+    const level = Number(row.level);
+    if (isBlank(row.level) || !Number.isInteger(level))
+      rowErrors.push("레벨은 정수여야 합니다");
+    const craftingPrice = Number(row.craftingPrice);
+    if (isBlank(row.craftingPrice) || !Number.isInteger(craftingPrice))
+      rowErrors.push("크래프팅 가격은 정수여야 합니다");
+    const tool = String(row.tool ?? "").trim();
+    if (!TOOLS.includes(tool))
+      rowErrors.push(`알 수 없는 도구(${tool || "빈 값"})`);
+    const category = isBlank(row.category)
+      ? CategoryType.NORMAL
+      : String(row.category).trim();
+    if (!CATEGORIES.includes(category))
+      rowErrors.push(`알 수 없는 카테고리(${category})`);
+
+    const materials: ProductMaterial[] = [];
+    SLOTS.forEach((slot) => {
+      if (isBlank(row[`name${slot}`])) return;
+      const materialName = readName(row[`name${slot}`]);
+      const count = Number(row[`count${slot}`]);
+      if (!materialName) {
+        rowErrors.push(`재료${slot} 이름에 쉼표가 있습니다`);
+      } else if (!(count > 0)) {
+        rowErrors.push(`재료${slot} 개수는 0보다 커야 합니다`);
+      } else {
+        materials.push({
+          name: materialName,
+          basic: !Number(row[`base${slot}`]),
+          count,
+        });
+      }
+    });
+
+    if (rowErrors.length > 0) {
+      errors.push(`${line}${name ? ` ${name}` : ""}: ${rowErrors.join(", ")}`);
+      return;
+    }
+
+    products.push({
+      id: Number(row.id),
+      name: name as string,
+      level,
+      craftingPrice,
+      tool: tool as Tool,
+      category: category as Category,
+      materials,
+    });
+  });
+
+  return {
+    products: products.sort((a, b) => a.level - b.level),
+    errors,
+  };
 }
 
 export function productsToExcelRows(items: Product[]): ProductExcelRow[] {
   return items.map(({ materials, ...item }) => {
-    const [m1, m2, m3, m4, m5] = materials;
-    return {
-      ...item,
-      name1: m1.name,
-      base1: m1.basic ? 0 : 1,
-      count1: m1.count,
-      name2: m2?.name,
-      base2: m2 ? (m2.basic ? 0 : 1) : undefined,
-      count2: m2?.count,
-      name3: m3?.name,
-      base3: m3 ? (m3.basic ? 0 : 1) : undefined,
-      count3: m3?.count,
-      name4: m4?.name,
-      base4: m4 ? (m4.basic ? 0 : 1) : undefined,
-      count4: m4?.count,
-      name5: m5?.name,
-      base5: m5 ? (m5.basic ? 0 : 1) : undefined,
-      count5: m5?.count,
-    };
+    const row: ProductExcelRow = { ...item };
+    SLOTS.forEach((slot, index) => {
+      const material = materials[index];
+      row[`name${slot}`] = material?.name;
+      row[`base${slot}`] = material ? (material.basic ? 0 : 1) : undefined;
+      row[`count${slot}`] = material?.count;
+    });
+    return row;
   });
 }
 
