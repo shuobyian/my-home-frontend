@@ -23,6 +23,31 @@ describe("parseWalnutParams", () => {
     ).toBeUndefined();
   });
 
+  it("레벨·경험치는 정수만, 버프 비율은 소수까지 받는다", () => {
+    expect(
+      parseWalnutParams(new URLSearchParams("presentLevel=60.5"))
+    ).toBeUndefined();
+    expect(
+      parseWalnutParams(new URLSearchParams("presentLevel=0x40"))
+    ).toBeUndefined();
+    expect(
+      parseWalnutParams(
+        new URLSearchParams(
+          "presentLevel=60&objectiveLevel=61.5&productionPercent=62.5"
+        )
+      )
+    ).toEqual({ presentLevel: 60, productionPercent: 62.5 });
+  });
+
+  it("0 값도 유지한다", () => {
+    const params = {
+      presentLevel: 60,
+      presentExperience: 0,
+      productionPercent: 0,
+    };
+    expect(parseWalnutParams(toWalnutSearchParams(params))).toEqual(params);
+  });
+
   it("선택 항목이 비었거나 숫자가 아니면 뺀다", () => {
     expect(
       parseWalnutParams(

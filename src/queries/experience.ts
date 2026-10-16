@@ -21,6 +21,8 @@ export const useWalnutQuery = (params?: WalnutParams) =>
     queryKey: experienceKeys.walnut(params),
     queryFn: () => calculateWalnut(params as WalnutParams),
     enabled: !!params,
+    // 조건을 바꿔 다시 계산하는 동안 이전 결과를 유지한다
+    keepPreviousData: true,
     // 화면에서 오류 메시지를 직접 보여 준다
     useErrorBoundary: false,
   });

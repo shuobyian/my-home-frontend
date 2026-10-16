@@ -9,6 +9,7 @@ import { parseWalnutParams, toWalnutSearchParams } from "domain/experience";
 import { useWalnutQuery } from "queries/experience";
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { WalnutParams } from "types/experience";
 
 // 호두작 계산. 계산 조건은 URL에 두어 경험치 표에 다녀오거나 새로고침해도 결과가 유지된다.
 export function WalnutPage() {
@@ -22,7 +23,17 @@ export function WalnutPage() {
     [queryString]
   );
 
-  const { data, isFetching, isError, error } = useWalnutQuery(params);
+  const { data, isFetching, isError, error, refetch } = useWalnutQuery(params);
+
+  const submit = (values: WalnutParams) => {
+    const next = toWalnutSearchParams(values);
+    // 같은 조건으로 다시 누르면 다시 계산한다(실패 후 재시도 포함). 히스토리는 쌓지 않는다.
+    if (next.toString() === queryString) {
+      refetch();
+      return;
+    }
+    setSearchParams(next);
+  };
 
   return (
     <Space direction='vertical' style={{ width: "100%" }} size='large'>
@@ -38,7 +49,7 @@ export function WalnutPage() {
       <WalnutForm
         initialValues={params}
         loading={isFetching}
-        onSubmit={(values) => setSearchParams(toWalnutSearchParams(values))}
+        onSubmit={submit}
       />
       {isError && (
         <Alert

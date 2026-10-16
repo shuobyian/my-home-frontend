@@ -27,11 +27,33 @@ describe("parseResultSearch", () => {
     "page=-1",
     "page=1.5",
     "page=abc",
+    "page=1e1",
+    "page=0x10",
+    "page=2147483649",
   ])("잘못된 값(%s)은 무시한다", (query) => {
     const search = parseResultSearch(new URLSearchParams(query));
     expect(search.tool).toBeUndefined();
     expect(search.category).toBeUndefined();
     expect(search.page).toBe(0);
+  });
+});
+
+describe("parseResultSearch - 일부만 잘못된 경우", () => {
+  it("잘못된 값만 버리고 나머지 조건은 살린다", () => {
+    expect(
+      parseResultSearch(new URLSearchParams("tool=HAMMER&page=3"))
+    ).toEqual({
+      name: "",
+      tool: undefined,
+      category: undefined,
+      page: 2,
+    });
+  });
+
+  it("이름의 제어 문자를 지운다", () => {
+    expect(
+      parseResultSearch(new URLSearchParams("name=%EB%82%98%00%EB%AC%B4")).name
+    ).toBe("나무");
   });
 });
 

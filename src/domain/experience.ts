@@ -13,6 +13,14 @@ const KEYS = [
   "productionPercent",
 ] as const;
 
+// 레벨·경험치는 정수, 버프 비율만 소수를 허용한다(10진수 표기만)
+const PATTERN: Record<(typeof KEYS)[number], RegExp> = {
+  presentLevel: /^\d+$/,
+  presentExperience: /^\d+$/,
+  objectiveLevel: /^\d+$/,
+  productionPercent: /^\d+(\.\d+)?$/,
+};
+
 // URL 쿼리를 호두작 계산 조건으로 바꾼다. 현재 레벨이 없으면 계산하지 않는다(undefined).
 // 범위 검사는 폼과 서버가 한다(주소를 직접 고친 경우 서버 메시지를 보여 준다).
 export function parseWalnutParams(
@@ -21,8 +29,7 @@ export function parseWalnutParams(
   const values: Partial<Record<(typeof KEYS)[number], number>> = {};
   KEYS.forEach((key) => {
     const raw = params.get(key);
-    const value = raw === null || raw.trim() === "" ? NaN : Number(raw);
-    if (Number.isFinite(value)) values[key] = value;
+    if (raw !== null && PATTERN[key].test(raw)) values[key] = Number(raw);
   });
 
   if (values.presentLevel === undefined) return undefined;

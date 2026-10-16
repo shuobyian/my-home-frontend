@@ -45,7 +45,11 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
     [queryString]
   );
 
-  const { data: results, isFetching } = useResultsQuery({
+  const {
+    data: results,
+    isFetching,
+    isPreviousData,
+  } = useResultsQuery({
     page: search.page,
     size: PAGE_SIZE,
     name: search.name || undefined,
@@ -55,20 +59,40 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
 
   const [form] = Form.useForm<SearchFormValues>();
 
-  // 뒤로 가기 등으로 URL이 바뀌면 입력창도 맞춘다
-  useEffect(() => {
-    form.setFieldsValue(toFormValues(search));
-  }, [form, search]);
+  // 같은 주소로의 이동은 히스토리에 쌓지 않는다(링크 클릭과 같은 규칙)
+  const navigateTo = (next: SearchState) => {
+    const params = toResultSearchParams(next);
+    setSearchParams(params, { replace: params.toString() === queryString });
+  };
 
-  const submit = ({ name, tool, category }: SearchFormValues) => {
-    setSearchParams(
-      toResultSearchParams({
-        name: name ?? "",
-        tool: tool === ALL ? undefined : tool,
-        category: category === ALL ? undefined : category,
-        page: 0,
-      })
+  // 뒤로 가기 등으로 검색 조건이 바뀌면 입력창도 맞춘다.
+  // 페이지만 바뀔 때는 제출하지 않은 입력을 지우지 않는다.
+  const { name, tool, category } = search;
+  useEffect(() => {
+    form.setFieldsValue(toFormValues({ name, tool, category, page: 0 }));
+  }, [form, name, tool, category]);
+
+  // 주소의 페이지가 결과 범위를 넘으면(오래된 링크 등) 마지막 페이지로 바로잡는다
+  useEffect(() => {
+    if (!results || isPreviousData) return;
+    const lastPage = Math.max(
+      0,
+      Math.ceil(results.totalElements / PAGE_SIZE) - 1
     );
+    if (search.page > lastPage) {
+      setSearchParams(toResultSearchParams({ ...search, page: lastPage }), {
+        replace: true,
+      });
+    }
+  }, [results, isPreviousData, search, setSearchParams]);
+
+  const submit = (values: SearchFormValues) => {
+    navigateTo({
+      name: values.name ?? "",
+      tool: values.tool === ALL ? undefined : values.tool,
+      category: values.category === ALL ? undefined : values.category,
+      page: 0,
+    });
   };
 
   return (
@@ -113,10 +137,7 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
           page: search.page,
           size: PAGE_SIZE,
           total: results?.totalElements ?? 0,
-          onChange: (page) =>
-            setSearchParams(
-              toResultSearchParams({ ...search, page: page - 1 })
-            ),
+          onChange: (page) => navigateTo({ ...search, page: page - 1 }),
         }}
         contents={results?.content ?? []}
         onRowClick={onSelect}

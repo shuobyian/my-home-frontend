@@ -55,6 +55,7 @@ export function WalnutForm({
         label='현재 레벨 (필수)'
         rules={[
           { required: true, message: "현재 레벨을 입력해주세요." },
+          { type: "integer", message: "정수로 입력해주세요." },
           {
             type: "number",
             min: WALNUT_MIN_LEVEL,
@@ -66,6 +67,7 @@ export function WalnutForm({
         <InputNumber
           style={{ width: "100%" }}
           precision={0}
+          inputMode='numeric'
           placeholder='현재 레벨'
         />
       </Form.Item>
@@ -74,12 +76,14 @@ export function WalnutForm({
         label='현재 경험치'
         extra='입력하지 않으면 0으로 계산됩니다.'
         rules={[
+          { type: "integer", message: "정수로 입력해주세요." },
           { type: "number", min: 0, message: "0 이상으로 입력해주세요." },
         ]}
       >
         <InputNumber
           style={{ width: "100%" }}
           precision={0}
+          inputMode='numeric'
           placeholder='기본값 = 0'
         />
       </Form.Item>
@@ -112,6 +116,7 @@ export function WalnutForm({
         <InputNumber
           style={{ width: "100%" }}
           precision={0}
+          inputMode='numeric'
           placeholder={`기본값 = ${
             typeof presentLevel === "number"
               ? presentLevel + 1
@@ -134,6 +139,7 @@ export function WalnutForm({
       >
         <InputNumber
           style={{ width: "100%" }}
+          inputMode='decimal'
           placeholder={`기본값 = ${DEFAULT_PRODUCTION_PERCENT}`}
         />
       </Form.Item>

@@ -10,7 +10,8 @@ import { Market } from "types/market";
 
 export function FreePage() {
   const navigate = useNavigate();
-  const { data: serverMarkets } = useMarketsQuery();
+  const { data, isFetchedAfterMount } = useMarketsQuery();
+  const serverMarkets = isFetchedAfterMount ? data : undefined;
 
   // 마지막으로 입력해 둔 시세가 있으면 그 값으로 시작한다(마운트 시 한 번 읽기)
   const [savedMarkets] = useState(() =>

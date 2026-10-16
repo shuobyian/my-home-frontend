@@ -7,7 +7,9 @@ import { Market } from "types/market";
 export function MarketManagePage() {
   const { message } = App.useApp();
 
-  const { data: serverMarkets } = useMarketsQuery();
+  // 캐시에 남은 오래된 시세로 채우면 저장 시 최신 시세를 덮어쓰므로 새로 받은 값만 쓴다
+  const { data, isFetchedAfterMount } = useMarketsQuery();
+  const serverMarkets = isFetchedAfterMount ? data : undefined;
   const { isLoading, mutate } = useUpdateMarketsMutation();
 
   const onSubmit = (markets: Market[]) => {

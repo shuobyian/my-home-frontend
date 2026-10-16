@@ -7,7 +7,8 @@ interface MarketFormValues {
 }
 
 interface MarketPriceFormProps {
-  // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다
+  // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다.
+  // 캐시에 남은 오래된 값으로 채우지 않도록 마운트 후 새로 받은 값만 넘긴다(isFetchedAfterMount)
   serverMarkets?: Market[];
   // 처음 채울 값(예: 브라우저에 저장해 둔 시세). 있으면 서버 시세보다 우선한다
   initialMarkets?: Market[];
@@ -99,6 +100,7 @@ export function MarketPriceForm({
                     <InputNumber
                       min={0}
                       precision={requirePrice ? 0 : undefined}
+                      inputMode={requirePrice ? "numeric" : "decimal"}
                       addonAfter='골드'
                     />
                   </Form.Item>
