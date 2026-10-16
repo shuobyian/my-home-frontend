@@ -1,5 +1,5 @@
 import { fetchMarkets, updateMarkets } from "apis/market";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const marketKeys = {
   all: ["market"] as const,
@@ -16,7 +16,7 @@ export const useUpdateMarketsMutation = () => {
   return useMutation({
     mutationFn: updateMarkets,
     onSuccess: () => {
-      queryClient.invalidateQueries(marketKeys.all);
+      queryClient.invalidateQueries({ queryKey: marketKeys.all });
     },
   });
 };

@@ -1,7 +1,11 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MyHomeError } from "apis/errors";
 import { RouteErrorBoundary } from "app/RouteErrorBoundary";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import {
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";
 
 // 실패 횟수만큼 실패한 뒤 성공하는 쿼리 함수
@@ -24,7 +28,7 @@ function QueryPage({ fetcher }: { fetcher: () => Promise<string> }) {
 
 function renderApp(fetcher: () => Promise<string>, initialPath = "/") {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 0, useErrorBoundary: true } },
+    defaultOptions: { queries: { retry: 0, throwOnError: true } },
   });
 
   return render(

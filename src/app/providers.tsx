@@ -2,7 +2,7 @@ import { App as AntdApp, ConfigProvider, ThemeConfig } from "antd";
 import koKR from "antd/locale/ko_KR";
 import { queryClient } from "app/queryClient";
 import { ReactNode } from "react";
-import { QueryClientProvider } from "react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import { AuthProvider } from "state/auth";
 import { CartProvider } from "state/cart";

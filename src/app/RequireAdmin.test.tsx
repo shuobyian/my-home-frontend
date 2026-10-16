@@ -3,7 +3,7 @@ import { login } from "apis/auth";
 import { MyHomeError } from "apis/errors";
 import { RequireAdmin } from "app/RequireAdmin";
 import { SESSION_KEY } from "lib/storage";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "state/auth";
 

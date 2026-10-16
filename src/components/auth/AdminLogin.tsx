@@ -13,7 +13,7 @@ interface AdminLoginProps {
 // 관리 화면 비밀번호 입력. 실패하면 서버 메시지를 보여 주고 다시 입력할 수 있다.
 export function AdminLogin({ onSuccess }: AdminLoginProps) {
   const navigate = useNavigate();
-  const { mutate: login, isLoading } = useLoginMutation();
+  const { mutate: login, isPending } = useLoginMutation();
   const [error, setError] = useState<string>();
 
   const submit = ({ password }: { password: string }) => {
@@ -50,7 +50,7 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
           />
         )}
         <Space>
-          <Button type='primary' htmlType='submit' loading={isLoading}>
+          <Button type='primary' htmlType='submit' loading={isPending}>
             확인
           </Button>
           <Button onClick={() => navigate(ROUTES.HOME)}>취소</Button>

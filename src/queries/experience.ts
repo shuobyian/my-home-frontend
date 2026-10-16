@@ -1,5 +1,5 @@
 import { calculateWalnut, fetchExperience } from "apis/experience";
-import { useQuery } from "react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { WalnutParams } from "types/experience";
 
 export const experienceKeys = {
@@ -22,7 +22,7 @@ export const useWalnutQuery = (params?: WalnutParams) =>
     queryFn: () => calculateWalnut(params as WalnutParams),
     enabled: !!params,
     // 조건을 바꿔 다시 계산하는 동안 이전 결과를 유지한다
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
     // 화면에서 오류 메시지를 직접 보여 준다
-    useErrorBoundary: false,
+    throwOnError: false,
   });
