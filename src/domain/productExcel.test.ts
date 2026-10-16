@@ -78,9 +78,9 @@ describe("parseExcelRows - 변환", () => {
 
   it("level 오름차순으로 정렬한다", () => {
     const products = toProducts([
-      createRow({ id: 1, level: 5 }),
-      createRow({ id: 2, level: 1 }),
-      createRow({ id: 3, level: 3 }),
+      createRow({ id: 1, name: "A", level: 5 }),
+      createRow({ id: 2, name: "B", level: 1 }),
+      createRow({ id: 3, name: "C", level: 3 }),
     ]);
 
     expect(products.map(({ id }) => id)).toEqual([2, 3, 1]);
@@ -163,11 +163,56 @@ describe("parseExcelRows - 검증", () => {
 
     expect(products.map(({ name }) => name)).toEqual(["정상"]);
     expect(errors).toEqual([
-      "3행: 물품명이 비었거나 쉼표가 있습니다, 레벨은 정수여야 합니다",
+      "3행: 물품명이 비었거나 쉼표가 있거나 255자를 넘습니다, 레벨은 정수여야 합니다",
       "4행 도구 오류: 알 수 없는 도구(HAMMER)",
-      "5행: 물품명이 비었거나 쉼표가 있습니다",
-      "6행 개수 오류: 재료1 개수는 0보다 커야 합니다",
+      "5행: 물품명이 비었거나 쉼표가 있거나 255자를 넘습니다",
+      "6행 개수 오류: 재료1 개수는 0보다 크고 1,000,000 이하여야 합니다",
     ]);
+  });
+
+  it("SheetJS가 붙인 실제 행 번호(__rowNum__)를 쓴다(빈 행을 건너뛴 시트)", () => {
+    const row = createRow({ name: "레벨 오류", level: 1.5 });
+    Object.defineProperty(row, "__rowNum__", { value: 9, enumerable: false });
+    expect(parseExcelRows([createRow({ name: "정상" }), row]).errors).toEqual([
+      "10행 레벨 오류: 레벨은 정수여야 합니다",
+    ]);
+  });
+
+  it("서버 한계값을 넘는 값과 숫자가 아닌 셀을 거부한다", () => {
+    const { errors } = parseExcelRows([
+      createRow({ name: "A", count1: 1_000_001 }),
+      { ...createRow({ name: "B" }), count1: "Infinity" },
+      { ...createRow({ name: "C" }), level: 3_000_000_000 },
+      { ...createRow({ name: "D" }), craftingPrice: new Date(2026, 0, 2) },
+      createRow({ name: "가".repeat(256) }),
+    ]);
+    expect(errors).toHaveLength(5);
+  });
+
+  it.each([
+    ["Y", false],
+    [2, false],
+    ["0", true],
+    ["1", true],
+    [" 1 ", true],
+  ])("base 값 %p 허용 여부: %p", (base, valid) => {
+    const { errors } = parseExcelRows([
+      { ...createRow(), base1: base as unknown as number },
+    ]);
+    expect(errors.length === 0).toBe(valid);
+  });
+
+  it("파일 안에 같은 물품명이 있으면 두 행 번호를 함께 알려 준다", () => {
+    expect(
+      parseExcelRows([createRow({ name: "의자" }), createRow({ name: "의자" })])
+        .errors
+    ).toEqual(["3행 의자: 2행과 물품명이 같습니다"]);
+  });
+
+  it("빈 시트는 오류로 처리한다", () => {
+    const { products, errors } = parseExcelRows([]);
+    expect(products).toEqual([]);
+    expect(errors[0]).toMatch("가져올 행이 없습니다");
   });
 
   it("category가 비어 있으면 서버 기본값 NORMAL로 본다", () => {

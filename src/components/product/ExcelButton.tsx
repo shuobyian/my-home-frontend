@@ -1,5 +1,6 @@
 import { App, Button, Space, Typography } from "antd";
 import { parseExcelRows, productsToExcelRows } from "domain/productExcel";
+import { isChunkLoadError } from "lib/chunk";
 import { downloadSheet, fileTimestamp, readFirstSheet } from "lib/excel";
 import { formatNumber } from "lib/format";
 import { useRef, useState } from "react";
@@ -19,6 +20,7 @@ export function ExcelButton({ products, onImport }: ExcelButtonProps) {
   const { message, modal } = App.useApp();
   const ref = useRef<HTMLInputElement>(null);
   const [loading, setLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   const importFile = async (file: File) => {
     setLoading(true);
@@ -50,10 +52,32 @@ export function ExcelButton({ products, onImport }: ExcelButtonProps) {
       message.success(
         `${formatNumber(imported.length)}개 물품을 가져왔습니다.`
       );
-    } catch {
-      message.error("엑셀 파일을 읽을 수 없습니다.");
+    } catch (error) {
+      message.error(
+        isChunkLoadError(error)
+          ? "엑셀 기능을 불러오지 못했습니다. 새로고침 후 다시 시도해주세요."
+          : "엑셀 파일을 읽을 수 없습니다."
+      );
     } finally {
       setLoading(false);
+    }
+  };
+
+  const download = async () => {
+    setDownloading(true);
+    try {
+      await downloadSheet(
+        productsToExcelRows(products),
+        `my_home_material_${fileTimestamp(new Date())}.xlsx`
+      );
+    } catch (error) {
+      message.error(
+        isChunkLoadError(error)
+          ? "엑셀 기능을 불러오지 못했습니다. 새로고침 후 다시 시도해주세요."
+          : "엑셀 파일을 만들 수 없습니다."
+      );
+    } finally {
+      setDownloading(false);
     }
   };
 
@@ -76,14 +100,7 @@ export function ExcelButton({ products, onImport }: ExcelButtonProps) {
         onChange={handleFileChange}
         style={{ display: "none" }}
       />
-      <Button
-        onClick={() =>
-          downloadSheet(
-            productsToExcelRows(products),
-            `my_home_material_${fileTimestamp(new Date())}.xlsx`
-          )
-        }
-      >
+      <Button loading={downloading} onClick={download}>
         내려받기
       </Button>
     </Space>

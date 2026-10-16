@@ -12,7 +12,7 @@ export function AppLayout() {
     <Layout style={{ padding: screens.sm ? "10px 100px" : "10px" }}>
       <AppHeader />
       <RouteErrorBoundary>
-        {/* 지연 로딩하는 화면(관리)의 코드를 받는 동안 표시. 받기 실패는 ErrorBoundary가 처리한다 */}
+        {/* 지연 로딩하는 화면(관리)의 코드를 받는 동안 표시. 받기 실패 시 ErrorBoundary가 새로고침을 안내한다 */}
         <Suspense
           fallback={<Spin style={{ display: "block", margin: "40px auto" }} />}
         >

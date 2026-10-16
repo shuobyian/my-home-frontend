@@ -44,13 +44,49 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
+// 서버(ProductInputSerializer) 규칙과 같은 한계값
+const NAME_MAX_LENGTH = 255;
+const MAX_MATERIAL_COUNT = 1_000_000;
+const INT32_MIN = -2147483648;
+const INT32_MAX = 2147483647;
+
 const isBlank = (value: unknown) =>
   value === undefined || value === null || String(value).trim() === "";
 
-// 서버 규칙: 이름은 공백만 있을 수 없고 쉼표를 쓸 수 없다
+// 숫자 칸은 숫자나 숫자 문자열만 받는다(날짜 서식 셀·불리언 등은 거부)
+function readNumber(value: unknown): number {
+  if (typeof value === "number") return value;
+  if (typeof value === "string" && value.trim() !== "") return Number(value);
+  return NaN;
+}
+
+const isInt32 = (value: number) =>
+  Number.isInteger(value) && value >= INT32_MIN && value <= INT32_MAX;
+
+// 서버 규칙: 이름은 공백만 있을 수 없고 쉼표를 쓸 수 없으며 255자 이하
 function readName(value: unknown): string | undefined {
   const name = String(value ?? "").trim();
-  return name && !name.includes(",") ? name : undefined;
+  return name && !name.includes(",") && name.length <= NAME_MAX_LENGTH
+    ? name
+    : undefined;
+}
+
+// baseN: 비었거나 0이면 최하위재료(basic), 1이면 하위재료가 있음. 그 밖의 값은 undefined.
+function readBasic(value: unknown): boolean | undefined {
+  if (isBlank(value)) return true;
+  const text = String(value).trim();
+  if (text === "0") return true;
+  if (text === "1") return false;
+  return undefined;
+}
+
+// SheetJS가 행 객체에 붙여 주는 실제 행 번호(0부터, 열거되지 않는 속성).
+// 빈 행을 건너뛴 시트에서도 엑셀 행 번호와 맞추기 위해 쓰고, 없으면 순서로 추정한다.
+function rowNumberOf(row: unknown, index: number) {
+  const rowNum = isRecord(row)
+    ? (row as { __rowNum__?: unknown }).__rowNum__
+    : undefined;
+  return typeof rowNum === "number" ? rowNum + 1 : index + 2;
 }
 
 // 엑셀 행을 검증해 물품으로 바꾼다. 문제가 있는 행은 오류로 모으고 물품에서 뺀다.
@@ -58,9 +94,21 @@ function readName(value: unknown): string | undefined {
 export function parseExcelRows(rows: unknown[]): ExcelImportResult {
   const products: Product[] = [];
   const errors: string[] = [];
+  // 파일 안의 같은 물품명(서버는 업로드 목록 안 중복을 거부한다)
+  const lineByName = new Map<string, number>();
+
+  if (rows.length === 0) {
+    return {
+      products,
+      errors: [
+        "가져올 행이 없습니다. 첫 번째 시트에 헤더와 물품 행이 있는지 확인해주세요.",
+      ],
+    };
+  }
 
   rows.forEach((row, index) => {
-    const line = `${index + 2}행`;
+    const lineNumber = rowNumberOf(row, index);
+    const line = `${lineNumber}행`;
     if (!isRecord(row)) {
       errors.push(`${line}: 형식이 올바르지 않습니다.`);
       return;
@@ -68,12 +116,18 @@ export function parseExcelRows(rows: unknown[]): ExcelImportResult {
 
     const rowErrors: string[] = [];
     const name = readName(row.name);
-    if (!name) rowErrors.push("물품명이 비었거나 쉼표가 있습니다");
-    const level = Number(row.level);
-    if (isBlank(row.level) || !Number.isInteger(level))
-      rowErrors.push("레벨은 정수여야 합니다");
-    const craftingPrice = Number(row.craftingPrice);
-    if (isBlank(row.craftingPrice) || !Number.isInteger(craftingPrice))
+    if (!name)
+      rowErrors.push("물품명이 비었거나 쉼표가 있거나 255자를 넘습니다");
+    const duplicateLine = name ? lineByName.get(name) : undefined;
+    if (name && duplicateLine !== undefined) {
+      rowErrors.push(`${duplicateLine}행과 물품명이 같습니다`);
+    } else if (name) {
+      lineByName.set(name, lineNumber);
+    }
+    const level = readNumber(row.level);
+    if (!isInt32(level)) rowErrors.push("레벨은 정수여야 합니다");
+    const craftingPrice = readNumber(row.craftingPrice);
+    if (!isInt32(craftingPrice))
       rowErrors.push("크래프팅 가격은 정수여야 합니다");
     const tool = String(row.tool ?? "").trim();
     if (!TOOLS.includes(tool))
@@ -88,17 +142,24 @@ export function parseExcelRows(rows: unknown[]): ExcelImportResult {
     SLOTS.forEach((slot) => {
       if (isBlank(row[`name${slot}`])) return;
       const materialName = readName(row[`name${slot}`]);
-      const count = Number(row[`count${slot}`]);
+      const count = readNumber(row[`count${slot}`]);
+      const basic = readBasic(row[`base${slot}`]);
       if (!materialName) {
-        rowErrors.push(`재료${slot} 이름에 쉼표가 있습니다`);
-      } else if (!(count > 0)) {
-        rowErrors.push(`재료${slot} 개수는 0보다 커야 합니다`);
+        rowErrors.push(`재료${slot} 이름에 쉼표가 있거나 255자를 넘습니다`);
+      } else if (
+        !Number.isFinite(count) ||
+        count <= 0 ||
+        count > MAX_MATERIAL_COUNT
+      ) {
+        rowErrors.push(
+          `재료${slot} 개수는 0보다 크고 ${MAX_MATERIAL_COUNT.toLocaleString()} 이하여야 합니다`
+        );
+      } else if (basic === undefined) {
+        rowErrors.push(
+          `재료${slot} base는 0(최하위재료) 또는 1(하위재료 있음)이어야 합니다`
+        );
       } else {
-        materials.push({
-          name: materialName,
-          basic: !Number(row[`base${slot}`]),
-          count,
-        });
+        materials.push({ name: materialName, basic, count });
       }
     });
 

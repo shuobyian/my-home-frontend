@@ -165,10 +165,6 @@
                 {
                   "name": "react-query",
                   "message": "서버 상태는 queries/의 훅으로만 다룹니다."
-                },
-                {
-                  "name": "xlsx",
-                  "message": "엑셀 처리는 lib/excel을 통해서만 합니다(동적 import)."
                 }
               ]
             }
@@ -183,8 +179,7 @@
         ],
         "excludedFiles": [
           "src/**/*.test.ts",
-          "src/**/*.test.tsx",
-          "src/lib/excel.ts"
+          "src/**/*.test.tsx"
         ],
         "rules": {
           "no-restricted-imports": [
@@ -206,10 +201,6 @@
                 {
                   "name": "react-query",
                   "message": "domain·types·lib는 서버 상태에 의존하지 않습니다."
-                },
-                {
-                  "name": "xlsx",
-                  "message": "엑셀 처리는 lib/excel을 통해서만 합니다(동적 import)."
                 }
               ]
             }
@@ -233,6 +224,10 @@
             {
               "selector": "Identifier[name='localStorage']",
               "message": "localStorage는 lib/storage의 readJSON·writeJSON으로만 접근합니다."
+            },
+            {
+              "selector": "ImportDeclaration[source.value=/^xlsx/]",
+              "message": "xlsx는 lib/excel에서 동적 import로만 불러옵니다(첫 화면 번들에서 제외)."
             }
           ]
         }

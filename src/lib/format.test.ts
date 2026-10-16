@@ -27,6 +27,16 @@ describe("formatNumber", () => {
   );
 });
 
+describe("formatNumber - 작은 값", () => {
+  it.each([
+    [0.004, "0.004"],
+    [-0.001, "-0.001"],
+    [-0, "0"],
+  ])("%p → %p", (input, expected) => {
+    expect(formatNumber(input)).toBe(expected);
+  });
+});
+
 describe("formatGold", () => {
   it("천 단위 콤마 뒤에 '골드'를 붙인다", () => {
     expect(formatGold(1234567)).toBe("1,234,567골드");
