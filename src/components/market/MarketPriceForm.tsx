@@ -1,83 +1,113 @@
-import { Button, Input, InputNumber, Table, TableColumnsType } from "antd";
-import { useMarketsQuery } from "queries/market";
-import { useEffect } from "react";
-import { Controller, useFormContext } from "react-hook-form";
+import { Button, Form, Input, InputNumber, Space, Table } from "antd";
+import { useEffect, useRef } from "react";
 import { Market } from "types/market";
-import { parseMarketList } from "domain/market";
-import { readJSON, STORAGE_KEY } from "lib/storage";
 
-interface MarketTableProps {
-  isUsedLocalStorage: boolean;
+interface MarketFormValues {
+  markets: Market[];
 }
 
-export function MarketTable({ isUsedLocalStorage }: MarketTableProps) {
-  const form = useFormContext<{ markets: Market[] }>();
-  const { control, reset, getValues } = form;
+interface MarketPriceFormProps {
+  // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다
+  serverMarkets?: Market[];
+  // 처음 채울 값(예: 브라우저에 저장해 둔 시세). 있으면 서버 시세보다 우선한다
+  initialMarkets?: Market[];
+  // 서버에 저장하는 화면은 정수 시세를 필수로 받는다(PUT /market 규칙)
+  requirePrice?: boolean;
+  submitText: string;
+  submitting?: boolean;
+  onSubmit: (markets: Market[]) => void;
+}
 
-  const { data } = useMarketsQuery();
+// 재료 시세 입력 표
+export function MarketPriceForm({
+  serverMarkets,
+  initialMarkets,
+  requirePrice = false,
+  submitText,
+  submitting,
+  onSubmit,
+}: MarketPriceFormProps) {
+  const [form] = Form.useForm<MarketFormValues>();
 
-  const columns: TableColumnsType<Market> = [
-    {
-      title: "물품명",
-      dataIndex: "name",
-      key: "name",
-      render: (_, __, i) => (
-        <Controller
-          name={`markets.${i}.name`}
-          control={control}
-          render={({ field }) => <Input value={field.value} disabled={true} />}
-        />
-      ),
-    },
-    {
-      title: "시세",
-      dataIndex: "price",
-      key: "price",
-      render: (_, __, i) => (
-        <Controller
-          name={`markets.${i}.price`}
-          control={control}
-          render={({ field }) => (
-            <InputNumber
-              value={field.value}
-              onChange={field.onChange}
-              pattern='[0-9]*'
-              addonAfter='골드'
-            />
-          )}
-        />
-      ),
-    },
-  ];
+  // 처음 값이 준비되면 한 번만 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록)
+  const filled = useRef(false);
+  useEffect(() => {
+    const markets = initialMarkets ?? serverMarkets;
+    if (filled.current || !markets) return;
+    form.setFieldsValue({ markets });
+    filled.current = true;
+  }, [form, initialMarkets, serverMarkets]);
 
-  const resetData = () => {
-    reset({ markets: data });
+  const loadServerMarkets = () => {
+    if (serverMarkets) form.setFieldsValue({ markets: serverMarkets });
   };
 
-  useEffect(() => {
-    // 저장된 시세는 이 시점에 읽는다(모듈 최상단에서 읽으면 앱 시작 시점 값에 고정된다)
-    const saved = isUsedLocalStorage
-      ? parseMarketList(readJSON(STORAGE_KEY.MARKET))
-      : undefined;
-    reset({ markets: saved ?? data });
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- 시세 데이터를 받았을 때만 폼을 초기화한다
-  }, [data]);
-
   return (
-    <div style={{ textAlign: "left" }}>
-      <Button onClick={resetData} style={{ margin: "10px" }}>
-        시세 불러오기
-      </Button>
-      <Table
-        columns={columns}
-        dataSource={
-          getValues("markets")?.map((market) => ({
-            ...market,
-            key: market.id,
-          })) || []
-        }
-        pagination={false}
-      />
-    </div>
+    <Form
+      form={form}
+      initialValues={{ markets: [] }}
+      onFinish={({ markets }) => onSubmit(markets ?? [])}
+    >
+      <Space
+        style={{
+          width: "100%",
+          justifyContent: "space-between",
+          marginBottom: 10,
+        }}
+      >
+        <Button onClick={loadServerMarkets} disabled={!serverMarkets}>
+          시세 불러오기
+        </Button>
+        <Button type='primary' htmlType='submit' loading={submitting}>
+          {submitText}
+        </Button>
+      </Space>
+      <Form.List name='markets'>
+        {(fields) => (
+          <Table
+            rowKey='key'
+            dataSource={fields}
+            pagination={false}
+            columns={[
+              {
+                title: "물품명",
+                key: "name",
+                render: (_, field) => (
+                  <>
+                    <Form.Item name={[field.name, "id"]} hidden>
+                      <Input />
+                    </Form.Item>
+                    <Form.Item name={[field.name, "name"]} noStyle>
+                      <Input disabled />
+                    </Form.Item>
+                  </>
+                ),
+              },
+              {
+                title: "시세",
+                key: "price",
+                render: (_, field) => (
+                  <Form.Item
+                    name={[field.name, "price"]}
+                    style={{ margin: 0 }}
+                    rules={
+                      requirePrice
+                        ? [{ required: true, message: "시세를 입력해주세요" }]
+                        : []
+                    }
+                  >
+                    <InputNumber
+                      min={0}
+                      precision={requirePrice ? 0 : undefined}
+                      addonAfter='골드'
+                    />
+                  </Form.Item>
+                ),
+              },
+            ]}
+          />
+        )}
+      </Form.List>
+    </Form>
   );
 }
