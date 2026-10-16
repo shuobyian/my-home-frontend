@@ -100,6 +100,7 @@ export function MarketPriceForm({
                   >
                     <UnitInputNumber
                       unit='골드'
+                      style={{ width: 180 }}
                       min={0}
                       precision={requirePrice ? 0 : undefined}
                       inputMode={requirePrice ? "numeric" : "decimal"}

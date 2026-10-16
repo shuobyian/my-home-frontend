@@ -1,14 +1,19 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { login } from "@/apis/auth";
 import { MyHomeError } from "@/apis/errors";
+import { preloadManagePages } from "@/app/managePages";
 import { RequireAdmin } from "@/app/RequireAdmin";
 import { SESSION_KEY } from "@/lib/storage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "@/state/auth";
+import { ROUTER_FUTURE } from "@/app/routes";
 
 vi.mock("@/apis/auth", () => ({ login: vi.fn() }));
 const mockedLogin = vi.mocked(login);
+// 관리 화면 코드를 실제로 받지 않고 미리 받기 요청 여부만 본다
+vi.mock("@/app/managePages", () => ({ preloadManagePages: vi.fn() }));
+const mockedPreload = vi.mocked(preloadManagePages);
 
 function renderManage(initialPath = "/manage") {
   const queryClient = new QueryClient({
@@ -17,7 +22,7 @@ function renderManage(initialPath = "/manage") {
   return render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MemoryRouter initialEntries={[initialPath]}>
+        <MemoryRouter future={ROUTER_FUTURE} initialEntries={[initialPath]}>
           <Routes>
             <Route element={<RequireAdmin />}>
               <Route path='/manage' element={<div>관리 내용</div>} />
@@ -48,6 +53,8 @@ describe("RequireAdmin", () => {
 
     expect(screen.getByText("관리자만 입장 가능합니다.")).toBeInTheDocument();
     expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
+    // 관리 화면 코드도 받지 않는다
+    expect(mockedPreload).not.toHaveBeenCalled();
   });
 
   it("비밀번호가 맞으면 관리 화면을 보여 주고 이 탭에서 기억한다", async () => {
@@ -59,6 +66,8 @@ describe("RequireAdmin", () => {
     expect(await screen.findByText("관리 내용")).toBeInTheDocument();
     expect(mockedLogin).toHaveBeenCalledWith("pw");
     expect(sessionStorage.getItem(SESSION_KEY.ADMIN)).toBe("true");
+    // 확인 뒤에는 메뉴 이동이 바로 반응하도록 관리 화면 코드를 미리 받는다
+    expect(mockedPreload).toHaveBeenCalledTimes(1);
   });
 
   it("비밀번호가 틀리면 서버 메시지를 보여 주고 관리 화면은 그리지 않는다", async () => {

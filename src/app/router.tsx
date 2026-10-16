@@ -1,4 +1,9 @@
 import { AppLayout } from "@/app/AppLayout";
+import {
+  ManageHomePage,
+  MarketManagePage,
+  ProductManagePage,
+} from "@/app/managePages";
 import { RequireAdmin } from "@/app/RequireAdmin";
 import { ROUTES } from "@/app/routes";
 import { CalculationPage } from "@/pages/CalculationPage";
@@ -8,25 +13,7 @@ import { FreeResultPage } from "@/pages/FreeResultPage";
 import { HomePage } from "@/pages/HomePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { WalnutPage } from "@/pages/WalnutPage";
-import { lazy } from "react";
 import { Route, Routes } from "react-router-dom";
-
-// 관리 화면은 관리자만 쓰므로 처음 들어갈 때 따로 불러온다(엑셀 처리 코드 포함)
-const ManageHomePage = lazy(() =>
-  import("@/pages/manage/ManageHomePage").then((m) => ({
-    default: m.ManageHomePage,
-  }))
-);
-const ProductManagePage = lazy(() =>
-  import("@/pages/manage/ProductManagePage").then((m) => ({
-    default: m.ProductManagePage,
-  }))
-);
-const MarketManagePage = lazy(() =>
-  import("@/pages/manage/MarketManagePage").then((m) => ({
-    default: m.MarketManagePage,
-  }))
-);
 
 export function AppRoutes() {
   return (

@@ -114,7 +114,7 @@ export function ProductModal({
         >
           <UnitInputNumber
             unit='골드'
-            style={{ width: 140 }}
+            style={{ width: 180 }}
             min={0}
             placeholder='크래프팅 가격'
           />
@@ -190,7 +190,7 @@ export function ProductModal({
                     >
                       <UnitInputNumber
                         unit='개'
-                        style={{ width: 90 }}
+                        style={{ width: 85 }}
                         min={0}
                         max={100}
                         placeholder='개수'

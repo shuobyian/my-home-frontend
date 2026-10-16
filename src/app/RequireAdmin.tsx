@@ -1,8 +1,9 @@
 import { Button, Segmented, Space, Spin } from "antd";
+import { preloadManagePages } from "@/app/managePages";
 import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import { ROUTES } from "@/app/routes";
 import { AdminLogin } from "@/components/auth/AdminLogin";
-import { Suspense } from "react";
+import { Suspense, useEffect } from "react";
 import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/state/auth";
 
@@ -19,6 +20,11 @@ export function RequireAdmin() {
   const { isAdmin, markAdmin, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+
+  // 확인이 끝나면 관리 화면 코드를 미리 받아 메뉴 이동이 바로 반응하게 한다
+  useEffect(() => {
+    if (isAdmin) preloadManagePages();
+  }, [isAdmin]);
 
   if (!isAdmin) return <AdminLogin onSuccess={markAdmin} />;
 
