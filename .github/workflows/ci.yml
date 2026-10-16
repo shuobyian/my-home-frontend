@@ -23,7 +23,7 @@ jobs:
           node-version-file: .nvmrc
 
       # package.json의 packageManager 버전을 설치하고 pnpm store를 캐시한다
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@v6.1.0
         with:
           cache: true
 

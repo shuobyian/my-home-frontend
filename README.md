@@ -7,8 +7,10 @@
 - Node.js 24 (`.nvmrc`)
 - pnpm 12 (`package.json`의 `packageManager`로 고정)
 
+pnpm은 어떤 방법으로 설치해도 됩니다. `pnpm install`을 실행하면 `packageManager`에 고정된 버전으로 자동 전환됩니다.
+
 ```bash
-corepack enable   # packageManager에 지정된 pnpm 버전을 사용
+npm install -g pnpm
 pnpm install
 ```
 
