@@ -4,9 +4,9 @@ import { useMarketsQuery } from "queries/market";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Market } from "types/market";
-import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";
+import { STORAGE_KEY } from "lib/storage";
 
-const MARKET_LIST = localStorage.getItem(MARKET);
+const MARKET_LIST = localStorage.getItem(STORAGE_KEY.MARKET);
 
 interface IMarketListProps {
   isUsedLocalStorage: boolean;

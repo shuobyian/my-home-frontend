@@ -1,17 +1,16 @@
 import { Avatar, Collapse, List, Space, Typography } from "antd";
 import { useMemo } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { calculateItem } from "util/calculateItem";
-import { StorageResult } from "util/hook/useSelectedResults";
-import { StringUtil } from "util/StringUtil";
+import { aggregateMaterials, Cart, sumPrice } from "domain/cart";
+import { formatGold, formatNumber } from "lib/format";
 import { MaterialTable } from "view/components/shared/MaterialTable";
 
-const EMPTY_RESULTS: StorageResult = {};
+const EMPTY_RESULTS: Cart = {};
 
 export function CalculationList() {
   // 주소로 직접 들어오면 state가 없다. 이때는 홈으로 돌려보낸다.
   const { state } = useLocation() as {
-    state: { selectedResults?: StorageResult; totalCount?: number } | null;
+    state: { selectedResults?: Cart; totalCount?: number } | null;
   };
   const selectedResults = state?.selectedResults ?? EMPTY_RESULTS;
   const totalCount = state?.totalCount ?? 0;
@@ -21,11 +20,12 @@ export function CalculationList() {
     [selectedResults]
   );
 
-  const totalPrice = useMemo(
-    () =>
-      calculateItem(selectedResults).reduce((acc, curr) => acc + curr.price, 0),
+  // 기초 재료 합산은 한 번만 계산해 총액과 표에 함께 쓴다
+  const materials = useMemo(
+    () => aggregateMaterials(selectedResults),
     [selectedResults]
   );
+  const totalPrice = sumPrice(materials);
 
   if (!state?.selectedResults) return <Navigate to='/' replace />;
 
@@ -44,7 +44,7 @@ export function CalculationList() {
                 <Typography.Text>
                   담긴 물품 (
                   <Typography.Text>
-                    {StringUtil.numberWithCommas(totalCount)}개
+                    {formatNumber(totalCount)}개
                   </Typography.Text>
                   )
                 </Typography.Text>
@@ -64,9 +64,7 @@ export function CalculationList() {
                             />
                           }
                           title={item.name}
-                          description={
-                            <div>{StringUtil.numberWithCommas(count)}개</div>
-                          }
+                          description={<div>{formatNumber(count)}개</div>}
                         />
                       </List.Item>
                     )}
@@ -80,10 +78,10 @@ export function CalculationList() {
           <Space style={{ width: "100%", justifyContent: "space-between" }}>
             <Typography.Text strong>기초 재료</Typography.Text>
             <Typography.Text strong>
-              총 {StringUtil.numberWithCommasAndMoney(totalPrice)}
+              총 {formatGold(totalPrice)}
             </Typography.Text>
           </Space>
-          <MaterialTable materials={calculateItem(selectedResults)} />
+          <MaterialTable materials={materials} />
         </Space>
       </Space>
     </div>

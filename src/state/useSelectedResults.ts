@@ -1,13 +1,14 @@
-import { Result } from "types/result";
+import { Cart } from "domain/cart";
+import { STORAGE_KEY } from "lib/storage";
 import { useEffect, useMemo, useState } from "react";
-import { SELECTED_RESULTS } from "util/constant/LOCAL_STORAGE_KEY";
-
-export type StorageResult = { [key: number]: { item: Result; count: number } };
+import { Result } from "types/result";
 
 export const useSelectedResults = () => {
-  const DEFAULT_DATA_SELECTED_RESULTS = localStorage.getItem(SELECTED_RESULTS);
+  const DEFAULT_DATA_SELECTED_RESULTS = localStorage.getItem(
+    STORAGE_KEY.SELECTED_RESULTS
+  );
 
-  const [selectedResults, setSelectedResults] = useState<StorageResult>({});
+  const [selectedResults, setSelectedResults] = useState<Cart>({});
 
   useEffect(() => {
     try {
@@ -31,8 +32,8 @@ export const useSelectedResults = () => {
     [selectedResults]
   );
 
-  const backup = (results: StorageResult) => {
-    localStorage.setItem(SELECTED_RESULTS, JSON.stringify(results));
+  const backup = (results: Cart) => {
+    localStorage.setItem(STORAGE_KEY.SELECTED_RESULTS, JSON.stringify(results));
   };
 
   const onChange = (item: Result) => {

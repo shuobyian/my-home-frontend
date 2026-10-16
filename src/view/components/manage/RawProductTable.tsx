@@ -3,11 +3,11 @@ import { getErrorMessage } from "apis/errors";
 import { useCreateProductsMutation } from "queries/product";
 import { useRef, useState } from "react";
 import { Product } from "types/product";
-import { PRODUCT } from "util/constant/LOCAL_STORAGE_KEY";
+import { STORAGE_KEY } from "lib/storage";
 import { ExcelButton } from "view/components/manage/ExcelButton";
 import ProductTableView from "view/components/manage/ProductTableView";
 
-const DEFAULT_DATA = localStorage.getItem(PRODUCT);
+const DEFAULT_DATA = localStorage.getItem(STORAGE_KEY.PRODUCT);
 
 export default function RawProductTable() {
   const { mutate: upload } = useCreateProductsMutation();
@@ -61,7 +61,7 @@ export default function RawProductTable() {
   };
 
   const save = () => {
-    localStorage.setItem(PRODUCT, JSON.stringify(datas));
+    localStorage.setItem(STORAGE_KEY.PRODUCT, JSON.stringify(datas));
 
     upload(
       { products: datas },

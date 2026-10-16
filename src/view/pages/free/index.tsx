@@ -3,7 +3,7 @@ import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Market } from "types/market";
-import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";
+import { STORAGE_KEY } from "lib/storage";
 import { MarketList } from "view/components/shared/MarketList";
 
 export function Free() {
@@ -19,7 +19,7 @@ export function Free() {
   const onSubmit = ({ markets }: { markets: Market[] }) => {
     try {
       setIsLoading(true);
-      localStorage.setItem(MARKET, JSON.stringify(markets));
+      localStorage.setItem(STORAGE_KEY.MARKET, JSON.stringify(markets));
       navigate("result", { state: { markets } });
     } finally {
       setIsLoading(false);

@@ -1,8 +1,11 @@
 import { Button, Space } from "antd";
-import { Item } from "apis/type/Item";
 import { useRef } from "react";
 import { Product } from "types/product";
-import { convertExcelToTable, convertTableToExcel } from "util/convertItem";
+import {
+  excelRowsToProducts,
+  ProductExcelRow,
+  productsToExcelRows,
+} from "domain/productExcel";
 import * as XLSX from "xlsx";
 
 interface IExcelButtonProps {
@@ -29,7 +32,7 @@ export function ExcelButton({
   };
 
   const handleExcelDownload = () => {
-    excelDownload(convertTableToExcel(datas), "my_home_material");
+    excelDownload(productsToExcelRows(datas), "my_home_material");
   };
 
   const readExcel = async (file: File) => {
@@ -47,7 +50,7 @@ export function ExcelButton({
       const rawData = fileInformation.Sheets[sheetName];
       const data = XLSX.utils.sheet_to_json(rawData);
 
-      const newData = convertExcelToTable(data as Item[]);
+      const newData = excelRowsToProducts(data as ProductExcelRow[]);
       setDatas(newData);
       originalDatas.current = newData;
     };

@@ -2,7 +2,7 @@ import { Space, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { getToolLabel } from "domain/labels";
 import { Product } from "types/product";
-import { StringUtil } from "util/StringUtil";
+import { formatGold } from "lib/format";
 
 export const materialColumns: ColumnsType<Product> = [
   {
@@ -23,8 +23,7 @@ export const materialColumns: ColumnsType<Product> = [
     title: "크래프팅 가격",
     key: "craftingPrice",
     dataIndex: "craftingPrice",
-    render: (craftingPrice) =>
-      StringUtil.numberWithCommasAndMoney(craftingPrice),
+    render: (craftingPrice) => formatGold(craftingPrice),
     width: 120,
   },
   {

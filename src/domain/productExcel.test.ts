@@ -1,9 +1,12 @@
-import { Item } from "apis/type/Item";
 import { CategoryType, ToolType } from "types/enums";
 import { createProduct } from "test/fixtures";
-import { convertExcelToTable, convertTableToExcel } from "util/convertItem";
+import {
+  excelRowsToProducts,
+  ProductExcelRow,
+  productsToExcelRows,
+} from "domain/productExcel";
 
-function createRow(overrides: Partial<Item> = {}): Item {
+function createRow(overrides: Partial<ProductExcelRow> = {}): ProductExcelRow {
   return {
     id: 1,
     name: "나무 의자",
@@ -18,9 +21,9 @@ function createRow(overrides: Partial<Item> = {}): Item {
   };
 }
 
-describe("convertExcelToTable", () => {
+describe("excelRowsToProducts", () => {
   it("엑셀 행을 Product로 변환한다", () => {
-    expect(convertExcelToTable([createRow()])).toEqual([
+    expect(excelRowsToProducts([createRow()])).toEqual([
       {
         id: 1,
         name: "나무 의자",
@@ -34,7 +37,7 @@ describe("convertExcelToTable", () => {
   });
 
   it("baseN이 0이면 basic: true, 1이면 basic: false다 (의미가 반대)", () => {
-    const [product] = convertExcelToTable([
+    const [product] = excelRowsToProducts([
       createRow({ base1: 0, name2: "천", base2: 1, count2: 2 }),
     ]);
 
@@ -45,7 +48,7 @@ describe("convertExcelToTable", () => {
   });
 
   it("이름이 비어 있는 재료 슬롯은 제외한다", () => {
-    const [product] = convertExcelToTable([
+    const [product] = excelRowsToProducts([
       createRow({
         name2: "",
         count2: 3,
@@ -66,7 +69,7 @@ describe("convertExcelToTable", () => {
   });
 
   it("level 오름차순으로 정렬한다", () => {
-    const products = convertExcelToTable([
+    const products = excelRowsToProducts([
       createRow({ id: 1, level: 5 }),
       createRow({ id: 2, level: 1 }),
       createRow({ id: 3, level: 3 }),
@@ -76,7 +79,7 @@ describe("convertExcelToTable", () => {
   });
 });
 
-describe("convertTableToExcel", () => {
+describe("productsToExcelRows", () => {
   it("Product를 엑셀 행으로 변환하고 없는 슬롯은 undefined로 둔다", () => {
     const product = createProduct({
       materials: [
@@ -85,7 +88,7 @@ describe("convertTableToExcel", () => {
       ],
     });
 
-    const rows = convertTableToExcel([product]);
+    const rows = productsToExcelRows([product]);
 
     // 엑셀 열 순서는 키 순서를 따르므로 슬롯 열의 존재와 순서를 고정한다.
     expect(Object.keys(rows[0]).slice(-15)).toEqual([
@@ -136,7 +139,7 @@ describe("convertTableToExcel", () => {
   // 현재 동작을 기록한다. 빈 재료를 허용하도록 고칠 때 함께 갱신한다 (R19).
   it("재료가 없는 Product는 TypeError를 던진다 (현재 동작)", () => {
     expect(() =>
-      convertTableToExcel([createProduct({ materials: [] })])
+      productsToExcelRows([createProduct({ materials: [] })])
     ).toThrow(TypeError);
   });
 });
@@ -160,7 +163,7 @@ describe("엑셀 왕복 변환", () => {
       })
     );
 
-    expect(convertExcelToTable(convertTableToExcel(products))).toEqual(
+    expect(excelRowsToProducts(productsToExcelRows(products))).toEqual(
       products
     );
   });

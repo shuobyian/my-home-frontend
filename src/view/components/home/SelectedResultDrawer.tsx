@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 import { Result } from "types/result";
-import { StorageResult } from "util/hook/useSelectedResults";
+import { Cart } from "domain/cart";
 
 const StyledInputNumber = styled(InputNumber)`
   .ant-input-number-input {
@@ -21,14 +21,14 @@ const StyledInputNumber = styled(InputNumber)`
 `;
 
 interface SelectedResultDrawerProps extends DrawerProps {
-  selectedResults: StorageResult;
+  selectedResults: Cart;
   totalCount: number;
   add: (id: number) => void;
   sub: (id: number) => void;
   update: (id: number, count: number) => void;
   remove: (id: number) => void;
   removeAll: () => void;
-  backup: (results: StorageResult) => void;
+  backup: (results: Cart) => void;
 }
 
 export function SelectedResultDrawer({

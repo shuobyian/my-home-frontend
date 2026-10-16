@@ -3,7 +3,7 @@ import Table, { ColumnsType } from "antd/es/table";
 import { getToolLabel } from "domain/labels";
 import { useState } from "react";
 import { Result } from "types/result";
-import { useSelectedResults } from "util/hook/useSelectedResults";
+import { useSelectedResults } from "state/useSelectedResults";
 import { ResultDetail } from "view/components/home/ResultDetail";
 import { SelectedResultDrawer } from "view/components/home/SelectedResultDrawer";
 

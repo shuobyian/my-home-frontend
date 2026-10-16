@@ -2,7 +2,7 @@ import { Table, Typography } from "antd";
 import { ColumnsType } from "antd/lib/table";
 import { useExperienceQuery } from "queries/experience";
 import { Experience as ExperienceRow } from "types/experience";
-import { StringUtil } from "util/StringUtil";
+import { formatNumber } from "lib/format";
 
 export function Experience() {
   const { data } = useExperienceQuery();
@@ -11,13 +11,13 @@ export function Experience() {
       title: "레벨",
       dataIndex: "level",
       key: "level",
-      render: (level) => StringUtil.numberWithCommas(level),
+      render: (level) => formatNumber(level),
     },
     {
       title: "경험치",
       dataIndex: "amount",
       key: "amount",
-      render: (amount) => StringUtil.numberWithCommas(amount),
+      render: (amount) => formatNumber(amount),
     },
   ];
 

@@ -1,7 +1,7 @@
 import { Button, Divider, Input, Space, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
 import { Product } from "types/product";
-import { StringUtil } from "util/StringUtil";
+import { formatNumber } from "lib/format";
 import { materialColumns } from "util/constant/materialColumns";
 import { ProductModal } from "view/components/manage/modal/ProductModal";
 
@@ -95,10 +95,10 @@ export default function ProductTableView({
           }}
         >
           <Typography.Text strong>
-            선택된 물품 {StringUtil.numberWithCommas(selectedRows.length)}개
+            선택된 물품 {formatNumber(selectedRows.length)}개
           </Typography.Text>
           <Typography.Text strong>
-            총 물품 {StringUtil.numberWithCommas(total)}개
+            총 물품 {formatNumber(total)}개
           </Typography.Text>
         </div>
         <Table

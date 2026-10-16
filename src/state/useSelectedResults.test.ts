@@ -1,7 +1,7 @@
 import { act, renderHook } from "@testing-library/react";
 import { createResult } from "test/fixtures";
-import { SELECTED_RESULTS } from "util/constant/LOCAL_STORAGE_KEY";
-import { useSelectedResults } from "util/hook/useSelectedResults";
+import { STORAGE_KEY } from "lib/storage";
+import { useSelectedResults } from "state/useSelectedResults";
 
 const chair = createResult({ id: 1, name: "나무 의자" });
 const vase = createResult({ id: 2, name: "꽃병" });
@@ -20,7 +20,7 @@ describe("useSelectedResults", () => {
 
   it("마운트 시 localStorage에 저장된 장바구니를 복원한다", () => {
     localStorage.setItem(
-      SELECTED_RESULTS,
+      STORAGE_KEY.SELECTED_RESULTS,
       JSON.stringify({ [chair.id]: { item: chair, count: 3 } })
     );
 
@@ -33,7 +33,7 @@ describe("useSelectedResults", () => {
   });
 
   it("저장된 값이 손상되어 있으면 빈 장바구니로 시작한다", () => {
-    localStorage.setItem(SELECTED_RESULTS, "{not json");
+    localStorage.setItem(STORAGE_KEY.SELECTED_RESULTS, "{not json");
 
     const { result } = renderHook(() => useSelectedResults());
 
@@ -108,6 +108,8 @@ describe("useSelectedResults", () => {
 
     result.current.backup(cart);
 
-    expect(JSON.parse(localStorage.getItem(SELECTED_RESULTS)!)).toEqual(cart);
+    expect(
+      JSON.parse(localStorage.getItem(STORAGE_KEY.SELECTED_RESULTS)!)
+    ).toEqual(cart);
   });
 });

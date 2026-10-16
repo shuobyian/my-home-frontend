@@ -5,7 +5,7 @@ import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { WalnutParams, WalnutResponse } from "types/experience";
-import { StringUtil } from "util/StringUtil";
+import { formatNumber } from "lib/format";
 import { ResultList } from "view/components/home/ResultList";
 
 export function Walnut() {
@@ -185,12 +185,10 @@ export function Walnut() {
           }}
         >
           <Typography.Text>
-            남은 경험치:{" "}
-            {StringUtil.numberWithCommas(walnutResult.remindExperience)}
+            남은 경험치: {formatNumber(walnutResult.remindExperience)}
           </Typography.Text>
           <Typography.Text>
-            필요한 앰플 개수:{" "}
-            {StringUtil.numberWithCommas(walnutResult.remindCount)}
+            필요한 앰플 개수: {formatNumber(walnutResult.remindCount)}
           </Typography.Text>
           <Typography.Text strong>필요한 앰플 재료</Typography.Text>
           <ResultList

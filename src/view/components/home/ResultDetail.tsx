@@ -1,6 +1,6 @@
 import { Space, Typography } from "antd";
 import { Result } from "types/result";
-import { StringUtil } from "util/StringUtil";
+import { formatNumber } from "lib/format";
 import { InfoRow } from "view/components/InfoRow";
 import { MaterialTable } from "view/components/shared/MaterialTable";
 
@@ -36,13 +36,11 @@ export function ResultDetail({ result }: ResultDetailProps) {
             />
             <InfoRow
               title='필요 금액'
-              value={`${StringUtil.numberWithCommas(
+              value={`${formatNumber(
                 result.totalPrice + result.craftingPrice
-              )}골드 (재료비: ${StringUtil.numberWithCommas(
+              )}골드 (재료비: ${formatNumber(
                 result.totalPrice
-              )}골드 + 제작비: ${StringUtil.numberWithCommas(
-                result.craftingPrice
-              )}골드)`}
+              )}골드 + 제작비: ${formatNumber(result.craftingPrice)}골드)`}
             />
             <img
               style={{ marginTop: "10px" }}
@@ -54,7 +52,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
           <Space style={{ gap: "10px" }} direction='vertical'>
             {result.product.materials.map((material) => (
               <Typography.Text key={material.name} style={{ color: "blue" }}>
-                {material.name} {StringUtil.numberWithCommas(material.count)}개
+                {material.name} {formatNumber(material.count)}개
               </Typography.Text>
             ))}
           </Space>

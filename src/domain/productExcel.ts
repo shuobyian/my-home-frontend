@@ -1,7 +1,33 @@
+import { Category, Tool } from "types/enums";
 import { Product } from "types/product";
-import { Item } from "apis/type/Item";
 
-export function convertExcelToTable(items: Item[]): Product[] {
+// 관리 화면 엑셀의 한 행. 재료 슬롯은 5개(nameN/baseN/countN)다.
+// baseN은 Product의 basic과 의미가 반대다(1이면 하위재료가 있음).
+export interface ProductExcelRow {
+  id: number;
+  name: string;
+  level: number;
+  craftingPrice: number;
+  tool: Tool;
+  category: Category;
+  name1: string;
+  base1: number;
+  count1: number;
+  name2?: string;
+  base2?: number;
+  count2?: number;
+  name3?: string;
+  base3?: number;
+  count3?: number;
+  name4?: string;
+  base4?: number;
+  count4?: number;
+  name5?: string;
+  base5?: number;
+  count5?: number;
+}
+
+export function excelRowsToProducts(items: ProductExcelRow[]): Product[] {
   return items
     .map((item) => ({
       id: item.id,
@@ -41,7 +67,7 @@ export function convertExcelToTable(items: Item[]): Product[] {
     .sort((a, b) => a.level - b.level);
 }
 
-export function convertTableToExcel(items: Product[]): Item[] {
+export function productsToExcelRows(items: Product[]): ProductExcelRow[] {
   return items.map(({ materials, ...item }) => {
     const [m1, m2, m3, m4, m5] = materials;
     return {

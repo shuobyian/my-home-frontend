@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { Market } from "types/market";
 import { Result } from "types/result";
-import { RESULT } from "util/constant/LOCAL_STORAGE_KEY";
+import { STORAGE_KEY } from "lib/storage";
 import { ResultList } from "view/components/home/ResultList";
 
-const RESULT_LIST = localStorage.getItem(RESULT);
+const RESULT_LIST = localStorage.getItem(STORAGE_KEY.RESULT);
 
 export function FreeResult() {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -27,7 +27,7 @@ export function FreeResult() {
   const [name, setName] = useState("");
 
   const onSave = () => {
-    if (data) localStorage.setItem(RESULT, JSON.stringify(data));
+    if (data) localStorage.setItem(STORAGE_KEY.RESULT, JSON.stringify(data));
   };
 
   const keyPressEnter = (
