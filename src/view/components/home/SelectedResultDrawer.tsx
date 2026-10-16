@@ -92,7 +92,7 @@ export function SelectedResultDrawer({
                       <Button onClick={() => sub(item.id)}>-</Button>
                       <StyledInputNumber
                         value={count}
-                        onChange={(value) => {
+                        onChange={(value: number | string | null) => {
                           if (value) {
                             update(item.id, Number(value));
                           }
