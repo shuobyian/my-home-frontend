@@ -8,6 +8,12 @@ export const STORAGE_KEY = {
   LEGACY_CART: "my-home-selected-results",
 } as const;
 
+// sessionStorage 키(탭을 닫으면 사라지는 값)
+export const SESSION_KEY = {
+  // 이 탭에서 관리자 비밀번호를 확인했는지(화면 표시용 게이트일 뿐, 서버 인증이 아님)
+  ADMIN: "my-home-admin",
+} as const;
+
 // 저장값을 읽는다. 없거나 손상되었거나 저장소를 쓸 수 없으면 undefined.
 // 형태 검사는 호출부에서 한다.
 export function readJSON(key: string): unknown {
@@ -32,6 +38,32 @@ export function writeJSON(key: string, value: unknown): boolean {
 export function removeItem(key: string) {
   try {
     localStorage.removeItem(key);
+  } catch {
+    // 삭제 실패는 무시한다
+  }
+}
+
+export function readSession(key: string): unknown {
+  try {
+    const raw = sessionStorage.getItem(key);
+    return raw === null ? undefined : JSON.parse(raw);
+  } catch {
+    return undefined;
+  }
+}
+
+export function writeSession(key: string, value: unknown): boolean {
+  try {
+    sessionStorage.setItem(key, JSON.stringify(value));
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+export function removeSession(key: string) {
+  try {
+    sessionStorage.removeItem(key);
   } catch {
     // 삭제 실패는 무시한다
   }
