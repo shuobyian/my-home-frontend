@@ -1,0 +1,104 @@
+import { Cart } from "domain/cart";
+import { STORAGE_KEY } from "lib/storage";
+import { useEffect, useMemo, useState } from "react";
+import { Result } from "types/result";
+
+export const useSelectedResults = () => {
+  const DEFAULT_DATA_SELECTED_RESULTS = localStorage.getItem(
+    STORAGE_KEY.SELECTED_RESULTS
+  );
+
+  const [selectedResults, setSelectedResults] = useState<Cart>({});
+
+  useEffect(() => {
+    try {
+      if (DEFAULT_DATA_SELECTED_RESULTS) {
+        setSelectedResults(JSON.parse(DEFAULT_DATA_SELECTED_RESULTS));
+      } else {
+        setSelectedResults({});
+      }
+    } catch {
+      setSelectedResults({});
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 마운트 시 1회만 localStorage에서 복원한다
+  }, []);
+
+  const totalCount = useMemo(
+    () =>
+      Object.values(selectedResults).reduce(
+        (acc, cur) => (acc += cur.count),
+        0
+      ),
+    [selectedResults]
+  );
+
+  const backup = (results: Cart) => {
+    localStorage.setItem(STORAGE_KEY.SELECTED_RESULTS, JSON.stringify(results));
+  };
+
+  const onChange = (item: Result) => {
+    let _selectedResults = { ...selectedResults };
+
+    if (_selectedResults[item.id]) {
+      _selectedResults[item.id].count += 1;
+    } else {
+      _selectedResults = {
+        ..._selectedResults,
+        [`${item.id}`]: { item, count: 1 },
+      };
+    }
+    setSelectedResults(_selectedResults);
+  };
+
+  const add = (id: number) => {
+    const _selectedResults = { ...selectedResults };
+
+    _selectedResults[id].count += 1;
+
+    setSelectedResults(_selectedResults);
+  };
+
+  const sub = (id: number) => {
+    const _selectedResults = { ...selectedResults };
+
+    if (_selectedResults[id].count < 2) {
+      delete _selectedResults[id];
+    } else {
+      _selectedResults[id].count -= 1;
+    }
+
+    setSelectedResults(_selectedResults);
+  };
+
+  const update = (id: number, count: number) => {
+    const _selectedResults = { ...selectedResults };
+
+    _selectedResults[id].count = count;
+
+    setSelectedResults(_selectedResults);
+  };
+
+  const remove = (id: number) => {
+    const _selectedResults = { ...selectedResults };
+
+    delete _selectedResults[id];
+
+    setSelectedResults(_selectedResults);
+  };
+
+  const removeAll = () => {
+    setSelectedResults({});
+  };
+
+  return {
+    selectedResults,
+    totalCount,
+    backup,
+    onChange,
+    add,
+    sub,
+    update,
+    remove,
+    removeAll,
+  };
+};

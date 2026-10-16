@@ -1,5 +1,6 @@
 import { Button, Result, Space } from "antd";
-import { getErrorMessage } from "apis/lib/error/MyHomeError";
+import { getErrorMessage } from "apis/errors";
+import { ROUTES } from "app/routes";
 import { Component, ReactNode, useRef } from "react";
 import {
   QueryErrorResetBoundary,
@@ -86,7 +87,7 @@ function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
     <ErrorBoundary
       resetKey={key}
       onReset={reset}
-      onGoHome={() => navigate("/")}
+      onGoHome={() => navigate(ROUTES.HOME)}
     >
       {children}
     </ErrorBoundary>
