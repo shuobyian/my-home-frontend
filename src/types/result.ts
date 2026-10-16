@@ -1,6 +1,6 @@
-import { Category, Tool } from "types/enums";
-import { Market } from "types/market";
-import { Product } from "types/product";
+import { Category, Tool } from "@/types/enums";
+import { Market } from "@/types/market";
+import { Product } from "@/types/product";
 
 // 기초 재료와 그 가격(시세 × 개수)
 export interface MaterialCost {

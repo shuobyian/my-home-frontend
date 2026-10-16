@@ -1,5 +1,5 @@
 import { Space } from "antd";
-import { ProductTable } from "components/product/ProductTable";
+import { ProductTable } from "@/components/product/ProductTable";
 
 export function ProductManagePage() {
   return (

@@ -1,8 +1,8 @@
 import { App, Typography } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { MarketPriceForm } from "components/market/MarketPriceForm";
-import { useMarketsQuery, useUpdateMarketsMutation } from "queries/market";
-import { Market } from "types/market";
+import { getErrorMessage } from "@/apis/errors";
+import { MarketPriceForm } from "@/components/market/MarketPriceForm";
+import { useMarketsQuery, useUpdateMarketsMutation } from "@/queries/market";
+import { Market } from "@/types/market";
 
 export function MarketManagePage() {
   const { message } = App.useApp();

@@ -1,15 +1,15 @@
 import { App, Button, Typography } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ProductTableView } from "components/product/ProductTableView";
+import { getErrorMessage } from "@/apis/errors";
+import { ProductTableView } from "@/components/product/ProductTableView";
 import {
   useCreateProductMutation,
   useDeleteProductsMutation,
   useProductsQuery,
   useUpdateProductMutation,
-} from "queries/product";
-import { useCreateResultsMutation } from "queries/result";
+} from "@/queries/product";
+import { useCreateResultsMutation } from "@/queries/result";
 import { useEffect, useState } from "react";
-import { ProductSearchParams } from "types/product";
+import { ProductSearchParams } from "@/types/product";
 
 // 서버에 저장된 물품 목록 관리
 export function ProductTable() {

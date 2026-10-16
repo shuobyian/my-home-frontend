@@ -1,6 +1,6 @@
 import { PictureOutlined } from "@ant-design/icons";
 import { Avatar, Image } from "antd";
-import { getItemImageUrl } from "lib/image";
+import { getItemImageUrl } from "@/lib/image";
 
 interface ItemImageProps {
   name: string;
@@ -17,7 +17,7 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
         alt={`${name} 사진`}
         width={300}
         preview={false}
-        fallback={`${process.env.PUBLIC_URL}/myhome.png`}
+        fallback={`${import.meta.env.BASE_URL}myhome.png`}
       />
     );
   }

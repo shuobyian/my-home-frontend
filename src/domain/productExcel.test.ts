@@ -1,5 +1,5 @@
-import { CategoryType, ToolType } from "types/enums";
-import { createProduct } from "test/fixtures";
+import { CategoryType, ToolType } from "@/types/enums";
+import { createProduct } from "@/test/fixtures";
 import {
   parseExcelRows,
   nextProductId,
@@ -8,8 +8,8 @@ import {
   ProductExcelRow,
   productsToExcelRows,
   summarizeBulkSave,
-} from "domain/productExcel";
-import { Product } from "types/product";
+} from "@/domain/productExcel";
+import { Product } from "@/types/product";
 
 function createRow(overrides: Partial<ProductExcelRow> = {}): ProductExcelRow {
   return {

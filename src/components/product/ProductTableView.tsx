@@ -8,12 +8,12 @@ import {
   TableColumnsType,
   Typography,
 } from "antd";
-import { productColumns } from "components/product/productColumns";
-import { ProductModal } from "components/product/ProductModal";
-import { ProductNameList } from "components/product/ProductNameList";
-import { formatNumber } from "lib/format";
+import { productColumns } from "@/components/product/productColumns";
+import { ProductModal } from "@/components/product/ProductModal";
+import { ProductNameList } from "@/components/product/ProductNameList";
+import { formatNumber } from "@/lib/format";
 import { Key, ReactNode, useState } from "react";
-import { Product, ProductCreateRequest } from "types/product";
+import { Product, ProductCreateRequest } from "@/types/product";
 
 const columns: TableColumnsType<Product> = productColumns.map((column) => ({
   ...column,

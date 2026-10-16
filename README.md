@@ -1,6 +1,6 @@
 # my-home-frontend
 
-놀러와 마이홈 제작 계산기 프론트엔드입니다. (Create React App 기반)
+놀러와 마이홈 제작 계산기 프론트엔드입니다. (Vite + React + TypeScript)
 
 ## 요구 사항
 
@@ -20,7 +20,8 @@ pnpm install
 | ------------------- | -------------------------------------- |
 | `pnpm start`        | 개발 서버 실행 (http://localhost:3000) |
 | `pnpm build`        | 프로덕션 빌드 (`build/`)               |
-| `pnpm test`         | 테스트 watch 모드                      |
+| `pnpm preview`      | 빌드 결과를 로컬에서 확인              |
+| `pnpm test`         | 테스트 watch 모드 (Vitest)             |
 | `pnpm test:ci`      | 테스트 1회 실행                        |
 | `pnpm typecheck`    | 타입 체크 (`tsc --noEmit`)             |
 | `pnpm lint`         | ESLint (경고도 실패로 처리)            |
@@ -34,13 +35,13 @@ typecheck → lint → format:check → test:ci → build 순서로 검증합니
 
 API 서버 주소는 환경별 `.env` 파일로 정합니다. 두 파일은 커밋되어 있습니다.
 
-| 파일               | 사용 시점                | `REACT_APP_API_BASE_URL` |
-| ------------------ | ------------------------ | ------------------------ |
-| `.env.development` | `pnpm start` (개발 서버) | `http://localhost:8123`  |
-| `.env.production`  | `pnpm build` (운영 빌드) | 운영 API 서버            |
+| 파일               | 사용 시점                | `VITE_API_BASE_URL`     |
+| ------------------ | ------------------------ | ----------------------- |
+| `.env.development` | `pnpm start` (개발 서버) | `http://localhost:8123` |
+| `.env.production`  | `pnpm build` (운영 빌드) | 운영 API 서버           |
 
 개발 중에 다른 서버를 쓰려면 `.env.development.local`(git 미추적)에 덮어씁니다.
 
 ```bash
-echo "REACT_APP_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
+echo "VITE_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
 ```

@@ -1,5 +1,5 @@
 import { Button, Result } from "antd";
-import { ROUTES } from "app/routes";
+import { ROUTES } from "@/app/routes";
 import { useNavigate } from "react-router-dom";
 
 export function NotFoundPage() {

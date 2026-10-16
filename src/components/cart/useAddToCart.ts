@@ -1,7 +1,7 @@
 import { App } from "antd";
-import { CartSource } from "domain/cart";
-import { useCart } from "state/cart";
-import { Result } from "types/result";
+import { CartSource } from "@/domain/cart";
+import { useCart } from "@/state/cart";
+import { Result } from "@/types/result";
 
 // 결과를 장바구니에 담고 짧게 알린다
 export function useAddToCart(source: CartSource) {

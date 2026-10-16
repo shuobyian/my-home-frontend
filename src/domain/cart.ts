@@ -1,5 +1,5 @@
-import { isResult } from "domain/result";
-import { MaterialCost, Result } from "types/result";
+import { isResult } from "@/domain/result";
+import { MaterialCost, Result } from "@/types/result";
 
 // 장바구니에 담은 결과의 출처. 같은 id라도 출처가 다르면 다른 시세로 계산된 결과다.
 export type CartSource = "server" | "free" | "walnut";

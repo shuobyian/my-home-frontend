@@ -1,11 +1,11 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { Button, Drawer, InputNumber, List, Space, Typography } from "antd";
-import { ROUTES } from "app/routes";
-import { ItemImage } from "components/common/ItemImage";
-import { CART_SOURCE_LABEL } from "domain/cart";
-import { formatGold } from "lib/format";
+import { ROUTES } from "@/app/routes";
+import { ItemImage } from "@/components/common/ItemImage";
+import { CART_SOURCE_LABEL } from "@/domain/cart";
+import { formatGold } from "@/lib/format";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "state/cart";
+import { useCart } from "@/state/cart";
 
 interface CartDrawerProps {
   open: boolean;

@@ -1,7 +1,7 @@
 import { Table, TableColumnsType } from "antd";
-import { MaterialCost } from "types/result";
-import { toMung } from "domain/result";
-import { formatNumber } from "lib/format";
+import { MaterialCost } from "@/types/result";
+import { toMung } from "@/domain/result";
+import { formatNumber } from "@/lib/format";
 
 const columns: TableColumnsType<MaterialCost> = [
   {

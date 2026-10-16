@@ -1,14 +1,14 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { login } from "apis/auth";
-import { MyHomeError } from "apis/errors";
-import { RequireAdmin } from "app/RequireAdmin";
-import { SESSION_KEY } from "lib/storage";
+import { login } from "@/apis/auth";
+import { MyHomeError } from "@/apis/errors";
+import { RequireAdmin } from "@/app/RequireAdmin";
+import { SESSION_KEY } from "@/lib/storage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
-import { AuthProvider } from "state/auth";
+import { AuthProvider } from "@/state/auth";
 
-jest.mock("apis/auth", () => ({ login: jest.fn() }));
-const mockedLogin = login as jest.MockedFunction<typeof login>;
+vi.mock("@/apis/auth", () => ({ login: vi.fn() }));
+const mockedLogin = vi.mocked(login);
 
 function renderManage(initialPath = "/manage") {
   const queryClient = new QueryClient({

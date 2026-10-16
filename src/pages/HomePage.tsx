@@ -1,6 +1,6 @@
 import { Space, Typography } from "antd";
-import { useAddToCart } from "components/cart/useAddToCart";
-import { ResultSearch } from "components/result/ResultSearch";
+import { useAddToCart } from "@/components/cart/useAddToCart";
+import { ResultSearch } from "@/components/result/ResultSearch";
 
 export function HomePage() {
   const addToCart = useAddToCart("server");

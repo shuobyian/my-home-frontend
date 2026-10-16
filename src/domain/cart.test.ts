@@ -8,9 +8,9 @@ import {
   parseCart,
   sumPrice,
   totalCount,
-} from "domain/cart";
-import { createResult } from "test/fixtures";
-import { Result } from "types/result";
+} from "@/domain/cart";
+import { createResult } from "@/test/fixtures";
+import { Result } from "@/types/result";
 
 const chair = createResult({
   id: 1,

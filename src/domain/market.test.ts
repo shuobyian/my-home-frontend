@@ -1,4 +1,4 @@
-import { parseMarketList } from "domain/market";
+import { parseMarketList } from "@/domain/market";
 
 describe("parseMarketList", () => {
   it("시세 배열이면 그대로 반환한다(입력 전 빈 시세 포함)", () => {

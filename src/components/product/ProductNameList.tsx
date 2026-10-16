@@ -1,4 +1,4 @@
-import { Product } from "types/product";
+import { Product } from "@/types/product";
 
 // 확인 모달에 넣는 물품 이름 목록
 export function ProductNameList({

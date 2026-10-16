@@ -1,11 +1,11 @@
 import { Button, Collapse, Empty, List, Space, Typography } from "antd";
-import { ROUTES } from "app/routes";
-import { ItemImage } from "components/common/ItemImage";
-import { MaterialTable } from "components/result/MaterialTable";
-import { CART_SOURCE_LABEL, sumPrice } from "domain/cart";
-import { formatGold, formatNumber } from "lib/format";
+import { ROUTES } from "@/app/routes";
+import { ItemImage } from "@/components/common/ItemImage";
+import { MaterialTable } from "@/components/result/MaterialTable";
+import { CART_SOURCE_LABEL, sumPrice } from "@/domain/cart";
+import { formatGold, formatNumber } from "@/lib/format";
 import { useNavigate } from "react-router-dom";
-import { useCart } from "state/cart";
+import { useCart } from "@/state/cart";
 
 // 장바구니에 담긴 물품과 기초 재료 합산 결과
 export function CartSummary() {

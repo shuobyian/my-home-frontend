@@ -1,10 +1,10 @@
 import { App, Button, Space, Typography } from "antd";
-import { parseExcelRows, productsToExcelRows } from "domain/productExcel";
-import { isChunkLoadError } from "lib/chunk";
-import { downloadSheet, fileTimestamp, readFirstSheet } from "lib/excel";
-import { formatNumber } from "lib/format";
+import { parseExcelRows, productsToExcelRows } from "@/domain/productExcel";
+import { isChunkLoadError } from "@/lib/chunk";
+import { downloadSheet, fileTimestamp, readFirstSheet } from "@/lib/excel";
+import { formatNumber } from "@/lib/format";
 import { useRef, useState } from "react";
-import { Product } from "types/product";
+import { Product } from "@/types/product";
 
 // 오류가 많을 때 모달에 보여 줄 최대 줄 수
 const MAX_ERROR_LINES = 20;

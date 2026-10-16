@@ -43,6 +43,3 @@ jobs:
 
       - name: Build
         run: pnpm build
-        env:
-          # lint 단계에서 이미 검사했으므로 빌드 중 ESLint 플러그인은 끈다
-          DISABLE_ESLINT_PLUGIN: "true"

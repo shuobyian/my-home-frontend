@@ -3,9 +3,9 @@ import {
   DEFAULT_PRODUCTION_PERCENT,
   MAX_LEVEL,
   WALNUT_MIN_LEVEL,
-} from "domain/experience";
+} from "@/domain/experience";
 import { useEffect } from "react";
-import { WalnutParams } from "types/experience";
+import { WalnutParams } from "@/types/experience";
 
 interface WalnutFormProps {
   // 마지막으로 계산한 조건(URL). 바뀌면 입력창도 맞춘다

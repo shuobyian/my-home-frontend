@@ -1,12 +1,12 @@
 import { Space, Typography } from "antd";
-import { ROUTES } from "app/routes";
-import { MarketPriceForm } from "components/market/MarketPriceForm";
-import { parseMarketList } from "domain/market";
-import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
-import { useMarketsQuery } from "queries/market";
+import { ROUTES } from "@/app/routes";
+import { MarketPriceForm } from "@/components/market/MarketPriceForm";
+import { parseMarketList } from "@/domain/market";
+import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
+import { useMarketsQuery } from "@/queries/market";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Market } from "types/market";
+import { Market } from "@/types/market";
 
 export function FreePage() {
   const navigate = useNavigate();

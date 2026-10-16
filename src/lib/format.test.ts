@@ -1,4 +1,4 @@
-import { formatGold, formatNumber } from "lib/format";
+import { formatGold, formatNumber } from "@/lib/format";
 
 describe("formatNumber", () => {
   it.each([

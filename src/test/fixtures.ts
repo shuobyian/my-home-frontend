@@ -1,6 +1,6 @@
-import { CategoryType, ToolType } from "types/enums";
-import { Product } from "types/product";
-import { Result } from "types/result";
+import { CategoryType, ToolType } from "@/types/enums";
+import { Product } from "@/types/product";
+import { Result } from "@/types/result";
 
 // 테스트용 Product를 만든다. 필요한 필드만 덮어쓴다.
 export function createProduct(overrides: Partial<Product> = {}): Product {

@@ -5,9 +5,9 @@ import {
   parseResultList,
   requiresAffinity,
   toMung,
-} from "domain/result";
-import { ToolType } from "types/enums";
-import { createResult } from "test/fixtures";
+} from "@/domain/result";
+import { ToolType } from "@/types/enums";
+import { createResult } from "@/test/fixtures";
 
 describe("isResult", () => {
   it("합산에 필요한 필드를 갖춘 결과면 true", () => {

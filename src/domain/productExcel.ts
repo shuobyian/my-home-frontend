@@ -1,5 +1,5 @@
-import { Category, CategoryType, Tool, ToolType } from "types/enums";
-import { Product, ProductMaterial } from "types/product";
+import { Category, CategoryType, Tool, ToolType } from "@/types/enums";
+import { Product, ProductMaterial } from "@/types/product";
 
 // 물품 하나에 넣을 수 있는 재료 수(엑셀 재료 슬롯 수)
 export const MAX_MATERIAL_SLOTS = 5;

@@ -1,7 +1,7 @@
 import { Button, Result, Space } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ROUTES } from "app/routes";
-import { isChunkLoadError } from "lib/chunk";
+import { getErrorMessage } from "@/apis/errors";
+import { ROUTES } from "@/app/routes";
+import { isChunkLoadError } from "@/lib/chunk";
 import { Component, ReactNode, useEffect, useRef } from "react";
 import {
   QueryErrorResetBoundary,

@@ -1,5 +1,5 @@
-import { ToolType } from "types/enums";
-import { MaterialCost, Result } from "types/result";
+import { ToolType } from "@/types/enums";
+import { MaterialCost, Result } from "@/types/result";
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);

@@ -3,8 +3,8 @@ import {
   getCategoryLabel,
   getToolLabel,
   TOOL_OPTIONS,
-} from "domain/labels";
-import { CategoryType, Tool, ToolType } from "types/enums";
+} from "@/domain/labels";
+import { CategoryType, Tool, ToolType } from "@/types/enums";
 
 describe("getToolLabel", () => {
   it("도구 값에 해당하는 한글 라벨을 반환한다", () => {

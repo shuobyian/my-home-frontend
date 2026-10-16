@@ -4,14 +4,14 @@ import {
   deleteProducts,
   fetchProducts,
   updateProduct,
-} from "apis/product";
+} from "@/apis/product";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { ProductSearchParams } from "types/product";
+import { ProductSearchParams } from "@/types/product";
 
 export const productKeys = {
   all: ["product"] as const,
