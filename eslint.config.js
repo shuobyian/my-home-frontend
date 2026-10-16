@@ -31,7 +31,41 @@ const HOOK_RULES_FROM_REACT_HOOKS = [
   "use-memo",
   "unsupported-syntax",
 ];
+// components의 도메인 폴더. 결과 표시(result)는 여러 화면이 함께 쓰는 공용 도메인이다.
+const COMPONENT_DOMAINS = [
+  "auth",
+  "cart",
+  "market",
+  "product",
+  "result",
+  "walnut",
+];
+const SHARED_COMPONENT_DOMAINS = ["result"];
+
+const COMPONENT_ZONES = [
+  ...COMPONENT_DOMAINS.map((domain) => ({
+    target: `./src/components/${domain}`,
+    from: COMPONENT_DOMAINS.filter(
+      (other) => other !== domain && !SHARED_COMPONENT_DOMAINS.includes(other)
+    ).map((other) => `./src/components/${other}`),
+    message:
+      "components의 도메인 폴더끼리는 서로 가져오지 않습니다(공용은 common·result). 조합은 pages에서 합니다.",
+  })),
+  {
+    target: "./src/components/common",
+    from: COMPONENT_DOMAINS.map((domain) => `./src/components/${domain}`),
+    message: "common은 도메인 컴포넌트를 가져오지 않습니다.",
+  },
+];
+
 const LAYER_ZONES = [
+  {
+    target: "./src/components",
+    from: "./src/queries",
+    message:
+      "components는 props로 받은 데이터를 표현만 합니다. 서버 데이터 조회·변경은 pages나 app에서 합니다.",
+  },
+  ...COMPONENT_ZONES,
   {
     target: ["./src/components", "./src/pages"],
     from: "./src/apis",

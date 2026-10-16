@@ -20,13 +20,15 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
     <Drawer
       open={open}
       onClose={onClose}
-      title={
+      title='장바구니'
+      extra={
         <Button
-          style={{ float: "right" }}
+          danger
+          icon={<DeleteOutlined />}
           onClick={clear}
           disabled={entries.length === 0}
         >
-          <DeleteOutlined style={{ color: "red" }} /> 전체 삭제
+          전체 삭제
         </Button>
       }
     >
@@ -71,9 +73,12 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                         />
                         <Button onClick={() => increment(key)}>+</Button>
                       </Space>
-                      <Button onClick={() => remove(key)}>
-                        <DeleteOutlined style={{ color: "red" }} />
-                      </Button>
+                      <Button
+                        danger
+                        icon={<DeleteOutlined />}
+                        aria-label={`${item.name} 삭제`}
+                        onClick={() => remove(key)}
+                      />
                     </Space>
                   </Space>
                 }

@@ -1,4 +1,4 @@
-import { Alert, Button, Space, Spin } from "antd";
+import { Alert, Button, Flex, Space, Spin } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useAddToCart } from "@/components/cart/useAddToCart";
@@ -38,15 +38,12 @@ export function WalnutPage() {
 
   return (
     <Space direction='vertical' style={{ width: "100%" }} size='large'>
-      <div>
-        <Button
-          onClick={() => navigate(ROUTES.EXPERIENCE)}
-          style={{ float: "right" }}
-        >
+      <Flex justify='space-between' align='flex-start' wrap gap={8}>
+        <WalnutGuide />
+        <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>
           레벨별 필요한 경험치
         </Button>
-        <WalnutGuide />
-      </div>
+      </Flex>
       <WalnutForm
         initialValues={params}
         loading={isFetching}

@@ -1,9 +1,11 @@
 import { Button, Segmented, Space, Spin } from "antd";
+import { getErrorMessage } from "@/apis/errors";
 import { preloadManagePages } from "@/app/managePages";
 import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import { ROUTES } from "@/app/routes";
 import { AdminLogin } from "@/components/auth/AdminLogin";
-import { Suspense, useEffect } from "react";
+import { useLoginMutation } from "@/queries/auth";
+import { Suspense, useEffect, useState } from "react";
 import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "@/state/auth";
 
@@ -20,13 +22,29 @@ export function RequireAdmin() {
   const { isAdmin, markAdmin, logout } = useAuth();
   const { pathname } = useLocation();
   const navigate = useNavigate();
+  const { mutate: login, isPending } = useLoginMutation();
+  const [loginError, setLoginError] = useState<string>();
 
   // 확인이 끝나면 관리 화면 코드를 미리 받아 메뉴 이동이 바로 반응하게 한다
   useEffect(() => {
     if (isAdmin) preloadManagePages();
   }, [isAdmin]);
 
-  if (!isAdmin) return <AdminLogin onSuccess={markAdmin} />;
+  if (!isAdmin) {
+    return (
+      <AdminLogin
+        loading={isPending}
+        error={loginError}
+        onSubmit={(password) => {
+          setLoginError(undefined);
+          login(password, {
+            onSuccess: markAdmin,
+            onError: (error) => setLoginError(getErrorMessage(error)),
+          });
+        }}
+      />
+    );
+  }
 
   // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴를 찾는다
   const selected = MANAGE_MENU.find(({ value }) =>
