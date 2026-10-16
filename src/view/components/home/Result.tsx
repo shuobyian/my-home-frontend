@@ -1,4 +1,4 @@
-import { Button, Input, InputNumber, Select, Space } from "antd";
+import { Button, Input, Select, Space } from "antd";
 import { ResultReqParams } from "apis/result/getResults";
 import { CategoryList } from "apis/type/Category";
 import { ToolList } from "apis/type/Tool";
