@@ -67,6 +67,23 @@ describe("aggregateMaterials", () => {
     ]);
   });
 
+  it("재료명이 정수 문자열이거나 객체 기본 속성 이름이어도 처음 나온 순서대로 합산한다", () => {
+    const numeric = createResult({
+      id: 9,
+      materials: [
+        { name: "200", count: 1, price: 10 },
+        { name: "constructor", count: 1, price: 20 },
+        { name: "10", count: 1, price: 30 },
+      ],
+    });
+
+    expect(aggregateMaterials(cartOf(["server", numeric, 2]))).toEqual([
+      { name: "200", count: 2, price: 20 },
+      { name: "constructor", count: 2, price: 40 },
+      { name: "10", count: 2, price: 60 },
+    ]);
+  });
+
   it("입력을 변경하지 않는다", () => {
     const cart = cartOf(["server", chair, 2], ["free", table, 1]);
     const snapshot = JSON.parse(JSON.stringify(cart));
