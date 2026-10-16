@@ -15,7 +15,7 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
-    "xlsx": "^0.18.5"
+    "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
   },
   "scripts": {
     "start": "react-scripts start",
@@ -224,6 +224,10 @@
             {
               "selector": "Identifier[name='localStorage']",
               "message": "localStorage는 lib/storage의 readJSON·writeJSON으로만 접근합니다."
+            },
+            {
+              "selector": "ImportDeclaration[source.value=/^xlsx/]",
+              "message": "xlsx는 lib/excel에서 동적 import로만 불러옵니다(첫 화면 번들에서 제외)."
             }
           ]
         }

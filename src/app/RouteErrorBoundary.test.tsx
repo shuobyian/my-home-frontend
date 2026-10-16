@@ -98,4 +98,15 @@ describe("RouteErrorBoundary", () => {
     expect(await screen.findByText("결과: 데이터")).toBeInTheDocument();
     expect(fetcher).toHaveBeenCalledTimes(2);
   });
+
+  it("지연 로딩 코드를 받지 못하면(ChunkLoadError) 새로고침을 안내한다", async () => {
+    const chunkError = new Error("Loading chunk 84 failed.");
+    chunkError.name = "ChunkLoadError";
+    renderApp(async () => {
+      throw chunkError;
+    });
+
+    expect(await screen.findByText("새로고침")).toBeInTheDocument();
+    expect(screen.queryByText("다시 시도")).not.toBeInTheDocument();
+  });
 });

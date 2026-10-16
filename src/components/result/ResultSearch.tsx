@@ -1,4 +1,5 @@
 import { Button, Form, Input, Select, Space } from "antd";
+import { Panel } from "components/common/Panel";
 import { ResultTable } from "components/result/ResultTable";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
 import {
@@ -97,40 +98,37 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
 
   return (
     <Space direction='vertical' style={{ width: "100%" }}>
-      <Form
-        form={form}
-        layout='inline'
-        initialValues={toFormValues(search)}
-        onFinish={submit}
-        style={{
-          padding: "10px",
-          border: "1px solid #eeeeee",
-          borderRadius: "10px",
-          rowGap: "10px",
-        }}
-      >
-        <Form.Item name='name'>
-          <Input placeholder='물품명 입력' allowClear />
-        </Form.Item>
-        <Form.Item name='tool'>
-          <Select
-            style={{ width: "120px" }}
-            options={[{ value: ALL, label: "도구-전체" }, ...TOOL_OPTIONS]}
-          />
-        </Form.Item>
-        <Form.Item name='category'>
-          <Select
-            style={{ width: "130px" }}
-            options={[
-              { value: ALL, label: "카테고리-전체" },
-              ...CATEGORY_OPTIONS,
-            ]}
-          />
-        </Form.Item>
-        <Button type='primary' htmlType='submit'>
-          검색
-        </Button>
-      </Form>
+      <Panel>
+        <Form
+          form={form}
+          layout='inline'
+          initialValues={toFormValues(search)}
+          onFinish={submit}
+          style={{ rowGap: 10 }}
+        >
+          <Form.Item name='name'>
+            <Input placeholder='물품명 입력' allowClear />
+          </Form.Item>
+          <Form.Item name='tool'>
+            <Select
+              style={{ width: "120px" }}
+              options={[{ value: ALL, label: "도구-전체" }, ...TOOL_OPTIONS]}
+            />
+          </Form.Item>
+          <Form.Item name='category'>
+            <Select
+              style={{ width: "130px" }}
+              options={[
+                { value: ALL, label: "카테고리-전체" },
+                ...CATEGORY_OPTIONS,
+              ]}
+            />
+          </Form.Item>
+          <Button type='primary' htmlType='submit'>
+            검색
+          </Button>
+        </Form>
+      </Panel>
       <ResultTable
         loading={isFetching}
         pagination={{

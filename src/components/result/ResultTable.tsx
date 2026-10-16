@@ -5,10 +5,6 @@ import { ResultDetail } from "components/result/ResultDetail";
 
 const columns: TableColumnsType<Result> = [
   {
-    title: "",
-    width: 30,
-  },
-  {
     title: "물품명",
     dataIndex: "name",
     key: "name",

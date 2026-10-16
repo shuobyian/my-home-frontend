@@ -1,7 +1,7 @@
 import { CategoryType, ToolType } from "types/enums";
 import { createProduct } from "test/fixtures";
 import {
-  excelRowsToProducts,
+  parseExcelRows,
   nextProductId,
   normalizeProductIds,
   parseSavedProducts,
@@ -26,9 +26,12 @@ function createRow(overrides: Partial<ProductExcelRow> = {}): ProductExcelRow {
   };
 }
 
-describe("excelRowsToProducts", () => {
+// 오류 없이 변환된 물품만 본다
+const toProducts = (rows: unknown[]) => parseExcelRows(rows).products;
+
+describe("parseExcelRows - 변환", () => {
   it("엑셀 행을 Product로 변환한다", () => {
-    expect(excelRowsToProducts([createRow()])).toEqual([
+    expect(toProducts([createRow()])).toEqual([
       {
         id: 1,
         name: "나무 의자",
@@ -42,7 +45,7 @@ describe("excelRowsToProducts", () => {
   });
 
   it("baseN이 0이면 basic: true, 1이면 basic: false다 (의미가 반대)", () => {
-    const [product] = excelRowsToProducts([
+    const [product] = toProducts([
       createRow({ base1: 0, name2: "천", base2: 1, count2: 2 }),
     ]);
 
@@ -53,7 +56,7 @@ describe("excelRowsToProducts", () => {
   });
 
   it("이름이 비어 있는 재료 슬롯은 제외한다", () => {
-    const [product] = excelRowsToProducts([
+    const [product] = toProducts([
       createRow({
         name2: "",
         count2: 3,
@@ -74,10 +77,10 @@ describe("excelRowsToProducts", () => {
   });
 
   it("level 오름차순으로 정렬한다", () => {
-    const products = excelRowsToProducts([
-      createRow({ id: 1, level: 5 }),
-      createRow({ id: 2, level: 1 }),
-      createRow({ id: 3, level: 3 }),
+    const products = toProducts([
+      createRow({ id: 1, name: "A", level: 5 }),
+      createRow({ id: 2, name: "B", level: 1 }),
+      createRow({ id: 3, name: "C", level: 3 }),
     ]);
 
     expect(products.map(({ id }) => id)).toEqual([2, 3, 1]);
@@ -141,11 +144,96 @@ describe("productsToExcelRows", () => {
     ]);
   });
 
-  // 현재 동작을 기록한다. 빈 재료를 허용하도록 고칠 때 함께 갱신한다 (R19).
-  it("재료가 없는 Product는 TypeError를 던진다 (현재 동작)", () => {
-    expect(() =>
-      productsToExcelRows([createProduct({ materials: [] })])
-    ).toThrow(TypeError);
+  it("재료가 없는 물품도 내려받을 수 있다(모든 슬롯이 비어 있음)", () => {
+    const [row] = productsToExcelRows([createProduct({ materials: [] })]);
+    expect(row.name1).toBeUndefined();
+    expect(row.count5).toBeUndefined();
+  });
+});
+
+describe("parseExcelRows - 검증", () => {
+  it("문제가 있는 행은 행 번호와 함께 오류로 모으고 물품에서 뺀다", () => {
+    const { products, errors } = parseExcelRows([
+      createRow({ id: 1, name: "정상" }),
+      createRow({ id: 2, name: "", level: 1.5 }),
+      { ...createRow({ id: 3, name: "도구 오류" }), tool: "HAMMER" },
+      createRow({ id: 4, name: "쉼표,이름" }),
+      createRow({ id: 5, name: "개수 오류", count1: 0 }),
+    ]);
+
+    expect(products.map(({ name }) => name)).toEqual(["정상"]);
+    expect(errors).toEqual([
+      "3행: 물품명이 비었거나 쉼표가 있거나 255자를 넘습니다, 레벨은 정수여야 합니다",
+      "4행 도구 오류: 알 수 없는 도구(HAMMER)",
+      "5행: 물품명이 비었거나 쉼표가 있거나 255자를 넘습니다",
+      "6행 개수 오류: 재료1 개수는 0보다 크고 1,000,000 이하여야 합니다",
+    ]);
+  });
+
+  it("SheetJS가 붙인 실제 행 번호(__rowNum__)를 쓴다(빈 행을 건너뛴 시트)", () => {
+    const row = createRow({ name: "레벨 오류", level: 1.5 });
+    Object.defineProperty(row, "__rowNum__", { value: 9, enumerable: false });
+    expect(parseExcelRows([createRow({ name: "정상" }), row]).errors).toEqual([
+      "10행 레벨 오류: 레벨은 정수여야 합니다",
+    ]);
+  });
+
+  it("서버 한계값을 넘는 값과 숫자가 아닌 셀을 거부한다", () => {
+    const { errors } = parseExcelRows([
+      createRow({ name: "A", count1: 1_000_001 }),
+      { ...createRow({ name: "B" }), count1: "Infinity" },
+      { ...createRow({ name: "C" }), level: 3_000_000_000 },
+      { ...createRow({ name: "D" }), craftingPrice: new Date(2026, 0, 2) },
+      createRow({ name: "가".repeat(256) }),
+    ]);
+    expect(errors).toHaveLength(5);
+  });
+
+  it.each([
+    ["Y", false],
+    [2, false],
+    ["0", true],
+    ["1", true],
+    [" 1 ", true],
+  ])("base 값 %p 허용 여부: %p", (base, valid) => {
+    const { errors } = parseExcelRows([
+      { ...createRow(), base1: base as unknown as number },
+    ]);
+    expect(errors.length === 0).toBe(valid);
+  });
+
+  it("파일 안에 같은 물품명이 있으면 두 행 번호를 함께 알려 준다", () => {
+    expect(
+      parseExcelRows([createRow({ name: "의자" }), createRow({ name: "의자" })])
+        .errors
+    ).toEqual(["3행 의자: 2행과 물품명이 같습니다"]);
+  });
+
+  it("빈 시트는 오류로 처리한다", () => {
+    const { products, errors } = parseExcelRows([]);
+    expect(products).toEqual([]);
+    expect(errors[0]).toMatch("가져올 행이 없습니다");
+  });
+
+  it("category가 비어 있으면 서버 기본값 NORMAL로 본다", () => {
+    const { products, errors } = parseExcelRows([
+      { ...createRow(), category: undefined },
+    ]);
+    expect(errors).toEqual([]);
+    expect(products[0].category).toBe(CategoryType.NORMAL);
+  });
+
+  it("객체가 아닌 행은 형식 오류", () => {
+    expect(parseExcelRows([null, "x"]).errors).toEqual([
+      "2행: 형식이 올바르지 않습니다.",
+      "3행: 형식이 올바르지 않습니다.",
+    ]);
+  });
+
+  it("이름 앞뒤 공백은 지운다", () => {
+    expect(
+      toProducts([createRow({ name: "  의자  ", name1: " 원목 " })])[0]
+    ).toMatchObject({ name: "의자", materials: [{ name: "원목" }] });
   });
 });
 
@@ -168,9 +256,7 @@ describe("엑셀 왕복 변환", () => {
       })
     );
 
-    expect(excelRowsToProducts(productsToExcelRows(products))).toEqual(
-      products
-    );
+    expect(toProducts(productsToExcelRows(products))).toEqual(products);
   });
 });
 

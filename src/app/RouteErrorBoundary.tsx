@@ -1,6 +1,7 @@
 import { Button, Result, Space } from "antd";
 import { getErrorMessage } from "apis/errors";
 import { ROUTES } from "app/routes";
+import { isChunkLoadError } from "lib/chunk";
 import { Component, ReactNode, useRef } from "react";
 import {
   QueryErrorResetBoundary,
@@ -50,6 +51,22 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 
   render() {
     if (!this.state.hasError) return this.props.children;
+
+    // 지연 로딩 코드를 받지 못한 경우: React.lazy가 실패를 기억하므로 '다시 시도'로는 복구되지 않는다
+    if (isChunkLoadError(this.state.error)) {
+      return (
+        <Result
+          status='warning'
+          title='화면을 불러오지 못했습니다.'
+          subTitle='새 버전이 배포되었거나 연결이 끊겼습니다. 새로고침해주세요.'
+          extra={
+            <Button type='primary' onClick={() => window.location.reload()}>
+              새로고침
+            </Button>
+          }
+        />
+      );
+    }
 
     return (
       <Result
