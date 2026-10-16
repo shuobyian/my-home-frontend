@@ -34,6 +34,116 @@
     "extends": [
       "react-app",
       "react-app/jest"
+    ],
+    "overrides": [
+      {
+        "files": [
+          "src/components/**",
+          "src/pages/**"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "paths": [
+                {
+                  "name": "axios",
+                  "message": "API 호출은 apis/와 queries/ 훅을 통해서만 합니다."
+                },
+                {
+                  "name": "react-query",
+                  "message": "서버 상태는 queries/의 훅으로만 다룹니다."
+                }
+              ],
+              "patterns": [
+                {
+                  "group": [
+                    "apis/*",
+                    "!apis/errors"
+                  ],
+                  "message": "화면 코드는 queries/ 훅을 쓰고, apis/에서는 apis/errors만 가져옵니다."
+                },
+                {
+                  "group": [
+                    "app/*",
+                    "!app/routes"
+                  ],
+                  "message": "화면 코드는 app/에서 app/routes만 가져옵니다."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/domain/**",
+          "src/types/**",
+          "src/lib/**"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "paths": [
+                {
+                  "name": "react",
+                  "message": "domain·types·lib는 React에 의존하지 않습니다."
+                },
+                {
+                  "name": "antd",
+                  "message": "domain·types·lib는 UI 라이브러리에 의존하지 않습니다."
+                },
+                {
+                  "name": "axios",
+                  "message": "domain·types·lib는 HTTP에 의존하지 않습니다."
+                },
+                {
+                  "name": "react-query",
+                  "message": "domain·types·lib는 서버 상태에 의존하지 않습니다."
+                }
+              ],
+              "patterns": [
+                {
+                  "group": [
+                    "app/*",
+                    "pages/*",
+                    "components/*",
+                    "state/*",
+                    "queries/*",
+                    "apis/*"
+                  ],
+                  "message": "domain·types·lib는 상위 레이어를 가져오지 않습니다."
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/apis/**",
+          "src/queries/**"
+        ],
+        "rules": {
+          "no-restricted-imports": [
+            "error",
+            {
+              "patterns": [
+                {
+                  "group": [
+                    "app/*",
+                    "pages/*",
+                    "components/*",
+                    "state/*"
+                  ],
+                  "message": "apis·queries는 화면·상태 레이어를 가져오지 않습니다."
+                }
+              ]
+            }
+          ]
+        }
+      }
     ]
   },
   "jest": {
