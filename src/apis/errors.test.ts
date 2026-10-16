@@ -21,7 +21,7 @@ describe("MyHomeError.from", () => {
   it("서버 에러 응답의 message와 상태 코드를 담는다", () => {
     const error = MyHomeError.from(
       axiosErrorWithResponse(400, {
-        statusCode: "400",
+        statusCode: 400,
         message: "이미 존재하는 물품입니다.",
         error: "Bad Request",
       })
@@ -30,7 +30,20 @@ describe("MyHomeError.from", () => {
     expect(error).toBeInstanceOf(MyHomeError);
     expect(error.getErrorMessage()).toBe("이미 존재하는 물품입니다.");
     expect(error.status).toBe(400);
+    expect(error.data?.statusCode).toBe(400);
     expect(error.request).toBe("http://localhost:8123/product");
+  });
+
+  it("5xx 응답 본문(error 키 없음)의 message를 쓴다", () => {
+    const error = MyHomeError.from(
+      axiosErrorWithResponse(500, {
+        statusCode: 500,
+        message: "Internal server error",
+      })
+    );
+
+    expect(error.getErrorMessage()).toBe("Internal server error");
+    expect(error.status).toBe(500);
   });
 
   it("응답 본문에 message가 없으면 알 수 없는 오류 메시지를 쓴다", () => {

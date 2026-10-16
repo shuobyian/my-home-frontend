@@ -2,9 +2,10 @@ import axios from "axios";
 
 // 서버가 내려주는 에러 응답 본문
 export interface ErrorResponseBody {
-  statusCode: string;
+  statusCode: number;
   message: string;
-  error: string;
+  // 5xx 응답에는 없다
+  error?: string;
 }
 
 const UNKNOWN_ERROR_MESSAGE = "알 수 없는 오류가 발생했습니다.";

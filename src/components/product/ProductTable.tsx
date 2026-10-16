@@ -1,5 +1,6 @@
 import { App, Button, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
+import { ProductTableView } from "components/product/ProductTableView";
 import {
   useCreateProductMutation,
   useDeleteProductsMutation,
@@ -8,87 +9,40 @@ import {
 } from "queries/product";
 import { useCreateResultsMutation } from "queries/result";
 import { useEffect, useState } from "react";
-import { Product } from "types/product";
-import { ProductTableView } from "components/product/ProductTableView";
+import { ProductSearchParams } from "types/product";
 
+// 서버에 저장된 물품 목록 관리
 export function ProductTable() {
-  const { message, modal } = App.useApp();
+  const { message } = App.useApp();
 
-  const [page, setPage] = useState(0);
-  const [size, setSize] = useState(10);
-  const [name, setName] = useState("");
+  const [params, setParams] = useState<ProductSearchParams>({
+    page: 0,
+    size: 10,
+    name: "",
+  });
+  const { data, isFetching } = useProductsQuery(params);
 
-  const { data: product, isFetching } = useProductsQuery({ page, size, name });
+  const createProduct = useCreateProductMutation();
+  const updateProduct = useUpdateProductMutation();
+  const deleteProducts = useDeleteProductsMutation();
+  const createResults = useCreateResultsMutation();
 
-  // 마지막 페이지의 물품을 모두 지우면(삭제 후 재조회) 이전 페이지로 이동한다
+  // 마지막 페이지의 물품을 모두 지우면 이전 페이지로 이동한다
   useEffect(() => {
-    if (product && product.content.length === 0 && page > 0) {
-      setPage((prev) => prev - 1);
+    if (data && data.content.length === 0 && params.page > 0) {
+      setParams((prev) => ({ ...prev, page: prev.page - 1 }));
     }
-  }, [product, page]);
+  }, [data, params.page]);
 
-  const { mutate: add } = useCreateProductMutation();
-  const { mutate: edit } = useUpdateProductMutation();
-  const { mutate: remove } = useDeleteProductsMutation();
-
-  const { isLoading, mutate: createResult } = useCreateResultsMutation();
-
-  const [isModalOpened, setIsModalOpened] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<Product>();
-  const [selectedRows, setSelectedRows] = useState<Product[]>([]);
-
-  const openModal = () => {
-    setIsModalOpened(true);
-  };
-
-  const onAdd = (data: Omit<Product, "id">) => {
-    add(data, {
-      onSuccess: () => {
-        message.success("추가되었습니다.");
-      },
-      onError: () => {
-        message.error("추가할 수 없습니다.");
-      },
-    });
-  };
-
-  const onEdit = (data: Product) => {
-    edit(data, {
-      onSuccess: () => {
-        message.success("수정되었습니다.");
-      },
-      onError: () => {
-        message.error("수정할 수 없습니다.");
-      },
-    });
-  };
-
-  const onRemove = () => {
-    modal.confirm({
-      title: "삭제하시겠습니까?",
-      content: (
-        <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-          {selectedRows.map(({ id, name }) => (
-            <li key={id}>{name}</li>
-          ))}
-        </ul>
-      ),
-      onOk: () => {
-        remove(
-          { ids: selectedRows.map((row) => row.id) },
-          {
-            onSuccess: () => {
-              message.success("삭제되었습니다.");
-            },
-            onError: () => {
-              message.error("삭제할 수 없습니다.");
-            },
-          }
-        );
-      },
-      okText: "삭제",
-      cancelText: "취소",
-    });
+  // 성공·실패 메시지를 보여 주고, 실패는 호출부(모달 유지 등)로 다시 던진다
+  const run = async (task: () => Promise<unknown>, successMessage: string) => {
+    try {
+      await task();
+      message.success(successMessage);
+    } catch (error) {
+      message.error(getErrorMessage(error));
+      throw error;
+    }
   };
 
   return (
@@ -96,9 +50,9 @@ export function ProductTable() {
       <Button
         style={{ float: "right" }}
         type='primary'
-        disabled={isLoading}
+        loading={createResults.isLoading}
         onClick={() =>
-          createResult(undefined, {
+          createResults.mutate(undefined, {
             onSuccess: () => {
               message.success("결과가 생성되었습니다.");
             },
@@ -112,30 +66,29 @@ export function ProductTable() {
       </Button>
       <Typography.Title level={4}>물품 리스트</Typography.Title>
       <ProductTableView
-        datas={product?.content || []}
-        total={product?.totalElements ?? 0}
+        products={data?.content ?? []}
+        total={data?.totalElements ?? 0}
         loading={isFetching}
-        openModal={openModal}
-        onRemove={onRemove}
-        add={onAdd}
-        edit={onEdit}
-        selectedRow={selectedRow}
-        setSelectedRow={setSelectedRow}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
-        isModalOpened={isModalOpened}
-        setIsModalOpened={setIsModalOpened}
-        name={name}
-        setName={setName}
         pagination={{
-          current: page + 1,
-          pageSize: size,
-          total: product?.totalElements ?? 0,
-          onChange: (_page, _size) => {
-            setPage(_page - 1);
-            setSize(_size);
-          },
+          current: params.page + 1,
+          pageSize: params.size,
+          onChange: (page, size) =>
+            setParams((prev) => ({ ...prev, page: page - 1, size })),
         }}
+        onSearch={(name) => setParams((prev) => ({ ...prev, name, page: 0 }))}
+        onAdd={(product) =>
+          run(() => createProduct.mutateAsync(product), "추가되었습니다.")
+        }
+        onEdit={(product) =>
+          run(() => updateProduct.mutateAsync(product), "수정되었습니다.")
+        }
+        onRemove={(products) =>
+          run(
+            () =>
+              deleteProducts.mutateAsync({ ids: products.map(({ id }) => id) }),
+            "삭제되었습니다."
+          )
+        }
       />
     </>
   );

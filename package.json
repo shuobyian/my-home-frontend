@@ -16,7 +16,6 @@
     "react-query": "^3.39.3",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
-    "styled-components": "^6.0.7",
     "xlsx": "^0.18.5"
   },
   "scripts": {
@@ -205,6 +204,27 @@
                   "message": "domain·types·lib는 서버 상태에 의존하지 않습니다."
                 }
               ]
+            }
+          ]
+        }
+      },
+      {
+        "files": [
+          "src/**/*.ts",
+          "src/**/*.tsx"
+        ],
+        "excludedFiles": [
+          "src/lib/storage.ts",
+          "src/**/*.test.ts",
+          "src/**/*.test.tsx"
+        ],
+        "rules": {
+          "no-restricted-syntax": [
+            "error",
+            "WithStatement",
+            {
+              "selector": "Identifier[name='localStorage']",
+              "message": "localStorage는 lib/storage의 readJSON·writeJSON으로만 접근합니다."
             }
           ]
         }

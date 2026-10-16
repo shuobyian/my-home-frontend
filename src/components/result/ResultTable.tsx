@@ -1,10 +1,7 @@
-import { Badge, Button, Space, Table, TableColumnsType, Tooltip } from "antd";
+import { Table, TableColumnsType, Tooltip } from "antd";
 import { getToolLabel } from "domain/labels";
-import { useState } from "react";
 import { Result } from "types/result";
-import { useSelectedResults } from "state/useSelectedResults";
 import { ResultDetail } from "components/result/ResultDetail";
-import { CartDrawer } from "components/cart/CartDrawer";
 
 const columns: TableColumnsType<Result> = [
   {
@@ -44,59 +41,42 @@ interface ResultTableProps {
     onChange: (page: number) => void;
   };
   contents: Result[];
+  // 행을 누르면 호출된다(예: 장바구니에 담기)
+  onRowClick?: (result: Result) => void;
 }
 
 export function ResultTable({
   loading,
   pagination,
   contents,
+  onRowClick,
 }: ResultTableProps) {
-  const { totalCount, onChange, ...rest } = useSelectedResults();
-  const [open, setOpen] = useState(false);
-
   return (
-    <Space direction='vertical'>
-      <div style={{ float: "right" }}>
-        <Badge count={totalCount}>
-          <Button onClick={() => setOpen(true)}>장바구니</Button>
-        </Badge>
-      </div>
-      <CartDrawer
-        open={open}
-        onClose={() => setOpen(false)}
-        totalCount={totalCount}
-        {...rest}
-      />
-      <Table
-        loading={loading}
-        columns={columns}
-        dataSource={contents.map((content) => ({
-          ...content,
-          key: content.id,
-        }))}
-        pagination={
-          pagination
-            ? {
-                current: pagination.page + 1,
-                pageSize: pagination.size,
-                total: pagination.total,
-                onChange: pagination.onChange,
-                showSizeChanger: false,
-              }
-            : undefined
-        }
-        expandable={{
-          expandedRowRender: (record) => (
-            <div>{<ResultDetail result={record} />}</div>
-          ),
-          rowExpandable: (record) => record.name !== "Not Expandable",
-        }}
-        onRow={(item) => ({
-          onClick: () => {
-            onChange(item);
-          },
-        })}
-      />
-    </Space>
+    <Table
+      loading={loading}
+      columns={columns}
+      dataSource={contents.map((content) => ({
+        ...content,
+        key: content.id,
+      }))}
+      pagination={
+        pagination
+          ? {
+              current: pagination.page + 1,
+              pageSize: pagination.size,
+              total: pagination.total,
+              onChange: pagination.onChange,
+              showSizeChanger: false,
+            }
+          : undefined
+      }
+      expandable={{
+        expandedRowRender: (record) => <ResultDetail result={record} />,
+      }}
+      onRow={(item) => ({
+        onClick: () => onRowClick?.(item),
+        style: onRowClick ? { cursor: "pointer" } : undefined,
+      })}
+    />
   );
 }

@@ -29,8 +29,9 @@ export type ProductCreateRequest = Omit<Product, "id">;
 
 export type ProductUpdateRequest = Product;
 
+// 서버는 id를 무시하고, 이미 있는 이름의 물품은 건너뛴다(추가만 한다)
 export interface ProductBulkCreateRequest {
-  products: Product[];
+  products: ProductCreateRequest[];
 }
 
 export interface ProductDeleteRequest {

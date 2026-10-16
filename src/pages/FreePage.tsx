@@ -1,10 +1,9 @@
 import { Button, Typography } from "antd";
 import { ROUTES } from "app/routes";
-import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { Market } from "types/market";
-import { STORAGE_KEY } from "lib/storage";
+import { STORAGE_KEY, writeJSON } from "lib/storage";
 import { MarketTable } from "components/market/MarketTable";
 
 export function FreePage() {
@@ -15,16 +14,9 @@ export function FreePage() {
   });
   const { handleSubmit } = form;
 
-  const [isLoading, setIsLoading] = useState(false);
-
   const onSubmit = ({ markets }: { markets: Market[] }) => {
-    try {
-      setIsLoading(true);
-      localStorage.setItem(STORAGE_KEY.MARKET, JSON.stringify(markets));
-      navigate(ROUTES.FREE_RESULT, { state: { markets } });
-    } finally {
-      setIsLoading(false);
-    }
+    writeJSON(STORAGE_KEY.MARKET, markets);
+    navigate(ROUTES.FREE_RESULT, { state: { markets } });
   };
 
   return (
@@ -52,7 +44,6 @@ export function FreePage() {
         </div>
         <Button
           type='primary'
-          disabled={isLoading}
           onClick={handleSubmit(onSubmit)}
           style={{ float: "right", margin: "10px" }}
         >

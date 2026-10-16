@@ -1,6 +1,6 @@
 // 재료 시세
 export interface Market {
-  id: string;
+  id: number;
   name: string;
   price: number;
 }
