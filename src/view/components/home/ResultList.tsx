@@ -88,7 +88,7 @@ export function ResultList({
         }
         expandable={{
           expandedRowRender: (record) => (
-            <p style={{ margin: 0 }}>{<ResultDetail result={record} />}</p>
+            <div>{<ResultDetail result={record} />}</div>
           ),
           rowExpandable: (record) => record.name !== "Not Expandable",
         }}
