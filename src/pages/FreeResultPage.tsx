@@ -1,26 +1,29 @@
-import { App, Button, Input, Space, Typography } from "antd";
+import { App, Button, Space, Typography } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { Panel } from "@/components/common/Panel";
+import { SearchBar } from "@/components/common/SearchBar";
 import { ResultTable } from "@/components/result/ResultTable";
+import { parseMarketList } from "@/domain/market";
 import { parseResultList } from "@/domain/result";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import { useCalculateResultsQuery } from "@/queries/result";
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { Market } from "@/types/market";
 import { Result } from "@/types/result";
 
 export function FreeResultPage() {
   const { message } = App.useApp();
   const addToCart = useAddToCart("free");
 
-  // 주소로 직접 들어오면 state가 없다. 이때는 시세 입력 화면으로 돌려보낸다.
-  const { state } = useLocation() as {
-    state: { markets?: Market[] } | null;
-  };
-  const markets = state?.markets;
+  // 시세 입력 화면이 넘긴 시세. 주소로 직접 들어왔거나 형식이 맞지 않으면 입력 화면으로 돌려보낸다.
+  const { state }: { state: unknown } = useLocation();
+  const markets = parseMarketList(
+    typeof state === "object" && state !== null && "markets" in state
+      ? state.markets
+      : undefined
+  );
 
   const { isLoading, isError, error, data } = useCalculateResultsQuery(
     { markets: markets ?? [] },
@@ -33,7 +36,6 @@ export function FreeResultPage() {
   );
   const [showSaved, setShowSaved] = useState(false);
 
-  const [name, setName] = useState("");
   const [query, setQuery] = useState("");
 
   const list = (showSaved ? saved : data) ?? [];
@@ -79,15 +81,7 @@ export function FreeResultPage() {
         있습니다.
       </Typography.Text>
       <Panel>
-        <Space.Compact style={{ width: "100%" }}>
-          <Input
-            placeholder='물품명 입력'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            onPressEnter={() => setQuery(name)}
-          />
-          <Button onClick={() => setQuery(name)}>검색</Button>
-        </Space.Compact>
+        <SearchBar onSearch={setQuery} />
       </Panel>
       {isError && !showSaved ? (
         <Typography.Text type='danger'>

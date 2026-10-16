@@ -4,7 +4,7 @@ import { ResultTable } from "@/components/result/ResultTable";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
 import {
   parseResultSearch,
-  ResultSearch as SearchState,
+  ResultSearchState as SearchState,
   toResultSearchParams,
 } from "@/domain/resultSearch";
 import { useResultsQuery } from "@/queries/result";

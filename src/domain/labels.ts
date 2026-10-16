@@ -31,7 +31,3 @@ export const CATEGORY_OPTIONS = Object.values(CategoryType).map((value) => ({
 export function getToolLabel(tool: Tool) {
   return TOOL_LABEL[tool] ?? "";
 }
-
-export function getCategoryLabel(category: Category) {
-  return CATEGORY_LABEL[category] ?? "";
-}

@@ -1,7 +1,7 @@
 import { Category, CategoryType, Tool, ToolType } from "@/types/enums";
 
 // 홈 결과 검색 조건. URL 쿼리(?name=&tool=&category=&page=)와 서로 변환한다.
-export interface ResultSearch {
+export interface ResultSearchState {
   name: string;
   tool?: Tool;
   category?: Category;
@@ -33,7 +33,7 @@ const CONTROL_CHARS = /[\u0000-\u001f\u007f]/g;
 const stripControlChars = (value: string) => value.replace(CONTROL_CHARS, "");
 
 // 잘못된 값(없는 도구, 음수·소수 페이지, 제어 문자 등)은 무시한다
-export function parseResultSearch(params: URLSearchParams): ResultSearch {
+export function parseResultSearch(params: URLSearchParams): ResultSearchState {
   const tool = params.get("tool");
   const category = params.get("category");
 
@@ -46,7 +46,9 @@ export function parseResultSearch(params: URLSearchParams): ResultSearch {
 }
 
 // 기본값(빈 이름, 전체, 첫 페이지)은 URL에 쓰지 않는다
-export function toResultSearchParams(search: ResultSearch): URLSearchParams {
+export function toResultSearchParams(
+  search: ResultSearchState
+): URLSearchParams {
   const params = new URLSearchParams();
   const name = search.name.trim();
   if (name) params.set("name", name);

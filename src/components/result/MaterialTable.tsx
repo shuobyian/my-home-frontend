@@ -20,7 +20,7 @@ const columns: TableColumnsType<MaterialCost> = [
   {
     title: "뭉",
     dataIndex: "count",
-    key: "count",
+    key: "mung",
     render: (count) =>
       toMung(count) > 0 ? `${formatNumber(toMung(count))}뭉` : "-",
     align: "right",

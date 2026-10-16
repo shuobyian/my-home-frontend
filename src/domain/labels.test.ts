@@ -1,10 +1,5 @@
-import {
-  CATEGORY_OPTIONS,
-  getCategoryLabel,
-  getToolLabel,
-  TOOL_OPTIONS,
-} from "@/domain/labels";
-import { CategoryType, Tool, ToolType } from "@/types/enums";
+import { CATEGORY_OPTIONS, getToolLabel, TOOL_OPTIONS } from "@/domain/labels";
+import { Tool, ToolType } from "@/types/enums";
 
 describe("getToolLabel", () => {
   it("도구 값에 해당하는 한글 라벨을 반환한다", () => {
@@ -14,13 +9,6 @@ describe("getToolLabel", () => {
 
   it("알 수 없는 값이면 빈 문자열을 반환한다", () => {
     expect(getToolLabel("UNKNOWN" as Tool)).toBe("");
-  });
-});
-
-describe("getCategoryLabel", () => {
-  it("카테고리 값에 해당하는 한글 라벨을 반환한다", () => {
-    expect(getCategoryLabel(CategoryType.NORMAL)).toBe("일반");
-    expect(getCategoryLabel(CategoryType.EVENT)).toBe("이벤트");
   });
 });
 
