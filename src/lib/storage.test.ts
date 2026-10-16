@@ -53,4 +53,17 @@ describe("session", () => {
     removeSession("s");
     expect(readSession("s")).toBeUndefined();
   });
+
+  it("손상된 값이나 저장 실패에도 예외를 던지지 않는다", () => {
+    sessionStorage.setItem("broken", "{not json");
+    expect(readSession("broken")).toBeUndefined();
+
+    const spy = jest
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("QuotaExceededError");
+      });
+    expect(writeSession("s", true)).toBe(false);
+    spy.mockRestore();
+  });
 });

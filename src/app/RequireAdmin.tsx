@@ -1,7 +1,9 @@
-import { Button, Segmented, Space } from "antd";
+import { Button, Segmented, Space, Spin } from "antd";
+import { RouteErrorBoundary } from "app/RouteErrorBoundary";
 import { ROUTES } from "app/routes";
 import { AdminLogin } from "components/auth/AdminLogin";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { Suspense } from "react";
+import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "state/auth";
 
 const MANAGE_MENU = [
@@ -20,17 +22,29 @@ export function RequireAdmin() {
 
   if (!isAdmin) return <AdminLogin onSuccess={markAdmin} />;
 
+  // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴를 찾는다
+  const selected = MANAGE_MENU.find(({ value }) =>
+    matchPath(value, pathname)
+  )?.value;
+
   return (
     <Space direction='vertical' style={{ width: "100%" }} size='large'>
       <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         <Segmented
           options={MANAGE_MENU}
-          value={pathname}
+          value={selected ?? pathname}
           onChange={(value) => navigate(String(value))}
         />
         <Button onClick={logout}>관리 종료</Button>
       </Space>
-      <Outlet />
+      {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴·'관리 종료'는 그대로 둔다 */}
+      <RouteErrorBoundary>
+        <Suspense
+          fallback={<Spin style={{ display: "block", margin: "40px auto" }} />}
+        >
+          <Outlet />
+        </Suspense>
+      </RouteErrorBoundary>
     </Space>
   );
 }
