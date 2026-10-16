@@ -30,7 +30,7 @@ export function CalculationList() {
       <Typography.Title level={5}>
         담긴 물품은 삭제하기 전까지 유지됩니다.
       </Typography.Title>
-      <Space direction="vertical" style={{ width: "100%" }}>
+      <Space direction='vertical' style={{ width: "100%" }}>
         <Collapse
           items={[
             {
@@ -47,14 +47,14 @@ export function CalculationList() {
               children: (
                 <div style={{ maxHeight: "300px", overflow: "auto" }}>
                   <List
-                    itemLayout="horizontal"
+                    itemLayout='horizontal'
                     dataSource={itemList}
                     renderItem={({ item, count }) => (
                       <List.Item>
                         <List.Item.Meta
                           avatar={
                             <Avatar
-                              size="large"
+                              size='large'
                               src={`${process.env.PUBLIC_URL}/images/${item.name}.jpg`}
                             />
                           }
@@ -71,7 +71,7 @@ export function CalculationList() {
             },
           ]}
         />
-        <Space direction="vertical" style={{ width: "100%" }}>
+        <Space direction='vertical' style={{ width: "100%" }}>
           <Space style={{ width: "100%", justifyContent: "space-between" }}>
             <Typography.Text strong>기초 재료</Typography.Text>
             <Typography.Text strong>

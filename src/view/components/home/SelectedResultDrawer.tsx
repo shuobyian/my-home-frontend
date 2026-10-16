@@ -72,14 +72,14 @@ export function SelectedResultDrawer({
         }}
       >
         <List
-          itemLayout="horizontal"
+          itemLayout='horizontal'
           dataSource={itemList}
           renderItem={({ item, count }) => (
             <List.Item>
               <List.Item.Meta
                 avatar={
                   <Avatar
-                    size="large"
+                    size='large'
                     src={`${process.env.PUBLIC_URL}/images/${item.name}.jpg`}
                   />
                 }

@@ -91,7 +91,7 @@ export default function ProductTable() {
     <>
       <Button
         style={{ float: "right" }}
-        type="primary"
+        type='primary'
         disabled={isLoading}
         onClick={() =>
           createResult(undefined, {
