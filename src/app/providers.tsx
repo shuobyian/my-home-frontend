@@ -1,6 +1,7 @@
 import { App as AntdApp, ConfigProvider, ThemeConfig } from "antd";
 import koKR from "antd/locale/ko_KR";
 import { queryClient } from "@/app/queryClient";
+import { ROUTER_FUTURE } from "@/app/routes";
 import { ReactNode } from "react";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
@@ -21,7 +22,7 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <AntdApp component={false}>
           <AuthProvider>
             <CartProvider>
-              <BrowserRouter>{children}</BrowserRouter>
+              <BrowserRouter future={ROUTER_FUTURE}>{children}</BrowserRouter>
             </CartProvider>
           </AuthProvider>
         </AntdApp>
