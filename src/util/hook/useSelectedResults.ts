@@ -1,4 +1,4 @@
-import { Result } from "apis/result/getResults";
+import { Result } from "types/result";
 import { useEffect, useMemo, useState } from "react";
 import { SELECTED_RESULTS } from "util/constant/LOCAL_STORAGE_KEY";
 

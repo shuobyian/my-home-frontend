@@ -8,10 +8,10 @@ import {
   List,
   Space,
 } from "antd";
-import { Result } from "apis/result/getResults";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
+import { Result } from "types/result";
 import { StorageResult } from "util/hook/useSelectedResults";
 
 const StyledInputNumber = styled(InputNumber)`

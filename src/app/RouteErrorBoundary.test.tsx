@@ -1,5 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import MyHomeError from "apis/lib/error/MyHomeError";
+import { MyHomeError } from "apis/errors";
 import { RouteErrorBoundary } from "app/RouteErrorBoundary";
 import { QueryClient, QueryClientProvider, useQuery } from "react-query";
 import { Link, MemoryRouter, Outlet, Route, Routes } from "react-router-dom";

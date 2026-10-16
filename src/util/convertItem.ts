@@ -1,4 +1,4 @@
-import { Product } from "apis/product/getProducts";
+import { Product } from "types/product";
 import { Item } from "apis/type/Item";
 
 export function convertExcelToTable(items: Item[]): Product[] {

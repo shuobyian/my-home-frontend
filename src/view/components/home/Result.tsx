@@ -1,15 +1,14 @@
 import { Button, Input, Select, Space } from "antd";
-import { ResultReqParams } from "apis/result/getResults";
-import { CategoryList } from "apis/type/Category";
-import { ToolList } from "apis/type/Tool";
-import { useResultQuery } from "queries/result/useResultQuery";
+import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
+import { useResultsQuery } from "queries/result";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
+import { ResultSearchParams } from "types/result";
 import { ResultList } from "view/components/home/ResultList";
 
-interface ResultForm extends Omit<ResultReqParams, "tool" | "category"> {
-  tool: ResultReqParams["tool"] | "ALL";
-  category: ResultReqParams["category"] | "ALL";
+interface ResultForm extends Omit<ResultSearchParams, "tool" | "category"> {
+  tool: ResultSearchParams["tool"] | "ALL";
+  category: ResultSearchParams["category"] | "ALL";
 }
 
 export function Result() {
@@ -26,7 +25,7 @@ export function Result() {
     category: "ALL",
   });
 
-  const { data: results, isLoading } = useResultQuery({
+  const { data: results, isFetching } = useResultsQuery({
     ...params,
     tool: params.tool === "ALL" ? undefined : params.tool,
     category: params.category === "ALL" ? undefined : params.category,
@@ -74,7 +73,7 @@ export function Result() {
               style={{ width: "120px" }}
               value={field.value}
               onChange={field.onChange}
-              options={[{ value: "ALL", label: "도구-전체" }, ...ToolList]}
+              options={[{ value: "ALL", label: "도구-전체" }, ...TOOL_OPTIONS]}
             />
           )}
         />
@@ -88,7 +87,7 @@ export function Result() {
               onChange={field.onChange}
               options={[
                 { value: "ALL", label: "카테고리-전체" },
-                ...CategoryList,
+                ...CATEGORY_OPTIONS,
               ]}
             />
           )}
@@ -98,7 +97,7 @@ export function Result() {
         </Button>
       </Space>
       <ResultList
-        loading={isLoading}
+        loading={isFetching}
         pagination={{
           page: params.page,
           size: params.size,

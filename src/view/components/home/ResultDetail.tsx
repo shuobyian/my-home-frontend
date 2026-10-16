@@ -1,5 +1,5 @@
 import { Space, Typography } from "antd";
-import { Result } from "apis/result/getResults";
+import { Result } from "types/result";
 import { StringUtil } from "util/StringUtil";
 import { InfoRow } from "view/components/InfoRow";
 import { MaterialTable } from "view/components/shared/MaterialTable";

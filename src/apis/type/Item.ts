@@ -1,5 +1,4 @@
-import { Category } from "apis/type/Category";
-import { Tool } from "apis/type/Tool";
+import { Category, Tool } from "types/enums";
 
 export interface Item {
   id: number;

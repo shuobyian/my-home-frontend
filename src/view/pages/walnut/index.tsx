@@ -1,27 +1,27 @@
 import { Button, Input, Typography, message } from "antd";
-import { WalnutReqParams, WalnutResBody } from "apis/experience/postWalnut";
-import { getErrorMessage } from "apis/lib/error/MyHomeError";
-import { useWalnutMutation } from "queries/experience/useWalnutMutation";
+import { getErrorMessage } from "apis/errors";
+import { useCalculateWalnutMutation } from "queries/experience";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { WalnutParams, WalnutResponse } from "types/experience";
 import { StringUtil } from "util/StringUtil";
 import { ResultList } from "view/components/home/ResultList";
 
 export function Walnut() {
   const navigate = useNavigate();
 
-  const { isLoading, mutate } = useWalnutMutation();
+  const { isLoading, mutate } = useCalculateWalnutMutation();
 
-  const form = useForm<WalnutReqParams>();
+  const form = useForm<WalnutParams>();
   const { handleSubmit, control, watch } = form;
   const { presentLevel } = watch();
 
-  const [walnutResult, setWalnutResult] = useState<WalnutResBody>();
+  const [walnutResult, setWalnutResult] = useState<WalnutResponse>();
 
-  const onSubmit = (formData: WalnutReqParams) => {
+  const onSubmit = (formData: WalnutParams) => {
     mutate(formData, {
-      onSuccess: ({ data }) => {
+      onSuccess: (data) => {
         setWalnutResult(data);
       },
       onError: (error) => {

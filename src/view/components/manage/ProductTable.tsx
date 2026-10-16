@@ -1,15 +1,14 @@
 import { Button, Modal, Typography, message } from "antd";
-import { getErrorMessage } from "apis/lib/error/MyHomeError";
-import { Product } from "apis/product/getProducts";
+import { getErrorMessage } from "apis/errors";
 import {
+  useCreateProductMutation,
   useDeleteProductsMutation,
-  usePostProductMutation,
-  usePutProductMutation,
-} from "queries/product/useProductMutation";
-import { useProductQuery } from "queries/product/useProductQuery";
-import { useResultMutation } from "queries/result/useResultMutation";
+  useProductsQuery,
+  useUpdateProductMutation,
+} from "queries/product";
+import { useCreateResultsMutation } from "queries/result";
 import { useState } from "react";
-import { useQueryClient } from "react-query";
+import { Product } from "types/product";
 import ProductTableView from "view/components/manage/ProductTableView";
 
 export default function ProductTable() {
@@ -17,15 +16,13 @@ export default function ProductTable() {
   const [size, setSize] = useState(10);
   const [name, setName] = useState("");
 
-  const queryClient = useQueryClient();
+  const { data: product } = useProductsQuery({ page, size, name });
 
-  const { data: product } = useProductQuery({ page, size, name });
-
-  const { mutate: add } = usePostProductMutation();
-  const { mutate: edit } = usePutProductMutation();
+  const { mutate: add } = useCreateProductMutation();
+  const { mutate: edit } = useUpdateProductMutation();
   const { mutate: remove } = useDeleteProductsMutation();
 
-  const { isLoading, mutate: createResult } = useResultMutation();
+  const { isLoading, mutate: createResult } = useCreateResultsMutation();
 
   const [isModalOpened, setIsModalOpened] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Product>();
@@ -38,7 +35,6 @@ export default function ProductTable() {
   const onAdd = (data: Omit<Product, "id">) => {
     add(data, {
       onSuccess: () => {
-        queryClient.invalidateQueries("product");
         message.success("추가되었습니다.");
       },
       onError: () => {
@@ -50,7 +46,6 @@ export default function ProductTable() {
   const onEdit = (data: Product) => {
     edit(data, {
       onSuccess: () => {
-        queryClient.invalidateQueries("product");
         message.success("수정되었습니다.");
       },
       onError: () => {

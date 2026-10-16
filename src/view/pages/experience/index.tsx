@@ -1,12 +1,12 @@
 import { Table, Typography } from "antd";
 import { ColumnsType } from "antd/lib/table";
-import { IExperience } from "apis/experience/getExperience";
-import { useExperienceQuery } from "queries/experience/useExperienceQuery";
+import { useExperienceQuery } from "queries/experience";
+import { Experience as ExperienceRow } from "types/experience";
 import { StringUtil } from "util/StringUtil";
 
 export function Experience() {
   const { data } = useExperienceQuery();
-  const columns: ColumnsType<IExperience> = [
+  const columns: ColumnsType<ExperienceRow> = [
     {
       title: "레벨",
       dataIndex: "level",

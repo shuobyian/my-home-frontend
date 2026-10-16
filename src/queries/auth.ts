@@ -1,7 +1,7 @@
-import { postLogin } from "apis/product/getLogin";
+import { login } from "apis/auth";
 import { useMutation } from "react-query";
 
 export const useLoginMutation = () =>
   useMutation({
-    mutationFn: postLogin,
+    mutationFn: login,
   });

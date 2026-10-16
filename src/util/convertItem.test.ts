@@ -1,6 +1,5 @@
-import { Category } from "apis/type/Category";
 import { Item } from "apis/type/Item";
-import { ToolType } from "apis/type/Tool";
+import { CategoryType, ToolType } from "types/enums";
 import { createProduct } from "test/fixtures";
 import { convertExcelToTable, convertTableToExcel } from "util/convertItem";
 
@@ -11,7 +10,7 @@ function createRow(overrides: Partial<Item> = {}): Item {
     level: 1,
     craftingPrice: 100,
     tool: ToolType.WOOD,
-    category: Category.NORMAL,
+    category: CategoryType.NORMAL,
     name1: "원목",
     base1: 0,
     count1: 5,
@@ -28,7 +27,7 @@ describe("convertExcelToTable", () => {
         level: 1,
         craftingPrice: 100,
         tool: ToolType.WOOD,
-        category: Category.NORMAL,
+        category: CategoryType.NORMAL,
         materials: [{ name: "원목", basic: true, count: 5 }],
       },
     ]);
@@ -156,7 +155,7 @@ describe("엑셀 왕복 변환", () => {
         id: i + 1,
         name: `물품${i + 1}`,
         level: i + 1,
-        category: i % 2 === 0 ? Category.NORMAL : Category.EVENT,
+        category: i % 2 === 0 ? CategoryType.NORMAL : CategoryType.EVENT,
         materials: materials.slice(0, i + 1),
       })
     );

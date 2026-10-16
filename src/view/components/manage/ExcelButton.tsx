@@ -1,7 +1,7 @@
 import { Button, Space } from "antd";
-import { Product } from "apis/product/getProducts";
 import { Item } from "apis/type/Item";
 import { useRef } from "react";
+import { Product } from "types/product";
 import { convertExcelToTable, convertTableToExcel } from "util/convertItem";
 import * as XLSX from "xlsx";
 

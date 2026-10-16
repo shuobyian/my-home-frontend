@@ -1,24 +1,21 @@
 import { Button, Typography, message } from "antd";
-import { IMarket } from "apis/market/putMarkets";
-import { useMarketMutation } from "queries/market/useMarketMutation";
+import { useUpdateMarketsMutation } from "queries/market";
 import { FormProvider, useForm } from "react-hook-form";
-import { useQueryClient } from "react-query";
+import { Market as MarketItem } from "types/market";
 import { MarketList } from "view/components/shared/MarketList";
 
 export function Market() {
-  const queryClient = useQueryClient();
-  const { isLoading, mutate } = useMarketMutation();
+  const { isLoading, mutate } = useUpdateMarketsMutation();
 
-  const form = useForm<{ markets: IMarket[] }>({
+  const form = useForm<{ markets: MarketItem[] }>({
     defaultValues: { markets: [] },
   });
   const { handleSubmit } = form;
 
-  const onSubmit = ({ markets }: { markets: IMarket[] }) => {
+  const onSubmit = ({ markets }: { markets: MarketItem[] }) => {
     mutate(markets, {
       onSuccess: () => {
         message.success("수정되었습니다.");
-        queryClient.invalidateQueries("market");
       },
       onError: () => {
         message.error("실패했습니다.");

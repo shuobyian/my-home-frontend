@@ -1,6 +1,6 @@
 import { Button, Divider, Input, Space, Table, Typography } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { Product } from "apis/product/getProducts";
+import { Product } from "types/product";
 import { StringUtil } from "util/StringUtil";
 import { materialColumns } from "util/constant/materialColumns";
 import { ProductModal } from "view/components/manage/modal/ProductModal";

@@ -1,22 +1,22 @@
 import { Button, Typography } from "antd";
-import { IMarket } from "apis/market/putMarkets";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
+import { Market } from "types/market";
 import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";
 import { MarketList } from "view/components/shared/MarketList";
 
 export function Free() {
   const navigate = useNavigate();
 
-  const form = useForm<{ markets: IMarket[] }>({
+  const form = useForm<{ markets: Market[] }>({
     defaultValues: { markets: [] },
   });
   const { handleSubmit } = form;
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const onSubmit = ({ markets }: { markets: IMarket[] }) => {
+  const onSubmit = ({ markets }: { markets: Market[] }) => {
     try {
       setIsLoading(true);
       localStorage.setItem(MARKET, JSON.stringify(markets));

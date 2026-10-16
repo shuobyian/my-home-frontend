@@ -1,9 +1,9 @@
 import { Button, Input, InputNumber } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
-import { IMarket } from "apis/market/putMarkets";
-import { useMarketQuery } from "queries/market/useMarketQuery";
+import { useMarketsQuery } from "queries/market";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
+import { Market } from "types/market";
 import { MARKET } from "util/constant/LOCAL_STORAGE_KEY";
 
 const MARKET_LIST = localStorage.getItem(MARKET);
@@ -13,12 +13,12 @@ interface IMarketListProps {
 }
 
 export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
-  const form = useFormContext<{ markets: IMarket[] }>();
+  const form = useFormContext<{ markets: Market[] }>();
   const { control, reset, getValues } = form;
 
-  const { data } = useMarketQuery();
+  const { data } = useMarketsQuery();
 
-  const columns: ColumnsType<IMarket> = [
+  const columns: ColumnsType<Market> = [
     {
       title: "물품명",
       dataIndex: "name",

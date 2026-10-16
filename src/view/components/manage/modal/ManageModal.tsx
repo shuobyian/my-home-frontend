@@ -1,5 +1,5 @@
 import { Input, Modal, Space, Typography } from "antd";
-import { useLoginMutation } from "queries/product/useLoginMutation";
+import { useLoginMutation } from "queries/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

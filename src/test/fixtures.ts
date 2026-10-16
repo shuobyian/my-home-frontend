@@ -1,7 +1,6 @@
-import { Product } from "apis/product/getProducts";
-import { Result } from "apis/result/getResults";
-import { Category } from "apis/type/Category";
-import { ToolType } from "apis/type/Tool";
+import { CategoryType, ToolType } from "types/enums";
+import { Product } from "types/product";
+import { Result } from "types/result";
 
 // 테스트용 Product를 만든다. 필요한 필드만 덮어쓴다.
 export function createProduct(overrides: Partial<Product> = {}): Product {
@@ -11,7 +10,7 @@ export function createProduct(overrides: Partial<Product> = {}): Product {
     level: 1,
     craftingPrice: 100,
     tool: ToolType.WOOD,
-    category: Category.NORMAL,
+    category: CategoryType.NORMAL,
     materials: [{ name: "원목", basic: true, count: 1 }],
     ...overrides,
   };

@@ -12,10 +12,9 @@ import {
   message,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
-import { Product } from "apis/product/getProducts";
-import { CategoryList } from "apis/type/Category";
-import { ToolList } from "apis/type/Tool";
+import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
 import { useEffect, useState } from "react";
+import { Product } from "types/product";
 
 interface IProductModalProps extends ModalProps {
   prevData?: Product;
@@ -93,13 +92,13 @@ export function ProductModal({
           name='tool'
           rules={[{ required: true, message: "도구를 선택해주세요" }]}
         >
-          <Select options={ToolList} placeholder='도구' />
+          <Select options={TOOL_OPTIONS} placeholder='도구' />
         </Form.Item>
         <Form.Item
           name='category'
           rules={[{ required: true, message: "카테고리를 선택해주세요" }]}
         >
-          <Select options={CategoryList} placeholder='카테고리' />
+          <Select options={CATEGORY_OPTIONS} placeholder='카테고리' />
         </Form.Item>
         <Space direction='vertical'>
           <Typography.Text>필요 재료</Typography.Text>

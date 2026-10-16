@@ -1,9 +1,9 @@
 import { Table } from "antd";
 import { ColumnsType } from "antd/lib/table";
-import { Result } from "apis/result/getResults";
+import { MaterialCost } from "types/result";
 import { StringUtil } from "util/StringUtil";
 
-const columns: ColumnsType<Result["materials"][0]> = [
+const columns: ColumnsType<MaterialCost> = [
   {
     title: "재료",
     dataIndex: "name",
@@ -38,7 +38,7 @@ const columns: ColumnsType<Result["materials"][0]> = [
 ];
 
 interface MaterialTableProps {
-  materials: Result["materials"];
+  materials: MaterialCost[];
 }
 
 export function MaterialTable({ materials }: MaterialTableProps) {

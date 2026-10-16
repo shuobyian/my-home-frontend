@@ -1,17 +1,23 @@
-import { IMyHomeError } from "apis/lib/error/Error";
 import axios from "axios";
+
+// 서버가 내려주는 에러 응답 본문
+export interface ErrorResponseBody {
+  statusCode: string;
+  message: string;
+  error: string;
+}
 
 const UNKNOWN_ERROR_MESSAGE = "알 수 없는 오류가 발생했습니다.";
 const NETWORK_ERROR_MESSAGE =
   "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
 
-export default class MyHomeError extends Error {
+export class MyHomeError extends Error {
   // 요청 url
   request?: string;
   // HTTP 상태 코드 (응답을 받지 못한 경우 없음)
   status?: number;
   // 서버 에러 응답 본문
-  data?: Partial<IMyHomeError>;
+  data?: Partial<ErrorResponseBody>;
 
   constructor({
     message,
@@ -22,7 +28,7 @@ export default class MyHomeError extends Error {
     message: string;
     request?: string;
     status?: number;
-    data?: Partial<IMyHomeError>;
+    data?: Partial<ErrorResponseBody>;
   }) {
     super(message);
     // Babel로 Error를 상속하면 prototype이 끊길 수 있어 instanceof를 보장한다
@@ -47,7 +53,7 @@ export default class MyHomeError extends Error {
         });
       }
 
-      const data = response.data as Partial<IMyHomeError> | undefined;
+      const data = response.data as Partial<ErrorResponseBody> | undefined;
       return new MyHomeError({
         message:
           typeof data?.message === "string" && data.message

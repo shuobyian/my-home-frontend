@@ -1,8 +1,8 @@
 import { Divider, Modal, Typography, message } from "antd";
-import { getErrorMessage } from "apis/lib/error/MyHomeError";
-import { Product } from "apis/product/getProducts";
-import { usePostProductsMutation } from "queries/product/useProductMutation";
+import { getErrorMessage } from "apis/errors";
+import { useCreateProductsMutation } from "queries/product";
 import { useRef, useState } from "react";
+import { Product } from "types/product";
 import { PRODUCT } from "util/constant/LOCAL_STORAGE_KEY";
 import { ExcelButton } from "view/components/manage/ExcelButton";
 import ProductTableView from "view/components/manage/ProductTableView";
@@ -10,7 +10,7 @@ import ProductTableView from "view/components/manage/ProductTableView";
 const DEFAULT_DATA = localStorage.getItem(PRODUCT);
 
 export default function RawProductTable() {
-  const { mutate: upload } = usePostProductsMutation();
+  const { mutate: upload } = useCreateProductsMutation();
 
   const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
   const originalDatas = useRef<Product[]>(defaultDatas);
@@ -66,7 +66,7 @@ export default function RawProductTable() {
     upload(
       { products: datas },
       {
-        onSuccess: ({ data }) => {
+        onSuccess: (data) => {
           Modal.info({
             title: "저장되었습니다.",
             content: (

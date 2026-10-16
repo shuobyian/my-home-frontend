@@ -1,5 +1,5 @@
 import { Button, Result, Space } from "antd";
-import { getErrorMessage } from "apis/lib/error/MyHomeError";
+import { getErrorMessage } from "apis/errors";
 import { Component, ReactNode, useRef } from "react";
 import {
   QueryErrorResetBoundary,

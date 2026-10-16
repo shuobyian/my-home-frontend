@@ -1,7 +1,7 @@
 import { Space, Tooltip } from "antd";
 import { ColumnsType } from "antd/es/table";
-import { Product } from "apis/product/getProducts";
-import { getToolLabel } from "apis/type/Tool";
+import { getToolLabel } from "domain/labels";
+import { Product } from "types/product";
 import { StringUtil } from "util/StringUtil";
 
 export const materialColumns: ColumnsType<Product> = [

@@ -1,9 +1,9 @@
 import { Button, Input, Space, Typography } from "antd";
-import { Result } from "apis/result/getResults";
-import { IMarket } from "apis/market/putMarkets";
-import { useCalculatorQuery } from "queries/result/useCalculatorQuery";
+import { useCalculateResultsQuery } from "queries/result";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
+import { Market } from "types/market";
+import { Result } from "types/result";
 import { RESULT } from "util/constant/LOCAL_STORAGE_KEY";
 import { ResultList } from "view/components/home/ResultList";
 
@@ -14,11 +14,11 @@ export function FreeResult() {
 
   // 주소로 직접 들어오면 state가 없다. 이때는 시세 입력 화면으로 돌려보낸다.
   const { state } = useLocation() as {
-    state: { markets?: IMarket[] } | null;
+    state: { markets?: Market[] } | null;
   };
   const markets = state?.markets;
 
-  const { isLoading, isError, data } = useCalculatorQuery(
+  const { isLoading, isError, data } = useCalculateResultsQuery(
     { markets: markets ?? [] },
     { enabled: !!markets }
   );

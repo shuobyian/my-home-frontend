@@ -1,4 +1,4 @@
-import MyHomeError, { getErrorMessage } from "apis/lib/error/MyHomeError";
+import { getErrorMessage, MyHomeError } from "apis/errors";
 import { AxiosError, AxiosHeaders, InternalAxiosRequestConfig } from "axios";
 
 const config = {
