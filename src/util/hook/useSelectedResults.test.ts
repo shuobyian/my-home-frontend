@@ -58,14 +58,23 @@ describe("useSelectedResults", () => {
     const { result } = renderHook(() => useSelectedResults());
     act(() => result.current.onChange(chair));
 
+    // 중첩 객체를 제자리에서 바꾸는 구현이라 count만으로는 리렌더 여부를 알 수 없다.
+    // 새 참조와 totalCount까지 확인해 상태 갱신이 일어났는지 검증한다.
+    let prev = result.current.selectedResults;
     act(() => result.current.add(chair.id));
+    expect(result.current.selectedResults).not.toBe(prev);
     expect(result.current.selectedResults[chair.id].count).toBe(2);
+    expect(result.current.totalCount).toBe(2);
 
+    prev = result.current.selectedResults;
     act(() => result.current.sub(chair.id));
+    expect(result.current.selectedResults).not.toBe(prev);
     expect(result.current.selectedResults[chair.id].count).toBe(1);
+    expect(result.current.totalCount).toBe(1);
 
     act(() => result.current.sub(chair.id));
     expect(result.current.selectedResults).toEqual({});
+    expect(result.current.totalCount).toBe(0);
   });
 
   it("update는 수량을 지정한 값으로 바꾼다", () => {

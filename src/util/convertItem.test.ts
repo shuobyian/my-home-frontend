@@ -86,7 +86,28 @@ describe("convertTableToExcel", () => {
       ],
     });
 
-    expect(convertTableToExcel([product])).toEqual([
+    const rows = convertTableToExcel([product]);
+
+    // 엑셀 열 순서는 키 순서를 따르므로 슬롯 열의 존재와 순서를 고정한다.
+    expect(Object.keys(rows[0]).slice(-15)).toEqual([
+      "name1",
+      "base1",
+      "count1",
+      "name2",
+      "base2",
+      "count2",
+      "name3",
+      "base3",
+      "count3",
+      "name4",
+      "base4",
+      "count4",
+      "name5",
+      "base5",
+      "count5",
+    ]);
+    // toStrictEqual: 없는 슬롯도 키는 존재하고 값이 undefined인지까지 확인한다.
+    expect(rows).toStrictEqual([
       {
         id: product.id,
         name: product.name,
