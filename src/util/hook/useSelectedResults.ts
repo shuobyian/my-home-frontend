@@ -19,6 +19,7 @@ export const useSelectedResults = () => {
     } catch {
       setSelectedResults({});
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 마운트 시 1회만 localStorage에서 복원한다
   }, []);
 
   const totalCount = useMemo(

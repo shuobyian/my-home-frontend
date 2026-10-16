@@ -58,7 +58,7 @@ export default function ProductTableView({
           width: "100%",
         }}
       >
-        <Space direction="horizontal">
+        <Space direction='horizontal'>
           <Button onClick={openModal}>추가</Button>
           {onRemove && (
             <Button onClick={onRemove} disabled={selectedRows.length < 1}>
@@ -67,12 +67,12 @@ export default function ProductTableView({
           )}
         </Space>
         {onSave && (
-          <Button onClick={onSave} type="primary">
+          <Button onClick={onSave} type='primary'>
             저장
           </Button>
         )}
       </div>
-      <Divider type="horizontal" />
+      <Divider type='horizontal' />
       <div
         style={{
           display: "flex",
@@ -82,7 +82,7 @@ export default function ProductTableView({
       >
         {setName && (
           <Input
-            placeholder="물품 이름"
+            placeholder='물품 이름'
             value={name}
             onChange={(e) => setName(e.target.value)}
           />

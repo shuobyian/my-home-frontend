@@ -1,46 +1,41 @@
-# Getting Started with Create React App
+# my-home-frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+놀러와 마이홈 제작 계산기 프론트엔드입니다. (Create React App 기반)
 
-## Available Scripts
+## 요구 사항
 
-In the project directory, you can run:
+- Node.js 24 (`.nvmrc`)
+- pnpm 12 (`package.json`의 `packageManager`로 고정)
 
-### `yarn start`
+pnpm은 어떤 방법으로 설치해도 됩니다. `pnpm install`을 실행하면 `packageManager`에 고정된 버전으로 자동 전환됩니다.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+```bash
+npm install -g pnpm
+pnpm install
+```
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## 스크립트
 
-### `yarn test`
+| 명령                | 설명                                   |
+| ------------------- | -------------------------------------- |
+| `pnpm start`        | 개발 서버 실행 (http://localhost:3000) |
+| `pnpm build`        | 프로덕션 빌드 (`build/`)               |
+| `pnpm test`         | 테스트 watch 모드                      |
+| `pnpm test:ci`      | 테스트 1회 실행                        |
+| `pnpm typecheck`    | 타입 체크 (`tsc --noEmit`)             |
+| `pnpm lint`         | ESLint (경고도 실패로 처리)            |
+| `pnpm format`       | Prettier로 전체 포맷 적용              |
+| `pnpm format:check` | 포맷 검사                              |
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+PR과 `main` 푸시마다 GitHub Actions(`.github/workflows/ci.yml`)가
+typecheck → lint → format:check → test:ci → build 순서로 검증합니다.
 
-### `yarn build`
+## 환경 변수
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+로컬 `.env`(git 미추적)에 설정합니다.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| 변수                | 설명                                                                                             |
+| ------------------- | ------------------------------------------------------------------------------------------------ |
+| `REACT_APP_PROFILE` | `DEV`이면 API 요청을 `http://localhost:8123`으로 보냅니다. 그 외에는 운영 API 서버를 사용합니다. |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
-
-### `yarn eject`
-
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
-
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
-
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
+> `.env`는 `pnpm build`에도 적용됩니다. 운영 배포용 빌드를 만들 때는 `REACT_APP_PROFILE=DEV`가 설정되어 있지 않은지 확인하세요.

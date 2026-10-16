@@ -44,7 +44,7 @@ interface MaterialTableProps {
 export function MaterialTable({ materials }: MaterialTableProps) {
   return (
     <Table
-      size="small"
+      size='small'
       columns={columns}
       dataSource={materials.map((b) => ({ ...b, key: b.name })) || []}
       pagination={{
