@@ -8,7 +8,6 @@ export interface ResultReqParams {
   page: number;
   size: number;
   name?: string;
-  count?: number;
   tool?: Tool;
   category?: Category;
 }

@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Typography, message } from "antd";
 import { IMarket } from "apis/market/putMarkets";
 import { useMarketMutation } from "queries/market/useMarketMutation";
