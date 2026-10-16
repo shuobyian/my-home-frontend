@@ -22,3 +22,8 @@ code {
 .app-home-link:hover h3 {
   color: #5c3572;
 }
+
+/* 장바구니 수량 입력값 가운데 정렬 */
+.cart-count-input .ant-input-number-input {
+  text-align: center;
+}

@@ -3,20 +3,21 @@ import { getErrorMessage } from "apis/errors";
 import { useCreateProductsMutation } from "queries/product";
 import { useRef, useState } from "react";
 import { Product } from "types/product";
-import { STORAGE_KEY } from "lib/storage";
+import { parseSavedProducts } from "domain/productExcel";
+import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
 import { ExcelButton } from "components/product/ExcelButton";
 import { ProductTableView } from "components/product/ProductTableView";
-
-const DEFAULT_DATA = localStorage.getItem(STORAGE_KEY.PRODUCT);
 
 export function RawProductTable() {
   const { message, modal } = App.useApp();
 
   const { mutate: upload } = useCreateProductsMutation();
 
-  const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
-  const originalDatas = useRef<Product[]>(defaultDatas);
-  const [datas, setDatas] = useState<Product[]>(defaultDatas);
+  // 저장된 값은 마운트할 때 한 번 읽는다(모듈 최상단에서 읽으면 앱 시작 시점 값에 고정된다)
+  const [datas, setDatas] = useState<Product[]>(() =>
+    parseSavedProducts(readJSON(STORAGE_KEY.PRODUCT))
+  );
+  const originalDatas = useRef<Product[]>(datas);
 
   const [isModalOpened, setIsModalOpened] = useState(false);
   const [selectedRow, setSelectedRow] = useState<Product>();
@@ -63,7 +64,7 @@ export function RawProductTable() {
   };
 
   const save = () => {
-    localStorage.setItem(STORAGE_KEY.PRODUCT, JSON.stringify(datas));
+    writeJSON(STORAGE_KEY.PRODUCT, datas);
 
     upload(
       { products: datas },

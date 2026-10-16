@@ -7,10 +7,12 @@ import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
 import { WalnutParams, WalnutResponse } from "types/experience";
 import { formatNumber } from "lib/format";
+import { useAddToCart } from "components/cart/useAddToCart";
 import { ResultTable } from "components/result/ResultTable";
 
 export function WalnutPage() {
   const { message } = App.useApp();
+  const addToCart = useAddToCart("walnut");
 
   const navigate = useNavigate();
 
@@ -197,6 +199,7 @@ export function WalnutPage() {
           <ResultTable
             loading={isLoading}
             contents={[walnutResult.ample.result]}
+            onRowClick={addToCart}
           />
         </div>
       )}

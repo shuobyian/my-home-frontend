@@ -208,6 +208,27 @@
             }
           ]
         }
+      },
+      {
+        "files": [
+          "src/**/*.ts",
+          "src/**/*.tsx"
+        ],
+        "excludedFiles": [
+          "src/lib/storage.ts",
+          "src/**/*.test.ts",
+          "src/**/*.test.tsx"
+        ],
+        "rules": {
+          "no-restricted-syntax": [
+            "error",
+            "WithStatement",
+            {
+              "selector": "Identifier[name='localStorage']",
+              "message": "localStorage는 lib/storage의 readJSON·writeJSON으로만 접근합니다."
+            }
+          ]
+        }
       }
     ]
   },

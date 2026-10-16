@@ -3,64 +3,38 @@ import {
   Avatar,
   Button,
   Drawer,
-  DrawerProps,
   InputNumber,
   List,
   Space,
+  Typography,
 } from "antd";
 import { ROUTES } from "app/routes";
-import { useEffect, useState } from "react";
+import { CART_SOURCE_LABEL } from "domain/cart";
 import { useNavigate } from "react-router-dom";
-import styled from "styled-components";
-import { Result } from "types/result";
-import { Cart } from "domain/cart";
+import { useCart } from "state/cart";
 
-const StyledInputNumber = styled(InputNumber)`
-  .ant-input-number-input {
-    text-align: center;
-  }
-`;
-
-interface CartDrawerProps extends DrawerProps {
-  selectedResults: Cart;
-  totalCount: number;
-  add: (id: number) => void;
-  sub: (id: number) => void;
-  update: (id: number, count: number) => void;
-  remove: (id: number) => void;
-  removeAll: () => void;
-  backup: (results: Cart) => void;
+interface CartDrawerProps {
+  open: boolean;
+  onClose: () => void;
 }
 
-export function CartDrawer({
-  selectedResults,
-  totalCount,
-  add,
-  sub,
-  update,
-  remove,
-  removeAll,
-  backup,
-  ...props
-}: CartDrawerProps) {
+export function CartDrawer({ open, onClose }: CartDrawerProps) {
   const navigate = useNavigate();
-
-  const [itemList, setItemList] = useState<{ item: Result; count: number }[]>(
-    []
-  );
-
-  useEffect(() => {
-    setItemList(Object.values(selectedResults));
-  }, [selectedResults]);
+  const { entries, increment, decrement, setCount, remove, clear } = useCart();
 
   return (
     <Drawer
+      open={open}
+      onClose={onClose}
       title={
-        <Button style={{ float: "right" }} onClick={() => removeAll()}>
+        <Button
+          style={{ float: "right" }}
+          onClick={clear}
+          disabled={entries.length === 0}
+        >
           <DeleteOutlined style={{ color: "red" }} /> 전체 삭제
         </Button>
       }
-      {...props}
     >
       <div
         style={{
@@ -74,9 +48,10 @@ export function CartDrawer({
       >
         <List
           itemLayout='horizontal'
-          dataSource={itemList}
-          renderItem={({ item, count }) => (
-            <List.Item>
+          dataSource={entries}
+          locale={{ emptyText: "담긴 물품이 없습니다." }}
+          renderItem={({ key, source, item, count }) => (
+            <List.Item key={key}>
               <List.Item.Meta
                 avatar={
                   <Avatar
@@ -86,26 +61,30 @@ export function CartDrawer({
                 }
                 title={item.name}
                 description={
-                  <Space
-                    style={{ width: "100%", justifyContent: "space-between" }}
-                  >
-                    <Space>
-                      <Button onClick={() => sub(item.id)}>-</Button>
-                      <StyledInputNumber
-                        value={count}
-                        min={1}
-                        precision={0}
-                        onChange={(value: number | string | null) => {
-                          if (value) {
-                            update(item.id, Number(value));
-                          }
-                        }}
-                      />
-                      <Button onClick={() => add(item.id)}>+</Button>
+                  <Space direction='vertical' style={{ width: "100%" }}>
+                    <Typography.Text type='secondary'>
+                      {CART_SOURCE_LABEL[source]}
+                    </Typography.Text>
+                    <Space
+                      style={{ width: "100%", justifyContent: "space-between" }}
+                    >
+                      <Space>
+                        <Button onClick={() => decrement(key)}>-</Button>
+                        <InputNumber
+                          className='cart-count-input'
+                          value={count}
+                          min={1}
+                          precision={0}
+                          onChange={(value) => {
+                            if (typeof value === "number") setCount(key, value);
+                          }}
+                        />
+                        <Button onClick={() => increment(key)}>+</Button>
+                      </Space>
+                      <Button onClick={() => remove(key)}>
+                        <DeleteOutlined style={{ color: "red" }} />
+                      </Button>
                     </Space>
-                    <Button onClick={() => remove(item.id)}>
-                      <DeleteOutlined style={{ color: "red" }} />
-                    </Button>
                   </Space>
                 }
               />
@@ -113,11 +92,11 @@ export function CartDrawer({
           )}
         />
         <Button
+          type='primary'
+          disabled={entries.length === 0}
           onClick={() => {
-            navigate(ROUTES.CALCULATION, {
-              state: { selectedResults, totalCount },
-            });
-            backup(selectedResults);
+            onClose();
+            navigate(ROUTES.CALCULATION);
           }}
         >
           합산

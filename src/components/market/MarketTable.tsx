@@ -3,9 +3,8 @@ import { useMarketsQuery } from "queries/market";
 import { useEffect } from "react";
 import { Controller, useFormContext } from "react-hook-form";
 import { Market } from "types/market";
-import { STORAGE_KEY } from "lib/storage";
-
-const MARKET_LIST = localStorage.getItem(STORAGE_KEY.MARKET);
+import { parseMarketList } from "domain/market";
+import { readJSON, STORAGE_KEY } from "lib/storage";
 
 interface MarketTableProps {
   isUsedLocalStorage: boolean;
@@ -56,10 +55,11 @@ export function MarketTable({ isUsedLocalStorage }: MarketTableProps) {
   };
 
   useEffect(() => {
-    if (isUsedLocalStorage)
-      reset({ markets: MARKET_LIST ? JSON.parse(MARKET_LIST) : data });
-
-    if (!isUsedLocalStorage) resetData();
+    // 저장된 시세는 이 시점에 읽는다(모듈 최상단에서 읽으면 앱 시작 시점 값에 고정된다)
+    const saved = isUsedLocalStorage
+      ? parseMarketList(readJSON(STORAGE_KEY.MARKET))
+      : undefined;
+    reset({ markets: saved ?? data });
     // eslint-disable-next-line react-hooks/exhaustive-deps -- 시세 데이터를 받았을 때만 폼을 초기화한다
   }, [data]);
 

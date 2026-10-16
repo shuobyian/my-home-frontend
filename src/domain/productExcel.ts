@@ -90,3 +90,17 @@ export function productsToExcelRows(items: Product[]): ProductExcelRow[] {
     };
   });
 }
+
+// 관리 화면에서 브라우저에 저장해 둔 물품 목록을 복원한다.
+// 표 렌더링에 필요한 필드를 갖춘 항목만 남긴다.
+export function parseSavedProducts(value: unknown): Product[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(
+    (item): item is Product =>
+      typeof item === "object" &&
+      item !== null &&
+      typeof item.id === "number" &&
+      typeof item.name === "string" &&
+      Array.isArray(item.materials)
+  );
+}

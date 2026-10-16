@@ -3,7 +3,7 @@ import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
 import { useResultsQuery } from "queries/result";
 import { useRef, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { ResultSearchParams } from "types/result";
+import { Result, ResultSearchParams } from "types/result";
 import { ResultTable } from "components/result/ResultTable";
 
 interface ResultForm extends Omit<ResultSearchParams, "tool" | "category"> {
@@ -11,7 +11,12 @@ interface ResultForm extends Omit<ResultSearchParams, "tool" | "category"> {
   category: ResultSearchParams["category"] | "ALL";
 }
 
-export function ResultSearch() {
+interface ResultSearchProps {
+  // 결과 행을 누르면 호출된다
+  onSelect?: (result: Result) => void;
+}
+
+export function ResultSearch({ onSelect }: ResultSearchProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
   const { control, handleSubmit } = useForm<ResultForm>({
@@ -106,6 +111,7 @@ export function ResultSearch() {
             setParams((prev) => ({ ...prev, page: page - 1 })),
         }}
         contents={results?.content ?? []}
+        onRowClick={onSelect}
       />
     </Space>
   );
