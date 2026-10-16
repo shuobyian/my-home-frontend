@@ -2,6 +2,7 @@
 import eslintReact from "@eslint-react/eslint-plugin";
 import js from "@eslint/js";
 import vitest from "@vitest/eslint-plugin";
+import confusingBrowserGlobals from "confusing-browser-globals";
 import { createTypeScriptImportResolver } from "eslint-import-resolver-typescript";
 import importX from "eslint-plugin-import-x";
 import jsxA11y from "eslint-plugin-jsx-a11y-x";
@@ -28,6 +29,7 @@ const HOOK_RULES_FROM_REACT_HOOKS = [
   "set-state-in-render",
   "static-components",
   "use-memo",
+  "unsupported-syntax",
 ];
 const LAYER_ZONES = [
   {
@@ -136,6 +138,19 @@ export default defineConfig([
           "off",
         ])
       ),
+      // 컴포넌트 안 컴포넌트 정의는 react-hooks/static-components가 같은 것을 검사한다
+      "@eslint-react/no-nested-component-definitions": "off",
+      "@eslint-react/dom-no-unsafe-target-blank": "error",
+      "import-x/no-anonymous-default-export": "error",
+
+      // eslint-config-react-app이 켜던 규칙 중 TypeScript가 대신 잡지 못하는 것
+      "array-callback-return": "error",
+      eqeqeq: ["error", "smart"],
+      "no-restricted-globals": ["error", ...confusingBrowserGlobals],
+      "no-self-compare": "error",
+      "no-template-curly-in-string": "error",
+      "no-throw-literal": "error",
+      "no-useless-concat": "error",
     },
   },
 
@@ -217,6 +232,13 @@ export default defineConfig([
   {
     files: TEST_FILES,
     extends: [vitest.configs.recommended, testingLibrary.configs["flat/react"]],
+  },
+
+  // ESLint 설정 파일 자체
+  {
+    files: ["eslint.config.js"],
+    extends: [js.configs.recommended],
+    languageOptions: { globals: globals.node },
   },
 
   // 빌드 설정은 Node에서 실행된다

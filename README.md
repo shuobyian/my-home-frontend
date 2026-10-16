@@ -65,4 +65,5 @@ echo "VITE_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
 | `test/`       | 테스트 도우미                                      | —                                      |
 
 - 화면(`pages`, `components`)은 `apis/`를 직접 쓰지 않고 `queries/`의 훅을 씁니다. 예외는 오류 메시지용 `apis/errors`입니다.
+- 화면은 `app/`에서 경로 상수인 `app/routes`만 가져옵니다.
 - `localStorage`는 `lib/storage`로만 다루고, `xlsx`는 첫 화면 번들에서 빠지도록 `lib/excel`에서 동적으로 불러옵니다.

@@ -221,6 +221,9 @@ importers:
       '@vitest/eslint-plugin':
         specifier: 1.6.27
         version: 1.6.27(@typescript-eslint/eslint-plugin@8.71.2(@typescript-eslint/parser@8.71.2(eslint@10.12.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@10.12.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3))(eslint@10.12.0(supports-color@7.2.0))(supports-color@7.2.0)(typescript@5.9.3)(vitest@5.0.3(@types/node@24.19.2)(jsdom@30.1.1)(vite@8.3.2(@types/node@24.19.2)))
+      confusing-browser-globals:
+        specifier: 1.0.11
+        version: 1.0.11
       eslint:
         specifier: 10.12.0
         version: 10.12.0(supports-color@7.2.0)
@@ -1220,6 +1223,9 @@ packages:
 
   compute-scroll-into-view@3.1.0:
     resolution: {integrity: sha512-rj8l8pD4bJ1nx+dAkMhV1xB5RuZEyVysfxJqB1pRchh1KVvwOv9b7CGB8ZfjTImVv2oF+sYMUkMZq6Na5Ftmbg==}
+
+  confusing-browser-globals@1.0.11:
+    resolution: {integrity: sha512-JsPKdmh8ZkmnHxDk55FZ1TqVLvEQTvoByJZRN9jzI0UjxK/QgAmsphz7PGtqgPieQZ/CQcHWXCR7ATDNhGe+YA==}
 
   convert-source-map@2.0.0:
     resolution: {integrity: sha512-Kvp459HrV2FEJ1CAsi1Ku+MY3kasH19TFykTz2xWmMeq6bk2NU3XXvfJ+Q61m0xktWwt+1HSYf3JZsTms3aRJg==}
@@ -3599,6 +3605,8 @@ snapshots:
   compare-versions@6.1.1: {}
 
   compute-scroll-into-view@3.1.0: {}
+
+  confusing-browser-globals@1.0.11: {}
 
   convert-source-map@2.0.0: {}
 
