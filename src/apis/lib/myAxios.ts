@@ -1,4 +1,3 @@
-import { IErrorResponse, IMyHomeError } from "apis/lib/error/Error";
 import MyHomeError from "apis/lib/error/MyHomeError";
 import axios from "axios";
 
@@ -33,16 +32,10 @@ myAxios.interceptors.request.use(async (config) => {
   };
 });
 
+// 모든 API 에러를 MyHomeError로 정규화한다 (응답이 없는 네트워크 오류 포함)
 myAxios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    return Promise.reject(
-      new MyHomeError({
-        request: error.response.request.responseURL,
-        errorResponse: error as IErrorResponse<IMyHomeError>,
-      })
-    );
-  }
+  (error) => Promise.reject(MyHomeError.from(error))
 );
 
 export default myAxios;
