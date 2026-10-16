@@ -1,17 +1,17 @@
-import { calculateResults, createResults, fetchResults } from "apis/result";
+import { calculateResults, createResults, fetchResults } from "@/apis/result";
 import {
   keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
 } from "@tanstack/react-query";
-import { Page } from "types/page";
+import { Page } from "@/types/page";
 import {
   CalculatorRequest,
   CalculatorResponse,
   Result,
   ResultSearchParams,
-} from "types/result";
+} from "@/types/result";
 
 export const resultKeys = {
   all: ["result"] as const,

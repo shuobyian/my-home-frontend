@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { MyHomeError } from "apis/errors";
-import { RouteErrorBoundary } from "app/RouteErrorBoundary";
+import { MyHomeError } from "@/apis/errors";
+import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import {
   keepPreviousData,
   QueryClient,
@@ -15,11 +15,12 @@ import {
   Routes,
   useSearchParams,
 } from "react-router-dom";
+import { silenceExpectedErrors } from "@/test/silenceErrors";
 
 // 실패 횟수만큼 실패한 뒤 성공하는 쿼리 함수
 function createFlakyFetcher(failures: number) {
   let calls = 0;
-  const fetcher = jest.fn(async () => {
+  const fetcher = vi.fn(async () => {
     calls += 1;
     if (calls <= failures) {
       throw new MyHomeError({ message: `서버 오류 ${calls}` });
@@ -107,8 +108,7 @@ function renderSearch(fetcher: (q: string) => Promise<string>) {
 }
 
 beforeEach(() => {
-  // ErrorBoundary가 잡은 에러를 React가 console.error로 출력하므로 테스트 출력에서 숨긴다
-  jest.spyOn(console, "error").mockImplementation(() => {});
+  silenceExpectedErrors();
 });
 
 describe("RouteErrorBoundary", () => {
@@ -170,7 +170,7 @@ describe("RouteErrorBoundary", () => {
   });
 
   it("같은 화면에서 주소(검색 조건)만 바뀐 뒤 실패해도 오류 화면을 보여 준다", async () => {
-    const fetcher = jest.fn(async (q: string) => {
+    const fetcher = vi.fn(async (q: string) => {
       if (q === "b") throw new MyHomeError({ message: "검색 실패" });
       return q;
     });
@@ -182,9 +182,10 @@ describe("RouteErrorBoundary", () => {
     expect(await screen.findByText("검색 실패")).toBeInTheDocument();
   });
 
-  it("지연 로딩 코드를 받지 못하면(ChunkLoadError) 새로고침을 안내한다", async () => {
-    const chunkError = new Error("Loading chunk 84 failed.");
-    chunkError.name = "ChunkLoadError";
+  it("지연 로딩 코드를 받지 못하면 새로고침을 안내한다", async () => {
+    const chunkError = new TypeError(
+      "Failed to fetch dynamically imported module: http://x/assets/a.js"
+    );
     renderApp(async () => {
       throw chunkError;
     });

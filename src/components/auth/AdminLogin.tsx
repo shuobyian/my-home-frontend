@@ -1,8 +1,8 @@
 import { Alert, Button, Form, Input, Space, Typography } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ROUTES } from "app/routes";
-import { Panel } from "components/common/Panel";
-import { useLoginMutation } from "queries/auth";
+import { getErrorMessage } from "@/apis/errors";
+import { ROUTES } from "@/app/routes";
+import { Panel } from "@/components/common/Panel";
+import { useLoginMutation } from "@/queries/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 

@@ -1,9 +1,9 @@
 import { Space, Typography } from "antd";
-import { Panel } from "components/common/Panel";
-import { ResultTable } from "components/result/ResultTable";
-import { formatNumber } from "lib/format";
-import { WalnutResponse } from "types/experience";
-import { Result } from "types/result";
+import { Panel } from "@/components/common/Panel";
+import { ResultTable } from "@/components/result/ResultTable";
+import { formatNumber } from "@/lib/format";
+import { WalnutResponse } from "@/types/experience";
+import { Result } from "@/types/result";
 
 interface WalnutResultProps {
   result: WalnutResponse;

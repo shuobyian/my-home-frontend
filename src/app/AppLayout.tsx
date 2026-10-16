@@ -1,6 +1,6 @@
 import { Grid, Layout, Spin } from "antd";
-import { AppHeader } from "app/AppHeader";
-import { RouteErrorBoundary } from "app/RouteErrorBoundary";
+import { AppHeader } from "@/app/AppHeader";
+import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import { Suspense } from "react";
 import { Outlet } from "react-router-dom";
 

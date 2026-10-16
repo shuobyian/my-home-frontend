@@ -1,7 +1,7 @@
 import { Space, TableColumnsType, Tooltip } from "antd";
-import { getToolLabel } from "domain/labels";
-import { Product } from "types/product";
-import { formatGold } from "lib/format";
+import { getToolLabel } from "@/domain/labels";
+import { Product } from "@/types/product";
+import { formatGold } from "@/lib/format";
 
 export const productColumns: TableColumnsType<Product> = [
   {

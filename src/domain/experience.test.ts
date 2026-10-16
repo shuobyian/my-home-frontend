@@ -1,4 +1,4 @@
-import { parseWalnutParams, toWalnutSearchParams } from "domain/experience";
+import { parseWalnutParams, toWalnutSearchParams } from "@/domain/experience";
 
 describe("parseWalnutParams", () => {
   it("숫자인 값만 읽는다", () => {

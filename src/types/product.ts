@@ -1,4 +1,4 @@
-import { Category, Tool } from "types/enums";
+import { Category, Tool } from "@/types/enums";
 
 // 물품의 직속 재료
 export interface ProductMaterial {

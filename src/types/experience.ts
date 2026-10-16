@@ -1,4 +1,4 @@
-import { Result } from "types/result";
+import { Result } from "@/types/result";
 
 // 레벨별 필요 경험치
 export interface Experience {

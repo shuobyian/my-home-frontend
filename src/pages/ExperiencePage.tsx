@@ -1,8 +1,8 @@
 import { Table, TableColumnsType, Typography } from "antd";
-import { WALNUT_MIN_LEVEL } from "domain/experience";
-import { useExperienceQuery } from "queries/experience";
-import { Experience } from "types/experience";
-import { formatNumber } from "lib/format";
+import { WALNUT_MIN_LEVEL } from "@/domain/experience";
+import { useExperienceQuery } from "@/queries/experience";
+import { Experience } from "@/types/experience";
+import { formatNumber } from "@/lib/format";
 
 export function ExperiencePage() {
   const { data, isLoading } = useExperienceQuery();

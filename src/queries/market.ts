@@ -1,4 +1,4 @@
-import { fetchMarkets, updateMarkets } from "apis/market";
+import { fetchMarkets, updateMarkets } from "@/apis/market";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 export const marketKeys = {

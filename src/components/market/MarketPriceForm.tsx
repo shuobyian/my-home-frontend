@@ -1,6 +1,6 @@
 import { Button, Form, Input, InputNumber, Space, Table } from "antd";
 import { useEffect, useRef } from "react";
-import { Market } from "types/market";
+import { Market } from "@/types/market";
 
 interface MarketFormValues {
   markets: Market[];

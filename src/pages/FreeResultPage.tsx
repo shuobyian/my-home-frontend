@@ -1,16 +1,16 @@
 import { App, Button, Input, Space, Typography } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ROUTES } from "app/routes";
-import { useAddToCart } from "components/cart/useAddToCart";
-import { Panel } from "components/common/Panel";
-import { ResultTable } from "components/result/ResultTable";
-import { parseResultList } from "domain/result";
-import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
-import { useCalculateResultsQuery } from "queries/result";
+import { getErrorMessage } from "@/apis/errors";
+import { ROUTES } from "@/app/routes";
+import { useAddToCart } from "@/components/cart/useAddToCart";
+import { Panel } from "@/components/common/Panel";
+import { ResultTable } from "@/components/result/ResultTable";
+import { parseResultList } from "@/domain/result";
+import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
+import { useCalculateResultsQuery } from "@/queries/result";
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
-import { Market } from "types/market";
-import { Result } from "types/result";
+import { Market } from "@/types/market";
+import { Result } from "@/types/result";
 
 export function FreeResultPage() {
   const { message } = App.useApp();

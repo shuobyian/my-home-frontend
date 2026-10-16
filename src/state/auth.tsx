@@ -3,7 +3,7 @@ import {
   removeSession,
   SESSION_KEY,
   writeSession,
-} from "lib/storage";
+} from "@/lib/storage";
 import { createContext, ReactNode, useContext, useMemo, useState } from "react";
 
 interface AuthContextValue {

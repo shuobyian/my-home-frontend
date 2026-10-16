@@ -1,4 +1,4 @@
-import { Category, CategoryType, Tool, ToolType } from "types/enums";
+import { Category, CategoryType, Tool, ToolType } from "@/types/enums";
 
 // 홈 결과 검색 조건. URL 쿼리(?name=&tool=&category=&page=)와 서로 변환한다.
 export interface ResultSearch {

@@ -1,4 +1,4 @@
-import { parseResultSearch, toResultSearchParams } from "domain/resultSearch";
+import { parseResultSearch, toResultSearchParams } from "@/domain/resultSearch";
 
 describe("parseResultSearch", () => {
   it("URL 쿼리를 검색 조건으로 바꾼다(page는 1부터 → 0부터)", () => {

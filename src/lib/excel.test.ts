@@ -1,4 +1,4 @@
-import { fileTimestamp } from "lib/excel";
+import { fileTimestamp } from "@/lib/excel";
 
 describe("fileTimestamp", () => {
   it("공백·콜론 없는 날짜 문자열을 만든다", () => {

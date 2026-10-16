@@ -10,10 +10,10 @@ import {
   Space,
   Typography,
 } from "antd";
-import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
-import { MAX_MATERIAL_SLOTS } from "domain/productExcel";
+import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
+import { MAX_MATERIAL_SLOTS } from "@/domain/productExcel";
 import { useState } from "react";
-import { Product, ProductCreateRequest } from "types/product";
+import { Product, ProductCreateRequest } from "@/types/product";
 
 // 서버는 물품명·재료명에 쉼표를 허용하지 않는다(결과의 재료 목록을 쉼표로 저장)
 const NO_COMMA_RULE = {

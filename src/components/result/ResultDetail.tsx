@@ -1,10 +1,10 @@
 import { Space, Typography } from "antd";
-import { ItemImage } from "components/common/ItemImage";
-import { getTotalCost, requiresAffinity } from "domain/result";
-import { Result } from "types/result";
-import { formatGold, formatNumber } from "lib/format";
-import { InfoRow } from "components/common/InfoRow";
-import { MaterialTable } from "components/result/MaterialTable";
+import { ItemImage } from "@/components/common/ItemImage";
+import { getTotalCost, requiresAffinity } from "@/domain/result";
+import { Result } from "@/types/result";
+import { formatGold, formatNumber } from "@/lib/format";
+import { InfoRow } from "@/components/common/InfoRow";
+import { MaterialTable } from "@/components/result/MaterialTable";
 
 interface ResultDetailProps {
   result: Result;

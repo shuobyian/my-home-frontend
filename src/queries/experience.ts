@@ -1,6 +1,6 @@
-import { calculateWalnut, fetchExperience } from "apis/experience";
+import { calculateWalnut, fetchExperience } from "@/apis/experience";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import { WalnutParams } from "types/experience";
+import { WalnutParams } from "@/types/experience";
 
 export const experienceKeys = {
   all: ["experience"] as const,

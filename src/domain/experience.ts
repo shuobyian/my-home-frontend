@@ -1,4 +1,4 @@
-import { WalnutParams } from "types/experience";
+import { WalnutParams } from "@/types/experience";
 
 // 호두작(식물앰플)은 55레벨부터 가능하고, 최대 레벨은 112다(백엔드 규칙)
 export const WALNUT_MIN_LEVEL = 55;

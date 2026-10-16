@@ -1,12 +1,12 @@
-import { client } from "apis/client";
-import { ENDPOINTS } from "apis/endpoints";
-import { Page } from "types/page";
+import { client } from "@/apis/client";
+import { ENDPOINTS } from "@/apis/endpoints";
+import { Page } from "@/types/page";
 import {
   CalculatorRequest,
   CalculatorResponse,
   Result,
   ResultSearchParams,
-} from "types/result";
+} from "@/types/result";
 
 export async function fetchResults(params: ResultSearchParams) {
   const { data } = await client.get<Page<Result>>(ENDPOINTS.RESULT, {

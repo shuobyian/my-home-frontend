@@ -1,8 +1,9 @@
 import { act, renderHook } from "@testing-library/react";
-import { STORAGE_KEY } from "lib/storage";
+import { STORAGE_KEY } from "@/lib/storage";
 import { ReactNode } from "react";
-import { CartProvider, useCart } from "state/cart";
-import { createResult } from "test/fixtures";
+import { CartProvider, useCart } from "@/state/cart";
+import { createResult } from "@/test/fixtures";
+import { silenceExpectedErrors } from "@/test/silenceErrors";
 
 const chair = createResult({
   id: 1,
@@ -73,7 +74,7 @@ describe("CartProvider / useCart", () => {
       JSON.stringify({ [chair.id]: { item: chair, count: 3 } })
     );
     const original = Storage.prototype.setItem;
-    const spy = jest
+    const spy = vi
       .spyOn(Storage.prototype, "setItem")
       .mockImplementation(function (this: Storage, key: string, value: string) {
         if (key === STORAGE_KEY.CART) throw new Error("QuotaExceededError");
@@ -108,7 +109,7 @@ describe("CartProvider / useCart", () => {
   });
 
   it("CartProvider 밖에서 쓰면 오류를 던진다", () => {
-    jest.spyOn(console, "error").mockImplementation(() => {});
+    silenceExpectedErrors();
     expect(() => renderHook(() => useCart())).toThrow(
       "useCart는 CartProvider 안에서만 사용할 수 있습니다."
     );

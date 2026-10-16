@@ -1,4 +1,4 @@
-import { Category, CategoryType, Tool, ToolType } from "types/enums";
+import { Category, CategoryType, Tool, ToolType } from "@/types/enums";
 
 // Record로 정의해 enum 값이 추가되면 라벨 누락을 컴파일 시점에 잡는다
 export const TOOL_LABEL: Record<Tool, string> = {

@@ -1,7 +1,7 @@
 import { Table, TableColumnsType, Tooltip } from "antd";
-import { getToolLabel } from "domain/labels";
-import { Result } from "types/result";
-import { ResultDetail } from "components/result/ResultDetail";
+import { getToolLabel } from "@/domain/labels";
+import { Result } from "@/types/result";
+import { ResultDetail } from "@/components/result/ResultDetail";
 
 const columns: TableColumnsType<Result> = [
   {

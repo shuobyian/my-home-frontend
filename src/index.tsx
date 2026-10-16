@@ -1,5 +1,5 @@
-import { AppProviders } from "app/providers";
-import { AppRoutes } from "app/router";
+import { AppProviders } from "@/app/providers";
+import { AppRoutes } from "@/app/router";
 import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";

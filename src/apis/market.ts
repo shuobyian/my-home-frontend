@@ -1,6 +1,6 @@
-import { client } from "apis/client";
-import { ENDPOINTS } from "apis/endpoints";
-import { Market } from "types/market";
+import { client } from "@/apis/client";
+import { ENDPOINTS } from "@/apis/endpoints";
+import { Market } from "@/types/market";
 
 export async function fetchMarkets() {
   const { data } = await client.get<Market[]>(ENDPOINTS.MARKET);

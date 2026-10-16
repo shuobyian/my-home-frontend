@@ -1,4 +1,4 @@
-import { Market } from "types/market";
+import { Market } from "@/types/market";
 
 function isMarket(value: unknown): value is Market {
   if (typeof value !== "object" || value === null) return false;

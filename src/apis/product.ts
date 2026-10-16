@@ -1,6 +1,6 @@
-import { client } from "apis/client";
-import { ENDPOINTS } from "apis/endpoints";
-import { Page } from "types/page";
+import { client } from "@/apis/client";
+import { ENDPOINTS } from "@/apis/endpoints";
+import { Page } from "@/types/page";
 import {
   Product,
   ProductBulkCreateRequest,
@@ -8,7 +8,7 @@ import {
   ProductDeleteRequest,
   ProductSearchParams,
   ProductUpdateRequest,
-} from "types/product";
+} from "@/types/product";
 
 export async function fetchProducts(params: ProductSearchParams) {
   const { data } = await client.get<Page<Product>>(ENDPOINTS.PRODUCT, {

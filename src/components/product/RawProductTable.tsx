@@ -1,19 +1,19 @@
 import { App, Button, Divider, Space, Typography } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ExcelButton } from "components/product/ExcelButton";
-import { ProductNameList } from "components/product/ProductNameList";
-import { ProductTableView } from "components/product/ProductTableView";
+import { getErrorMessage } from "@/apis/errors";
+import { ExcelButton } from "@/components/product/ExcelButton";
+import { ProductNameList } from "@/components/product/ProductNameList";
+import { ProductTableView } from "@/components/product/ProductTableView";
 import {
   nextProductId,
   normalizeProductIds,
   parseSavedProducts,
   summarizeBulkSave,
-} from "domain/productExcel";
-import { formatNumber } from "lib/format";
-import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
-import { useCreateProductsMutation } from "queries/product";
+} from "@/domain/productExcel";
+import { formatNumber } from "@/lib/format";
+import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
+import { useCreateProductsMutation } from "@/queries/product";
 import { useState } from "react";
-import { Product } from "types/product";
+import { Product } from "@/types/product";
 
 // 엑셀로 가져온 물품을 브라우저에서 편집하고 서버에 일괄 저장한다
 export function RawProductTable() {

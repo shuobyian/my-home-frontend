@@ -7,8 +7,8 @@ import {
   migrateLegacyCart,
   parseCart,
   totalCount,
-} from "domain/cart";
-import { readJSON, removeItem, STORAGE_KEY, writeJSON } from "lib/storage";
+} from "@/domain/cart";
+import { readJSON, removeItem, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import {
   createContext,
   ReactNode,
@@ -17,7 +17,7 @@ import {
   useMemo,
   useReducer,
 } from "react";
-import { MaterialCost, Result } from "types/result";
+import { MaterialCost, Result } from "@/types/result";
 
 interface CartContextValue {
   entries: CartEntry[];

@@ -1,10 +1,10 @@
 import { Button, Segmented, Space, Spin } from "antd";
-import { RouteErrorBoundary } from "app/RouteErrorBoundary";
-import { ROUTES } from "app/routes";
-import { AdminLogin } from "components/auth/AdminLogin";
+import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
+import { ROUTES } from "@/app/routes";
+import { AdminLogin } from "@/components/auth/AdminLogin";
 import { Suspense } from "react";
 import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
-import { useAuth } from "state/auth";
+import { useAuth } from "@/state/auth";
 
 const MANAGE_MENU = [
   { label: "Raw 엑셀 데이터", value: ROUTES.MANAGE },

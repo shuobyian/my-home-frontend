@@ -5,7 +5,7 @@ import {
   removeSession,
   writeJSON,
   writeSession,
-} from "lib/storage";
+} from "@/lib/storage";
 
 beforeEach(() => {
   localStorage.clear();
@@ -28,7 +28,7 @@ describe("storage", () => {
   });
 
   it("저장소 접근이 실패해도 예외를 던지지 않는다", () => {
-    const spy = jest
+    const spy = vi
       .spyOn(Storage.prototype, "setItem")
       .mockImplementation(() => {
         throw new Error("QuotaExceededError");
@@ -58,7 +58,7 @@ describe("session", () => {
     sessionStorage.setItem("broken", "{not json");
     expect(readSession("broken")).toBeUndefined();
 
-    const spy = jest
+    const spy = vi
       .spyOn(Storage.prototype, "setItem")
       .mockImplementation(() => {
         throw new Error("QuotaExceededError");

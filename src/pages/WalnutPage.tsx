@@ -1,15 +1,15 @@
 import { Alert, Button, Space, Spin } from "antd";
-import { getErrorMessage } from "apis/errors";
-import { ROUTES } from "app/routes";
-import { useAddToCart } from "components/cart/useAddToCart";
-import { WalnutForm } from "components/walnut/WalnutForm";
-import { WalnutGuide } from "components/walnut/WalnutGuide";
-import { WalnutResult } from "components/walnut/WalnutResult";
-import { parseWalnutParams, toWalnutSearchParams } from "domain/experience";
-import { useWalnutQuery } from "queries/experience";
+import { getErrorMessage } from "@/apis/errors";
+import { ROUTES } from "@/app/routes";
+import { useAddToCart } from "@/components/cart/useAddToCart";
+import { WalnutForm } from "@/components/walnut/WalnutForm";
+import { WalnutGuide } from "@/components/walnut/WalnutGuide";
+import { WalnutResult } from "@/components/walnut/WalnutResult";
+import { parseWalnutParams, toWalnutSearchParams } from "@/domain/experience";
+import { useWalnutQuery } from "@/queries/experience";
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { WalnutParams } from "types/experience";
+import { WalnutParams } from "@/types/experience";
 
 // 호두작 계산. 계산 조건은 URL에 두어 경험치 표에 다녀오거나 새로고침해도 결과가 유지된다.
 export function WalnutPage() {
