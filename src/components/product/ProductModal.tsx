@@ -10,6 +10,7 @@ import {
   Space,
   Typography,
 } from "antd";
+import { UnitInputNumber } from "@/components/common/UnitInputNumber";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
 import { MAX_MATERIAL_SLOTS } from "@/domain/productExcel";
 import { useState } from "react";
@@ -111,7 +112,12 @@ export function ProductModal({
           name='craftingPrice'
           rules={[{ required: true, message: "크래프팅 가격을 입력해주세요" }]}
         >
-          <InputNumber min={0} addonAfter='골드' placeholder='크래프팅 가격' />
+          <UnitInputNumber
+            unit='골드'
+            style={{ width: 140 }}
+            min={0}
+            placeholder='크래프팅 가격'
+          />
         </Form.Item>
         <Form.Item
           name='tool'
@@ -182,11 +188,11 @@ export function ProductModal({
                         },
                       ]}
                     >
-                      <InputNumber
-                        style={{ width: 120 }}
+                      <UnitInputNumber
+                        unit='개'
+                        style={{ width: 90 }}
                         min={0}
                         max={100}
-                        addonAfter='개'
                         placeholder='개수'
                       />
                     </Form.Item>

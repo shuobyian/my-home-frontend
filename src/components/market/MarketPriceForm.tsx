@@ -1,4 +1,5 @@
-import { Button, Form, Input, InputNumber, Space, Table } from "antd";
+import { Button, Form, Input, Space, Table } from "antd";
+import { UnitInputNumber } from "@/components/common/UnitInputNumber";
 import { useEffect, useRef } from "react";
 import { Market } from "@/types/market";
 
@@ -97,11 +98,11 @@ export function MarketPriceForm({
                         : []
                     }
                   >
-                    <InputNumber
+                    <UnitInputNumber
+                      unit='골드'
                       min={0}
                       precision={requirePrice ? 0 : undefined}
                       inputMode={requirePrice ? "numeric" : "decimal"}
-                      addonAfter='골드'
                     />
                   </Form.Item>
                 ),
