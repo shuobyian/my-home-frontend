@@ -1,4 +1,5 @@
 import { Avatar, Collapse, List, Space, Typography } from "antd";
+import { ROUTES } from "app/routes";
 import { useMemo } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { aggregateMaterials, Cart, sumPrice } from "domain/cart";
@@ -27,7 +28,7 @@ export function CalculationList() {
   );
   const totalPrice = sumPrice(materials);
 
-  if (!state?.selectedResults) return <Navigate to='/' replace />;
+  if (!state?.selectedResults) return <Navigate to={ROUTES.HOME} replace />;
 
   return (
     <div style={{ width: "100%" }}>

@@ -1,4 +1,4 @@
-import { Divider, Modal, Typography, message } from "antd";
+import { App, Divider, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
 import { useCreateProductsMutation } from "queries/product";
 import { useRef, useState } from "react";
@@ -10,6 +10,8 @@ import ProductTableView from "view/components/manage/ProductTableView";
 const DEFAULT_DATA = localStorage.getItem(STORAGE_KEY.PRODUCT);
 
 export default function RawProductTable() {
+  const { message, modal } = App.useApp();
+
   const { mutate: upload } = useCreateProductsMutation();
 
   const defaultDatas = DEFAULT_DATA ? JSON.parse(DEFAULT_DATA) : [];
@@ -45,7 +47,7 @@ export default function RawProductTable() {
   };
 
   const onRemove = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "삭제하시겠습니까?",
       content: (
         <ul style={{ maxHeight: 400, overflow: "scroll" }}>
@@ -67,7 +69,7 @@ export default function RawProductTable() {
       { products: datas },
       {
         onSuccess: (data) => {
-          Modal.info({
+          modal.info({
             title: "저장되었습니다.",
             content: (
               <ul style={{ maxHeight: 400, overflow: "scroll" }}>
@@ -91,7 +93,7 @@ export default function RawProductTable() {
       (data) => !originalDatas.current.find(({ name }) => name === data.name)
     );
 
-    Modal.confirm({
+    modal.confirm({
       title: "저장하시겠습니까?",
       content: (
         <ul style={{ maxHeight: 400, overflow: "scroll" }}>

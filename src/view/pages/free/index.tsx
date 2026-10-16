@@ -1,4 +1,5 @@
 import { Button, Typography } from "antd";
+import { ROUTES } from "app/routes";
 import { useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useNavigate } from "react-router-dom";
@@ -20,7 +21,7 @@ export function Free() {
     try {
       setIsLoading(true);
       localStorage.setItem(STORAGE_KEY.MARKET, JSON.stringify(markets));
-      navigate("result", { state: { markets } });
+      navigate(ROUTES.FREE_RESULT, { state: { markets } });
     } finally {
       setIsLoading(false);
     }

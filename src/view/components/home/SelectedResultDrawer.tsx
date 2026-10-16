@@ -8,6 +8,7 @@ import {
   List,
   Space,
 } from "antd";
+import { ROUTES } from "app/routes";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
@@ -113,7 +114,7 @@ export function SelectedResultDrawer({
         />
         <Button
           onClick={() => {
-            navigate("/calculation", {
+            navigate(ROUTES.CALCULATION, {
               state: { selectedResults, totalCount },
             });
             backup(selectedResults);

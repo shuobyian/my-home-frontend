@@ -1,5 +1,6 @@
-import { Button, Input, Typography, message } from "antd";
+import { App, Button, Input, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
+import { ROUTES } from "app/routes";
 import { useCalculateWalnutMutation } from "queries/experience";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -9,6 +10,8 @@ import { formatNumber } from "lib/format";
 import { ResultList } from "view/components/home/ResultList";
 
 export function Walnut() {
+  const { message } = App.useApp();
+
   const navigate = useNavigate();
 
   const { isLoading, mutate } = useCalculateWalnutMutation();
@@ -34,7 +37,7 @@ export function Walnut() {
     <>
       <div>
         <Button
-          onClick={() => navigate("/experience")}
+          onClick={() => navigate(ROUTES.EXPERIENCE)}
           style={{ float: "right" }}
         >
           레벨별 필요한 경험치

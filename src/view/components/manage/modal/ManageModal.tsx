@@ -1,4 +1,5 @@
 import { Input, Modal, Space, Typography } from "antd";
+import { ROUTES } from "app/routes";
 import { useLoginMutation } from "queries/auth";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -18,14 +19,14 @@ export function ManageModal() {
       centered
       open={modalOpen}
       onCancel={() => {
-        navigate("/");
+        navigate(ROUTES.HOME);
         setModalOpen(false);
       }}
       cancelText='취소'
       onOk={() => {
         login(password, {
           onSuccess: () => setModalOpen(false),
-          onError: () => navigate("/"),
+          onError: () => navigate(ROUTES.HOME),
         });
       }}
       okText='확인'

@@ -1,4 +1,5 @@
 import {
+  App,
   Button,
   Form,
   Input,
@@ -9,7 +10,6 @@ import {
   Select,
   Space,
   Typography,
-  message,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "domain/labels";
@@ -28,6 +28,8 @@ export function ProductModal({
   edit,
   ...props
 }: IProductModalProps) {
+  const { message } = App.useApp();
+
   const [loading, setLoading] = useState(false);
 
   const [form] = useForm<Product>();

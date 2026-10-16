@@ -1,4 +1,5 @@
 import { Button, Input, Space, Typography } from "antd";
+import { ROUTES } from "app/routes";
 import { useCalculateResultsQuery } from "queries/result";
 import { useEffect, useRef, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
@@ -44,7 +45,7 @@ export function FreeResult() {
     setResultList(RESULT_LIST ? JSON.parse(RESULT_LIST) : data);
   }, [data]);
 
-  if (!markets) return <Navigate to='/free' replace />;
+  if (!markets) return <Navigate to={ROUTES.FREE} replace />;
 
   return (
     <Space direction='vertical'>

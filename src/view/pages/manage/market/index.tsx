@@ -1,10 +1,12 @@
-import { Button, Typography, message } from "antd";
+import { App, Button, Typography } from "antd";
 import { useUpdateMarketsMutation } from "queries/market";
 import { FormProvider, useForm } from "react-hook-form";
 import { Market as MarketItem } from "types/market";
 import { MarketList } from "view/components/shared/MarketList";
 
 export function Market() {
+  const { message } = App.useApp();
+
   const { isLoading, mutate } = useUpdateMarketsMutation();
 
   const form = useForm<{ markets: MarketItem[] }>({

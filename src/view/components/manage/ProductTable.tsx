@@ -1,4 +1,4 @@
-import { Button, Modal, Typography, message } from "antd";
+import { App, Button, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
 import {
   useCreateProductMutation,
@@ -12,6 +12,8 @@ import { Product } from "types/product";
 import ProductTableView from "view/components/manage/ProductTableView";
 
 export default function ProductTable() {
+  const { message, modal } = App.useApp();
+
   const [page, setPage] = useState(0);
   const [size, setSize] = useState(10);
   const [name, setName] = useState("");
@@ -55,7 +57,7 @@ export default function ProductTable() {
   };
 
   const onRemove = () => {
-    Modal.confirm({
+    modal.confirm({
       title: "삭제하시겠습니까?",
       content: (
         <ul style={{ maxHeight: 400, overflow: "scroll" }}>
