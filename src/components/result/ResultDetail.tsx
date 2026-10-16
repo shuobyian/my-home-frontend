@@ -1,4 +1,4 @@
-import { Space, Typography } from "antd";
+import { Space, theme, Typography } from "antd";
 import { ItemImage } from "@/components/common/ItemImage";
 import { getTotalCost, requiresAffinity } from "@/domain/result";
 import { Result } from "@/types/result";
@@ -11,6 +11,8 @@ interface ResultDetailProps {
 }
 
 export function ResultDetail({ result }: ResultDetailProps) {
+  const { token } = theme.useToken();
+
   return (
     <div
       style={{
@@ -46,7 +48,10 @@ export function ResultDetail({ result }: ResultDetailProps) {
           </Space>
           <Space style={{ gap: "10px" }} direction='vertical'>
             {result.product.materials.map((material) => (
-              <Typography.Text key={material.name} style={{ color: "blue" }}>
+              <Typography.Text
+                key={material.name}
+                style={{ color: token.colorInfoText }}
+              >
                 {material.name} {formatNumber(material.count)}개
               </Typography.Text>
             ))}

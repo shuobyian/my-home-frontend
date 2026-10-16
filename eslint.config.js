@@ -9,6 +9,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y-x";
 import reactHooks from "eslint-plugin-react-hooks";
 import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig, globalIgnores } from "eslint/config";
+import fs from "node:fs";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -31,7 +32,40 @@ const HOOK_RULES_FROM_REACT_HOOKS = [
   "use-memo",
   "unsupported-syntax",
 ];
+// components의 도메인 폴더. 결과 표시(result)는 여러 화면이 함께 쓰는 공용 도메인이다.
+// 새 도메인 폴더도 빠지지 않도록 실제 폴더 목록에서 만든다
+const COMPONENT_DOMAINS = fs
+  .readdirSync(new URL("./src/components/", import.meta.url), {
+    withFileTypes: true,
+  })
+  .filter((entry) => entry.isDirectory() && entry.name !== "common")
+  .map((entry) => entry.name);
+const SHARED_COMPONENT_DOMAINS = ["result"];
+
+const COMPONENT_ZONES = [
+  ...COMPONENT_DOMAINS.map((domain) => ({
+    target: `./src/components/${domain}`,
+    from: COMPONENT_DOMAINS.filter(
+      (other) => other !== domain && !SHARED_COMPONENT_DOMAINS.includes(other)
+    ).map((other) => `./src/components/${other}`),
+    message:
+      "components의 도메인 폴더끼리는 서로 가져오지 않습니다(공용은 common·result). 조합은 pages에서 합니다.",
+  })),
+  {
+    target: "./src/components/common",
+    from: COMPONENT_DOMAINS.map((domain) => `./src/components/${domain}`),
+    message: "common은 도메인 컴포넌트를 가져오지 않습니다.",
+  },
+];
+
 const LAYER_ZONES = [
+  {
+    target: "./src/components",
+    from: "./src/queries",
+    message:
+      "components는 props로 받은 데이터를 표현만 합니다. 서버 데이터 조회·변경은 pages나 app에서 합니다.",
+  },
+  ...COMPONENT_ZONES,
   {
     target: ["./src/components", "./src/pages"],
     from: "./src/apis",

@@ -12,15 +12,15 @@ code {
     source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
-/* 공통 헤더의 홈 링크: 키보드 포커스와 마우스 오버 표시 */
+/* 공통 헤더의 홈 링크: 키보드 포커스와 마우스 오버 표시(색은 AppHeader가 테마에서 넘긴다) */
 .app-home-link:focus-visible {
-  outline: 2px solid #5c3572;
+  outline: 2px solid var(--app-brand-color);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
 .app-home-link:hover h3 {
-  color: #5c3572;
+  color: var(--app-brand-color);
 }
 
 /* 장바구니 수량 입력값 가운데 정렬 */

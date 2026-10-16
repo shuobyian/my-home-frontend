@@ -1,7 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { App } from "antd";
-import { ProductTable } from "@/components/product/ProductTable";
+import { ProductManagePage } from "@/pages/manage/ProductManagePage";
 import { createProduct } from "@/test/fixtures";
 import { ProductSearchParams } from "@/types/product";
 
@@ -24,7 +24,7 @@ function renderTable() {
   return render(
     <QueryClientProvider client={queryClient}>
       <App>
-        <ProductTable />
+        <ProductManagePage />
       </App>
     </QueryClientProvider>
   );
@@ -35,7 +35,7 @@ const requestedPages = () =>
     ([params]) => (params as ProductSearchParams).page
   );
 
-describe("ProductTable", () => {
+describe("ProductManagePage", () => {
   it("보던 페이지가 범위를 넘으면(다른 곳에서 물품 삭제 등) 마지막 페이지로 한 번에 바로잡는다", async () => {
     // 처음에는 25개(3쪽)였다가, 3쪽을 열 때는 15개(2쪽)로 줄어 있다
     mockedFetchProducts.mockImplementation(

@@ -84,6 +84,54 @@ describe("RequireAdmin", () => {
     expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
   });
 
+  it("다시 제출하면 확인하는 동안 이전 실패 메시지를 지우고 버튼을 로딩 상태로 둔다", async () => {
+    mockedLogin
+      .mockRejectedValueOnce(
+        new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
+      )
+      .mockReturnValueOnce(new Promise(() => {}));
+    renderManage();
+
+    submitPassword("wrong");
+    expect(
+      await screen.findByText("비밀번호가 올바르지 않습니다.")
+    ).toBeInTheDocument();
+
+    submitPassword("pw");
+
+    await waitFor(() =>
+      expect(
+        screen.queryByText("비밀번호가 올바르지 않습니다.")
+      ).not.toBeInTheDocument()
+    );
+    expect(screen.getByRole("button", { name: /확\s?인/ })).toHaveClass(
+      "ant-btn-loading"
+    );
+  });
+
+  it("실패 → 성공 → '관리 종료' 뒤 다시 보이는 확인 화면에는 이전 실패 메시지가 없다", async () => {
+    mockedLogin
+      .mockRejectedValueOnce(
+        new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
+      )
+      .mockResolvedValueOnce(undefined);
+    renderManage();
+
+    submitPassword("wrong");
+    await screen.findByText("비밀번호가 올바르지 않습니다.");
+    submitPassword("pw");
+    expect(await screen.findByText("관리 내용")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "관리 종료" }));
+
+    expect(
+      await screen.findByText("관리자만 입장 가능합니다.")
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByText("비밀번호가 올바르지 않습니다.")
+    ).not.toBeInTheDocument();
+  });
+
   it("이 탭에서 이미 확인했으면 바로 관리 화면을 보여 주고, '관리 종료'로 다시 잠근다", async () => {
     sessionStorage.setItem(SESSION_KEY.ADMIN, "true");
     renderManage();

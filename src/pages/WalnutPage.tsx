@@ -1,4 +1,4 @@
-import { Alert, Button, Space, Spin } from "antd";
+import { Alert, Button, Flex, Space, Spin } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useAddToCart } from "@/components/cart/useAddToCart";
@@ -38,15 +38,19 @@ export function WalnutPage() {
 
   return (
     <Space direction='vertical' style={{ width: "100%" }} size='large'>
-      <div>
-        <Button
-          onClick={() => navigate(ROUTES.EXPERIENCE)}
-          style={{ float: "right" }}
-        >
+      {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
+      <Flex
+        justify='space-between'
+        align='flex-start'
+        wrap
+        gap={8}
+        style={{ flexDirection: "row-reverse" }}
+      >
+        <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>
           레벨별 필요한 경험치
         </Button>
         <WalnutGuide />
-      </div>
+      </Flex>
       <WalnutForm
         initialValues={params}
         loading={isFetching}
