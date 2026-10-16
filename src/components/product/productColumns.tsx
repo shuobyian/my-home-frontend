@@ -38,15 +38,13 @@ export const productColumns: TableColumnsType<Product> = [
     dataIndex: "",
     render: (item: Product) => (
       <Space direction='vertical'>
-        {item.materials.map((m) =>
-          m.name ? (
+        {item.materials
+          .filter((m) => m.name)
+          .map((m) => (
             <div key={m.name}>
               {m.name} / {m.basic ? "최하위재료" : "하위재료 O"} / {m.count}개
             </div>
-          ) : (
-            <></>
-          )
-        )}
+          ))}
       </Space>
     ),
     width: 400,

@@ -2,7 +2,7 @@ import { Button, Result, Space } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { isChunkLoadError } from "@/lib/chunk";
-import { Component, ReactNode, useEffect, useRef } from "react";
+import { Component, ReactNode, useEffect, useState } from "react";
 import {
   QueryErrorResetBoundary,
   useQueryErrorResetBoundary,
@@ -95,9 +95,9 @@ function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
   // 화면을 이동하면 캐시에 에러로 남은 쿼리를 마운트 시 다시 요청하도록 표시한다.
   // reset은 내부 플래그만 바꾸므로 렌더 중에 호출해도 안전하다.
   // (ErrorBoundary도 같은 렌더에서 초기화되므로 새 화면의 쿼리가 이 표시를 보고 마운트된다)
-  const prevKey = useRef(key);
-  if (prevKey.current !== key) {
-    prevKey.current = key;
+  const [prevKey, setPrevKey] = useState(key);
+  if (prevKey !== key) {
+    setPrevKey(key);
     reset();
   }
 

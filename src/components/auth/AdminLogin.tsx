@@ -38,6 +38,8 @@ export function AdminLogin({ onSuccess }: AdminLoginProps) {
           <Input.Password
             placeholder='비밀번호 입력'
             autoComplete='current-password'
+            // 게이트 화면의 유일한 입력이라 바로 입력할 수 있게 한다
+            // eslint-disable-next-line jsx-a11y-x/no-autofocus
             autoFocus
           />
         </Form.Item>
