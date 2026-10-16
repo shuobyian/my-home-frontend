@@ -2,6 +2,7 @@ import { App, Button, Input, Space, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
 import { ROUTES } from "app/routes";
 import { useAddToCart } from "components/cart/useAddToCart";
+import { Panel } from "components/common/Panel";
 import { ResultTable } from "components/result/ResultTable";
 import { parseResultList } from "domain/result";
 import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
@@ -77,23 +78,17 @@ export function FreeResultPage() {
         이 결과는 서버에 저장되지 않으며 현재 접속 중인 브라우저에 저장할 수
         있습니다.
       </Typography.Text>
-      <Space
-        style={{
-          padding: "10px",
-          border: "1px solid #eeeeee",
-          borderRadius: "10px",
-          gap: "10px",
-          width: "100%",
-        }}
-      >
-        <Input
-          placeholder='물품명 입력'
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onPressEnter={() => setQuery(name)}
-        />
-        <Button onClick={() => setQuery(name)}>검색</Button>
-      </Space>
+      <Panel>
+        <Space.Compact style={{ width: "100%" }}>
+          <Input
+            placeholder='물품명 입력'
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onPressEnter={() => setQuery(name)}
+          />
+          <Button onClick={() => setQuery(name)}>검색</Button>
+        </Space.Compact>
+      </Panel>
       {isError && !showSaved ? (
         <Typography.Text type='danger'>
           결과를 계산할 수 없습니다. {getErrorMessage(error)}
