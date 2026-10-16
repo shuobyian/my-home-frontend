@@ -50,7 +50,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
             {result.product.materials.map((material) => (
               <Typography.Text
                 key={material.name}
-                style={{ color: token.colorInfo }}
+                style={{ color: token.colorInfoText }}
               >
                 {material.name} {formatNumber(material.count)}개
               </Typography.Text>

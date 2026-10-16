@@ -9,6 +9,7 @@ import jsxA11y from "eslint-plugin-jsx-a11y-x";
 import reactHooks from "eslint-plugin-react-hooks";
 import testingLibrary from "eslint-plugin-testing-library";
 import { defineConfig, globalIgnores } from "eslint/config";
+import fs from "node:fs";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
@@ -32,14 +33,13 @@ const HOOK_RULES_FROM_REACT_HOOKS = [
   "unsupported-syntax",
 ];
 // components의 도메인 폴더. 결과 표시(result)는 여러 화면이 함께 쓰는 공용 도메인이다.
-const COMPONENT_DOMAINS = [
-  "auth",
-  "cart",
-  "market",
-  "product",
-  "result",
-  "walnut",
-];
+// 새 도메인 폴더도 빠지지 않도록 실제 폴더 목록에서 만든다
+const COMPONENT_DOMAINS = fs
+  .readdirSync(new URL("./src/components/", import.meta.url), {
+    withFileTypes: true,
+  })
+  .filter((entry) => entry.isDirectory() && entry.name !== "common")
+  .map((entry) => entry.name);
 const SHARED_COMPONENT_DOMAINS = ["result"];
 
 const COMPONENT_ZONES = [
