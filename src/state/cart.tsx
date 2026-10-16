@@ -45,9 +45,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, dispatch] = useReducer(cartReducer, undefined, loadCart);
 
   useEffect(() => {
-    writeJSON(STORAGE_KEY.CART, cart);
-    // 새 형식으로 저장한 뒤에는 이전 형식을 지운다
-    removeItem(STORAGE_KEY.LEGACY_CART);
+    // 새 형식으로 저장에 성공했을 때만 이전 형식을 지운다(실패하면 다음에 다시 옮긴다)
+    if (writeJSON(STORAGE_KEY.CART, cart)) {
+      removeItem(STORAGE_KEY.LEGACY_CART);
+    }
   }, [cart]);
 
   const value = useMemo<CartContextValue>(

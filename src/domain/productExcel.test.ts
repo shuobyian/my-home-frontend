@@ -1,13 +1,15 @@
 import { CategoryType, ToolType } from "types/enums";
 import { createProduct } from "test/fixtures";
 import {
-  diffProducts,
   excelRowsToProducts,
   nextProductId,
+  normalizeProductIds,
   parseSavedProducts,
   ProductExcelRow,
   productsToExcelRows,
+  summarizeBulkSave,
 } from "domain/productExcel";
+import { Product } from "types/product";
 
 function createRow(overrides: Partial<ProductExcelRow> = {}): ProductExcelRow {
   return {
@@ -179,39 +181,84 @@ describe("nextProductId", () => {
       nextProductId([createProduct({ id: 7 }), createProduct({ id: 3 })])
     ).toBe(8);
   });
+
+  it("정수가 아닌 id는 무시한다(NaN을 만들지 않는다)", () => {
+    const broken = { ...createProduct({ id: 2 }), id: undefined } as unknown;
+    expect(nextProductId([broken as Product, createProduct({ id: 2 })])).toBe(
+      3
+    );
+  });
 });
 
-describe("diffProducts", () => {
-  it("id 기준으로 추가·수정·삭제를 구분한다", () => {
-    const a = createProduct({ id: 1, name: "A" });
-    const b = createProduct({ id: 2, name: "B" });
-    const c = createProduct({ id: 3, name: "C" });
-    const bEdited = { ...b, level: 99 };
-    const d = createProduct({ id: 4, name: "D" });
+describe("normalizeProductIds", () => {
+  it("id가 없거나 중복된 행에 새 번호를 매기고 나머지는 그대로 둔다", () => {
+    const a = createProduct({ id: 5, name: "A" });
+    const b = {
+      ...createProduct({ name: "B" }),
+      id: undefined,
+    } as unknown as Product;
+    const c = createProduct({ id: 5, name: "C" });
 
-    expect(diffProducts([a, b, c], [d, a, bEdited])).toEqual({
-      added: [d],
-      updated: [bEdited],
-      removed: [c],
-    });
+    expect(
+      normalizeProductIds([a, b, c]).map(({ id, name }) => [id, name])
+    ).toEqual([
+      [5, "A"],
+      [6, "B"],
+      [7, "C"],
+    ]);
+  });
+});
+
+describe("summarizeBulkSave", () => {
+  const saved = [
+    createProduct({ id: 1, name: "A" }),
+    createProduct({ id: 2, name: "B" }),
+    createProduct({ id: 3, name: "C" }),
+  ];
+
+  it("마지막 저장본과 이름으로 비교해 추가·이름 변경·수정·삭제를 구분한다", () => {
+    const current = [
+      createProduct({ id: 1, name: "A" }),
+      createProduct({ id: 2, name: "B2" }),
+      createProduct({ id: 3, name: "C", level: 99 }),
+      createProduct({ id: 4, name: "D" }),
+    ];
+
+    const summary = summarizeBulkSave(saved, current);
+
+    expect(summary.toAdd.map(({ name }) => name)).toEqual(["B2", "D"]);
+    expect(summary.renamed.map(({ name }) => name)).toEqual(["B2"]);
+    expect(summary.edited.map(({ name }) => name)).toEqual(["C"]);
+    expect(summary.removed.map(({ name }) => name)).toEqual(["B"]);
   });
 
-  it("변경이 없으면 모두 빈 배열", () => {
-    const list = [createProduct({ id: 1 })];
-    expect(diffProducts(list, JSON.parse(JSON.stringify(list)))).toEqual({
-      added: [],
-      updated: [],
+  it("저장한 적이 없으면 가져온 행은 모두 추가 대상이다", () => {
+    expect(summarizeBulkSave([], saved).toAdd).toEqual(saved);
+  });
+
+  it("id만 바뀐 행은 변경으로 보지 않는다", () => {
+    const reNumbered = saved.map((p, i) => ({ ...p, id: i + 100 }));
+    expect(summarizeBulkSave(saved, reNumbered)).toEqual({
+      toAdd: [],
+      renamed: [],
+      edited: [],
       removed: [],
     });
   });
 });
 
 describe("parseSavedProducts", () => {
-  it("표에 필요한 필드를 갖춘 항목만 남긴다", () => {
+  it("이름·재료를 갖춘 항목만 남기고 id가 없으면 번호를 매긴다", () => {
     const valid = createProduct({ id: 1 });
+    const noId = { name: "id 없음", materials: [] };
     expect(
-      parseSavedProducts([valid, { id: "2", name: "x", materials: [] }, null])
-    ).toEqual([valid]);
+      parseSavedProducts([valid, noId, { name: 3, materials: [] }, null]).map(
+        ({ id, name }) => [id, name]
+      )
+    ).toEqual([
+      [1, valid.name],
+      [2, "id 없음"],
+    ]);
   });
 
   it("배열이 아니면 빈 배열", () => {

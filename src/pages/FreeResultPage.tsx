@@ -40,7 +40,12 @@ export function FreeResultPage() {
 
   const onSave = () => {
     if (!data) return;
-    writeJSON(STORAGE_KEY.RESULT, data);
+    if (!writeJSON(STORAGE_KEY.RESULT, data)) {
+      message.error(
+        "브라우저에 저장하지 못했습니다. 저장 공간이나 사이트 데이터 설정을 확인해주세요."
+      );
+      return;
+    }
     setSaved(data);
     message.success("현재 결과를 브라우저에 저장했습니다.");
   };

@@ -4,9 +4,10 @@ import { ExcelButton } from "components/product/ExcelButton";
 import { ProductNameList } from "components/product/ProductNameList";
 import { ProductTableView } from "components/product/ProductTableView";
 import {
-  diffProducts,
   nextProductId,
+  normalizeProductIds,
   parseSavedProducts,
+  summarizeBulkSave,
 } from "domain/productExcel";
 import { formatNumber } from "lib/format";
 import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
@@ -23,12 +24,11 @@ export function RawProductTable() {
   const [products, setProducts] = useState<Product[]>(() =>
     parseSavedProducts(readJSON(STORAGE_KEY.PRODUCT))
   );
-  // 마지막으로 가져오거나 저장한 시점의 목록(변경 사항 비교 기준)
-  const [baseline, setBaseline] = useState<Product[]>(products);
+  // 마지막으로 서버에 저장한 목록(저장 확인 요약의 기준). 엑셀을 가져와도 바꾸지 않는다.
+  const [lastSaved, setLastSaved] = useState<Product[]>(products);
 
   const importProducts = (imported: Product[]) => {
-    setProducts(imported);
-    setBaseline(imported);
+    setProducts(normalizeProductIds(imported));
   };
 
   const save = (snapshot: Product[]) => {
@@ -39,7 +39,7 @@ export function RawProductTable() {
       { products: snapshot.map(({ id, ...product }) => product) },
       {
         onSuccess: (saved) => {
-          setBaseline(snapshot);
+          setLastSaved(snapshot);
           modal.info({
             title: `${formatNumber(saved.length)}개 물품이 추가되었습니다.`,
             content: <ProductNameList products={saved} />,
@@ -55,39 +55,53 @@ export function RawProductTable() {
 
   const confirmSave = () => {
     const snapshot = products;
-    const { added, updated, removed } = diffProducts(baseline, snapshot);
-    const sections = [
-      { label: "추가", items: added },
-      { label: "수정", items: updated },
-      { label: "삭제", items: removed },
-    ].filter(({ items }) => items.length > 0);
+    const { toAdd, renamed, edited, removed } = summarizeBulkSave(
+      lastSaved,
+      snapshot
+    );
 
     modal.confirm({
-      title: "저장하시겠습니까?",
+      title: "서버에 저장하시겠습니까?",
+      width: 520,
       content: (
-        <>
-          <Typography.Paragraph type='secondary'>
-            일괄 저장은 서버에 없는 이름의 물품만 추가합니다. 이미 있는 물품의
-            수정·삭제는 반영되지 않으니 '물품 리스트'에서 해주세요.
-          </Typography.Paragraph>
-          {sections.length === 0 ? (
+        <Space direction='vertical' style={{ width: "100%" }}>
+          <Typography.Text type='secondary'>
+            일괄 저장은 서버에 없는 이름의 물품만 추가합니다. 서버에 이미 있는
+            이름은 건너뜁니다.
+          </Typography.Text>
+          {toAdd.length === 0 ? (
             <Typography.Text>
-              마지막 저장 이후 바뀐 물품이 없습니다.
+              마지막 저장 이후 추가할 새 이름이 없습니다.
             </Typography.Text>
           ) : (
-            sections.map(({ label, items }) => (
-              <div key={label}>
-                <Typography.Text strong>
-                  {label} {formatNumber(items.length)}개
-                </Typography.Text>
-                <ProductNameList products={items} />
-              </div>
-            ))
+            <div>
+              <Typography.Text strong>
+                추가 요청 {formatNumber(toAdd.length)}개
+              </Typography.Text>
+              <ProductNameList products={toAdd} />
+            </div>
           )}
-        </>
+          {renamed.length > 0 && (
+            <Typography.Text type='warning'>
+              이름을 바꾼 {formatNumber(renamed.length)}개는 새 물품으로
+              추가되고, 원래 이름의 물품은 서버에 그대로 남습니다.
+            </Typography.Text>
+          )}
+          {(edited.length > 0 || removed.length > 0) && (
+            <div>
+              <Typography.Text type='warning'>
+                반영되지 않는 변경: 수정 {formatNumber(edited.length)}개, 삭제{" "}
+                {formatNumber(removed.length)}개. 기존 물품의 수정·삭제는 '물품
+                리스트'에서 해주세요.
+              </Typography.Text>
+              <ProductNameList products={[...edited, ...removed]} />
+            </div>
+          )}
+        </Space>
       ),
       onOk: () => save(snapshot),
-      okText: "확인",
+      okButtonProps: { disabled: toAdd.length === 0 },
+      okText: "저장",
       cancelText: "취소",
     });
   };
@@ -100,7 +114,8 @@ export function RawProductTable() {
         total={products.length}
         onAdd={async (product) => {
           setProducts((prev) => [
-            { ...product, id: nextProductId(prev) },
+            // 지운 행의 id를 재사용하지 않도록 마지막 저장본의 id도 함께 본다
+            { ...product, id: nextProductId([...prev, ...lastSaved]) },
             ...prev,
           ]);
           message.success("추가되었습니다");

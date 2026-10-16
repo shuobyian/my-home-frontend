@@ -36,7 +36,7 @@ const table = createResult({
 function cartOf(...entries: [CartSource, Result, number][]): Cart {
   return Object.fromEntries(
     entries.map(([source, item, count]) => {
-      const key = cartKey(source, item.id);
+      const key = cartKey(source, item);
       return [key, { key, source, item, count }];
     })
   );
@@ -125,7 +125,11 @@ describe("cartReducer", () => {
     let cart = cartReducer({}, { type: "add", source: "server", item: chair });
     cart = cartReducer(cart, { type: "add", source: "free", item: chair });
 
-    expect(Object.keys(cart)).toEqual(["server:1", "free:1"]);
+    expect(Object.keys(cart)).toEqual([
+      cartKey("server", chair),
+      cartKey("free", chair),
+    ]);
+    expect(Object.keys(cart)[0]).toBe("server:1");
   });
 
   it("add: 이미 담긴 결과는 처음 담은 스냅샷(가격)을 유지한다", () => {
@@ -135,6 +139,50 @@ describe("cartReducer", () => {
 
     expect(cart["server:1"].item).toBe(chair);
     expect(cart["server:1"].count).toBe(2);
+  });
+
+  it("add: 호두작·자유 모드는 같은 id라도 스냅샷(재료·가격)이 다르면 따로 담는다", () => {
+    // 호두작 결과는 필요한 앰플 개수만큼 곱해져 온다(Lv60→61은 7개분, Lv60→70은 57개분)
+    const ampleFor7 = createResult({
+      id: 50,
+      materials: [{ name: "호두", count: 7, price: 700 }],
+    });
+    const ampleFor57 = createResult({
+      id: 50,
+      materials: [{ name: "호두", count: 57, price: 5700 }],
+    });
+
+    let cart = cartReducer(
+      {},
+      { type: "add", source: "walnut", item: ampleFor7 }
+    );
+    cart = cartReducer(cart, {
+      type: "add",
+      source: "walnut",
+      item: ampleFor57,
+    });
+    cart = cartReducer(cart, {
+      type: "add",
+      source: "walnut",
+      item: ampleFor7,
+    });
+
+    expect(Object.values(cart).map(({ count }) => count)).toEqual([2, 1]);
+    expect(aggregateMaterials(cart)).toEqual([
+      { name: "호두", count: 7 * 2 + 57, price: 700 * 2 + 5700 },
+    ]);
+  });
+
+  it("add: 기본 시세 결과는 id로 묶고 처음 스냅샷을 유지한다", () => {
+    const repriced = createResult({
+      ...chair,
+      materials: [{ name: "원목", count: 10, price: 9999 }],
+    });
+    let cart = cartReducer({}, { type: "add", source: "server", item: chair });
+    cart = cartReducer(cart, { type: "add", source: "server", item: repriced });
+
+    expect(Object.keys(cart)).toEqual(["server:1"]);
+    expect(cart["server:1"].item).toBe(chair);
   });
 
   it("increment / decrement: 1개에서 줄이면 항목을 삭제한다", () => {
@@ -232,6 +280,29 @@ describe("migrateLegacyCart", () => {
     expect(migrateLegacyCart(legacy)).toEqual(
       cartOf(["server", chair, 2], ["server", vase, 1])
     );
+  });
+
+  it("이전 앱에서 들어갈 수 있던 소수·0 이하 수량과 null 가격은 보정해서 살린다", () => {
+    const nullPriced = {
+      ...vase,
+      materials: [{ name: "돌", count: 4, price: null }],
+    };
+    const legacy = {
+      [chair.id]: { item: chair, count: 1.5 },
+      [table.id]: { item: table, count: -3 },
+      [vase.id]: { item: nullPriced, count: 2 },
+    };
+
+    const migrated = migrateLegacyCart(JSON.parse(JSON.stringify(legacy)));
+
+    expect(
+      Object.values(migrated).map(({ key, count }) => [key, count])
+    ).toEqual([
+      ["server:1", 2],
+      ["server:2", 2],
+      ["server:3", 1],
+    ]);
+    expect(migrated["server:2"].item.materials[0].price).toBe(0);
   });
 
   it("손상된 값은 빈 장바구니로 변환한다", () => {

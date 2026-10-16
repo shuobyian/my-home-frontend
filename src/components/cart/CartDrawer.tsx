@@ -10,6 +10,7 @@ import {
 } from "antd";
 import { ROUTES } from "app/routes";
 import { CART_SOURCE_LABEL } from "domain/cart";
+import { formatGold } from "lib/format";
 import { useNavigate } from "react-router-dom";
 import { useCart } from "state/cart";
 
@@ -63,7 +64,8 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                 description={
                   <Space direction='vertical' style={{ width: "100%" }}>
                     <Typography.Text type='secondary'>
-                      {CART_SOURCE_LABEL[source]}
+                      {CART_SOURCE_LABEL[source]} · 재료비{" "}
+                      {formatGold(item.totalPrice)}
                     </Typography.Text>
                     <Space
                       style={{ width: "100%", justifyContent: "space-between" }}

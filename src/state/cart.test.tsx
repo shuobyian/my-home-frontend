@@ -47,7 +47,9 @@ describe("CartProvider / useCart", () => {
 
     const { result } = renderHook(() => useCart(), { wrapper });
 
-    expect(result.current.entries.map(({ key }) => key)).toEqual(["free:1"]);
+    expect(
+      result.current.entries.map(({ source, item }) => [source, item.id])
+    ).toEqual([["free", 1]]);
   });
 
   it("이전 형식으로 저장된 장바구니를 옮기고 이전 키를 지운다", () => {
@@ -63,6 +65,26 @@ describe("CartProvider / useCart", () => {
     ]);
     expect(localStorage.getItem(STORAGE_KEY.LEGACY_CART)).toBeNull();
     expect(stored(STORAGE_KEY.CART)["server:1"].count).toBe(3);
+  });
+
+  it("새 형식 저장에 실패하면 이전 형식을 지우지 않는다(다음에 다시 옮긴다)", () => {
+    localStorage.setItem(
+      STORAGE_KEY.LEGACY_CART,
+      JSON.stringify({ [chair.id]: { item: chair, count: 3 } })
+    );
+    const original = Storage.prototype.setItem;
+    const spy = jest
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(function (this: Storage, key: string, value: string) {
+        if (key === STORAGE_KEY.CART) throw new Error("QuotaExceededError");
+        original.call(this, key, value);
+      });
+
+    renderHook(() => useCart(), { wrapper });
+    spy.mockRestore();
+
+    expect(localStorage.getItem(STORAGE_KEY.LEGACY_CART)).not.toBeNull();
+    expect(localStorage.getItem(STORAGE_KEY.CART)).toBeNull();
   });
 
   it("저장값이 손상되어 있으면 빈 장바구니로 시작한다", () => {

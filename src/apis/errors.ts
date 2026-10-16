@@ -4,7 +4,8 @@ import axios from "axios";
 export interface ErrorResponseBody {
   statusCode: number;
   message: string;
-  error: string;
+  // 5xx 응답에는 없다
+  error?: string;
 }
 
 const UNKNOWN_ERROR_MESSAGE = "알 수 없는 오류가 발생했습니다.";

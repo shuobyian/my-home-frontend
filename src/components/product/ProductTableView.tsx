@@ -77,16 +77,22 @@ export function ProductTableView({
 
   const confirmRemove = () => {
     const targets = selection.rows;
-    modal.confirm({
-      title: `${formatNumber(targets.length)}개 물품을 삭제하시겠습니까?`,
-      content: <ProductNameList products={targets} />,
-      okText: "삭제",
-      cancelText: "취소",
-      onOk: async () => {
-        await onRemove(targets);
-        setSelection(EMPTY_SELECTION);
-      },
-    });
+    // then을 붙이면 onOk가 실패(reject)해도 antd가 다시 던지지 않고 확인창을 유지한다
+    modal
+      .confirm({
+        title: `${formatNumber(targets.length)}개 물품을 삭제하시겠습니까?`,
+        content: <ProductNameList products={targets} />,
+        okText: "삭제",
+        cancelText: "취소",
+        onOk: async () => {
+          await onRemove(targets);
+          setSelection(EMPTY_SELECTION);
+        },
+      })
+      .then(
+        () => undefined,
+        () => undefined
+      );
   };
 
   return (

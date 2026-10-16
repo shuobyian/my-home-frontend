@@ -19,12 +19,13 @@ export function readJSON(key: string): unknown {
   }
 }
 
-// 저장에 실패해도(저장 공간 부족, 시크릿 모드 등) 화면 동작은 계속한다
-export function writeJSON(key: string, value: unknown) {
+// 저장 공간 부족·저장 차단 등으로 실패해도 예외를 던지지 않고 false를 반환한다
+export function writeJSON(key: string, value: unknown): boolean {
   try {
     localStorage.setItem(key, JSON.stringify(value));
+    return true;
   } catch {
-    // 저장 실패는 무시한다
+    return false;
   }
 }
 

@@ -69,6 +69,11 @@ export function ProductModal({
       onOk={handleOk}
       onCancel={onClose}
       confirmLoading={submitting}
+      // 저장 중에는 닫지 못하게 해서, 실패 시 입력을 유지하고 늦게 온 응답이 다른 모달을 닫지 않게 한다
+      closable={!submitting}
+      maskClosable={!submitting}
+      keyboard={!submitting}
+      cancelButtonProps={{ disabled: submitting }}
     >
       <Form
         form={form}
