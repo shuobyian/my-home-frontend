@@ -2,7 +2,7 @@ import { Button, Result, Space } from "antd";
 import { getErrorMessage } from "apis/errors";
 import { ROUTES } from "app/routes";
 import { isChunkLoadError } from "lib/chunk";
-import { Component, ReactNode, useRef } from "react";
+import { Component, ReactNode, useEffect, useRef } from "react";
 import {
   QueryErrorResetBoundary,
   useQueryErrorResetBoundary,
@@ -20,28 +20,28 @@ interface ErrorBoundaryProps {
 interface ErrorBoundaryState {
   hasError: boolean;
   error: unknown;
+  resetKey: string;
 }
 
 class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
-  state: ErrorBoundaryState = { hasError: false, error: null };
+  state: ErrorBoundaryState = {
+    hasError: false,
+    error: null,
+    resetKey: this.props.resetKey,
+  };
 
-  static getDerivedStateFromError(error: unknown): ErrorBoundaryState {
+  static getDerivedStateFromError(error: unknown) {
     return { hasError: true, error };
   }
 
-  componentDidUpdate(
-    prevProps: ErrorBoundaryProps,
-    prevState: ErrorBoundaryState
-  ) {
-    // 이미 오류 화면을 보여 주던 중에 화면을 이동했을 때만 초기화한다.
-    // (이동한 화면에서 방금 난 에러를 같은 커밋에서 지우지 않도록 prevState를 확인)
-    if (
-      prevState.hasError &&
-      this.state.hasError &&
-      prevProps.resetKey !== this.props.resetKey
-    ) {
-      this.reset();
-    }
+  // 화면을 이동하면(resetKey 변경) 같은 렌더에서 오류 상태를 지운다.
+  // 이동한 화면이 렌더 중에 새로 던진 에러는 그 뒤 getDerivedStateFromError가 다시 잡는다.
+  static getDerivedStateFromProps(
+    props: ErrorBoundaryProps,
+    state: ErrorBoundaryState
+  ): Partial<ErrorBoundaryState> | null {
+    if (props.resetKey === state.resetKey) return null;
+    return { hasError: false, error: null, resetKey: props.resetKey };
   }
 
   reset = () => {
@@ -90,15 +90,23 @@ function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
   // pathname이 아니라 key를 쓴다: 홈에서 '홈으로'처럼 같은 경로로 이동해도 초기화된다
   const { key } = useLocation();
   const navigate = useNavigate();
-  const { reset } = useQueryErrorResetBoundary();
+  const { reset, clearReset } = useQueryErrorResetBoundary();
 
   // 화면을 이동하면 캐시에 에러로 남은 쿼리를 마운트 시 다시 요청하도록 표시한다.
   // reset은 내부 플래그만 바꾸므로 렌더 중에 호출해도 안전하다.
+  // (ErrorBoundary도 같은 렌더에서 초기화되므로 새 화면의 쿼리가 이 표시를 보고 마운트된다)
   const prevKey = useRef(key);
   if (prevKey.current !== key) {
     prevKey.current = key;
     reset();
   }
+
+  // 이동이 반영되면 표시를 다시 내린다. 표시가 남아 있는 동안에는 쿼리 에러가
+  // 오류 화면으로 올라가지 않는데, 새로 마운트되는 쿼리만 이를 내려 주므로
+  // 검색 조건만 바뀌는 화면(같은 컴포넌트 유지)에서는 계속 남아 있게 된다.
+  useEffect(() => {
+    clearReset();
+  }, [key, clearReset]);
 
   return (
     <ErrorBoundary
