@@ -41,22 +41,18 @@ describe("calculateItem", () => {
     ]);
   });
 
-  it("여러 결과에 같은 재료가 있으면 개수를 합산한다", () => {
+  it("여러 결과에 같은 재료가 있으면 개수와 가격을 합산한다", () => {
     const cart: StorageResult = {
       [chair.id]: { item: chair, count: 2 },
       [table.id]: { item: table, count: 1 },
     };
 
+    // 원목: 개수 10×2 + 4×1 = 24, 가격 5000×2 + 2000×1 = 12000
     expect(calculateItem(cart)).toEqual([
-      expect.objectContaining({ name: "원목", count: 24 }),
-      expect.objectContaining({ name: "천", count: 4 }),
+      { name: "원목", count: 24, price: 12000 },
+      { name: "천", count: 4, price: 600 },
     ]);
   });
-
-  // 기대값: 원목 10000 + 2000 = 12000골드. 현재는 count를 더해 10004가 나온다.
-  it.todo(
-    "여러 결과에 같은 재료가 있으면 가격도 합산한다 (R01, 단계 1에서 수정)"
-  );
 
   it("입력을 변경하지 않는다", () => {
     const cart: StorageResult = {
