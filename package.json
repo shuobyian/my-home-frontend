@@ -2,6 +2,10 @@
   "name": "my-home-frontend",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@12.14.0",
+  "engines": {
+    "node": ">=24"
+  },
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "@emotion/react": "^11.11.1",
@@ -21,7 +25,7 @@
     "xlsx": "^0.18.5"
   },
   "scripts": {
-    "start": "react-scripts start --max-old-space-size=4096",
+    "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
