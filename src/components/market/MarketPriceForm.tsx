@@ -31,12 +31,12 @@ export function MarketPriceForm({
   const [form] = Form.useForm<MarketFormValues>();
 
   // 처음 값이 준비되면 한 번만 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록)
-  const filled = useRef(false);
+  const filledRef = useRef(false);
   useEffect(() => {
     const markets = initialMarkets ?? serverMarkets;
-    if (filled.current || !markets) return;
+    if (filledRef.current || !markets) return;
     form.setFieldsValue({ markets });
-    filled.current = true;
+    filledRef.current = true;
   }, [form, initialMarkets, serverMarkets]);
 
   const loadServerMarkets = () => {

@@ -24,208 +24,13 @@
     "test": "vitest",
     "test:ci": "vitest run",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx --max-warnings=0",
+    "lint": "eslint . --max-warnings=0",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ],
-    "settings": {
-      "import/resolver": {
-        "typescript": {
-          "project": "./tsconfig.json"
-        }
-      }
-    },
-    "rules": {
-      "import/no-restricted-paths": [
-        "error",
-        {
-          "zones": [
-            {
-              "target": [
-                "./src/components",
-                "./src/pages"
-              ],
-              "from": "./src/apis",
-              "except": [
-                "./errors.ts"
-              ],
-              "message": "화면 코드는 queries/ 훅을 쓰고, apis/에서는 apis/errors만 가져옵니다."
-            },
-            {
-              "target": [
-                "./src/components",
-                "./src/pages"
-              ],
-              "from": "./src/app",
-              "except": [
-                "./routes.ts"
-              ],
-              "message": "화면 코드는 app/에서 app/routes만 가져옵니다."
-            },
-            {
-              "target": "./src/components",
-              "from": "./src/pages",
-              "message": "components는 pages를 가져오지 않습니다(조합은 pages에서)."
-            },
-            {
-              "target": "./src/state",
-              "from": [
-                "./src/app",
-                "./src/pages",
-                "./src/components",
-                "./src/queries",
-                "./src/apis"
-              ],
-              "message": "state는 화면·서버 상태 레이어를 가져오지 않습니다."
-            },
-            {
-              "target": [
-                "./src/apis",
-                "./src/queries"
-              ],
-              "from": [
-                "./src/app",
-                "./src/pages",
-                "./src/components",
-                "./src/state"
-              ],
-              "message": "apis·queries는 화면·상태 레이어를 가져오지 않습니다."
-            },
-            {
-              "target": "./src/apis",
-              "from": "./src/queries",
-              "message": "apis는 queries를 가져오지 않습니다."
-            },
-            {
-              "target": [
-                "./src/domain",
-                "./src/lib"
-              ],
-              "from": [
-                "./src/app",
-                "./src/pages",
-                "./src/components",
-                "./src/state",
-                "./src/queries",
-                "./src/apis"
-              ],
-              "message": "domain·lib는 상위 레이어를 가져오지 않습니다."
-            },
-            {
-              "target": "./src/types",
-              "from": [
-                "./src/app",
-                "./src/pages",
-                "./src/components",
-                "./src/state",
-                "./src/queries",
-                "./src/apis",
-                "./src/domain",
-                "./src/lib"
-              ],
-              "message": "types는 다른 레이어를 가져오지 않습니다."
-            }
-          ]
-        }
-      ]
-    },
-    "overrides": [
-      {
-        "files": [
-          "src/components/**",
-          "src/pages/**"
-        ],
-        "excludedFiles": [
-          "src/**/*.test.ts",
-          "src/**/*.test.tsx"
-        ],
-        "rules": {
-          "no-restricted-imports": [
-            "error",
-            {
-              "paths": [
-                {
-                  "name": "axios",
-                  "message": "API 호출은 apis/와 queries/ 훅을 통해서만 합니다."
-                },
-                {
-                  "name": "@tanstack/react-query",
-                  "message": "서버 상태는 queries/의 훅으로만 다룹니다."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "files": [
-          "src/domain/**",
-          "src/types/**",
-          "src/lib/**"
-        ],
-        "excludedFiles": [
-          "src/**/*.test.ts",
-          "src/**/*.test.tsx"
-        ],
-        "rules": {
-          "no-restricted-imports": [
-            "error",
-            {
-              "paths": [
-                {
-                  "name": "react",
-                  "message": "domain·types·lib는 React에 의존하지 않습니다."
-                },
-                {
-                  "name": "antd",
-                  "message": "domain·types·lib는 UI 라이브러리에 의존하지 않습니다."
-                },
-                {
-                  "name": "axios",
-                  "message": "domain·types·lib는 HTTP에 의존하지 않습니다."
-                },
-                {
-                  "name": "@tanstack/react-query",
-                  "message": "domain·types·lib는 서버 상태에 의존하지 않습니다."
-                }
-              ]
-            }
-          ]
-        }
-      },
-      {
-        "files": [
-          "src/**/*.ts",
-          "src/**/*.tsx"
-        ],
-        "excludedFiles": [
-          "src/lib/storage.ts",
-          "src/**/*.test.ts",
-          "src/**/*.test.tsx"
-        ],
-        "rules": {
-          "no-restricted-syntax": [
-            "error",
-            "WithStatement",
-            {
-              "selector": "Identifier[name='localStorage']",
-              "message": "localStorage는 lib/storage의 readJSON·writeJSON으로만 접근합니다."
-            },
-            {
-              "selector": "ImportDeclaration[source.value=/^xlsx/]",
-              "message": "xlsx는 lib/excel에서 동적 import로만 불러옵니다(첫 화면 번들에서 제외)."
-            }
-          ]
-        }
-      }
-    ]
-  },
   "devDependencies": {
+    "@eslint-react/eslint-plugin": "5.27.2",
+    "@eslint/js": "10.0.1",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "^13.0.0",
     "@testing-library/user-event": "^13.2.1",
@@ -233,12 +38,19 @@
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
     "@vitejs/plugin-react": "6.1.1",
-    "eslint": "8.54.0",
-    "eslint-config-react-app": "7.0.1",
+    "@vitest/eslint-plugin": "1.6.27",
+    "confusing-browser-globals": "1.0.11",
+    "eslint": "10.12.0",
     "eslint-import-resolver-typescript": "4.4.5",
+    "eslint-plugin-import-x": "4.17.1",
+    "eslint-plugin-jsx-a11y-x": "0.2.0",
+    "eslint-plugin-react-hooks": "7.1.1",
+    "eslint-plugin-testing-library": "7.16.2",
+    "globals": "17.13.0",
     "jsdom": "30.1.1",
     "prettier": "3.9.10",
     "typescript": "5.9.3",
+    "typescript-eslint": "8.71.2",
     "vite": "8.3.2",
     "vitest": "5.0.3"
   }
