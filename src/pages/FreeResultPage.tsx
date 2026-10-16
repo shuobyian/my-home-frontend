@@ -1,4 +1,5 @@
 import { App, Button, Input, Space, Typography } from "antd";
+import { getErrorMessage } from "apis/errors";
 import { ROUTES } from "app/routes";
 import { useAddToCart } from "components/cart/useAddToCart";
 import { ResultTable } from "components/result/ResultTable";
@@ -20,7 +21,7 @@ export function FreeResultPage() {
   };
   const markets = state?.markets;
 
-  const { isLoading, isError, data } = useCalculateResultsQuery(
+  const { isLoading, isError, error, data } = useCalculateResultsQuery(
     { markets: markets ?? [] },
     { enabled: !!markets }
   );
@@ -89,7 +90,9 @@ export function FreeResultPage() {
         <Button onClick={() => setQuery(name)}>검색</Button>
       </Space>
       {isError && !showSaved ? (
-        <Typography.Text>결과를 불러올 수 없습니다.</Typography.Text>
+        <Typography.Text type='danger'>
+          결과를 계산할 수 없습니다. {getErrorMessage(error)}
+        </Typography.Text>
       ) : (
         <ResultTable
           loading={isLoading && !showSaved}

@@ -15,6 +15,12 @@ import { MAX_MATERIAL_SLOTS } from "domain/productExcel";
 import { useState } from "react";
 import { Product, ProductCreateRequest } from "types/product";
 
+// 서버는 물품명·재료명에 쉼표를 허용하지 않는다(결과의 재료 목록을 쉼표로 저장)
+const NO_COMMA_RULE = {
+  pattern: /^[^,]*$/,
+  message: "이름에 쉼표(,)는 쓸 수 없습니다",
+};
+
 interface ProductModalProps {
   // 수정할 물품. 없으면 추가 모드
   product?: Product;
@@ -74,7 +80,14 @@ export function ProductModal({
         </Form.Item>
         <Form.Item
           name='name'
-          rules={[{ required: true, message: "물품명을 입력해주세요" }]}
+          rules={[
+            {
+              required: true,
+              whitespace: true,
+              message: "물품명을 입력해주세요",
+            },
+            NO_COMMA_RULE,
+          ]}
         >
           <Input placeholder='물품명' />
         </Form.Item>
@@ -120,7 +133,12 @@ export function ProductModal({
                       style={{ margin: 0 }}
                       name={[field.name, "name"]}
                       rules={[
-                        { required: true, message: "물품명을 입력해주세요" },
+                        {
+                          required: true,
+                          whitespace: true,
+                          message: "물품명을 입력해주세요",
+                        },
+                        NO_COMMA_RULE,
                       ]}
                     >
                       <Input placeholder='물품명' />
@@ -148,6 +166,15 @@ export function ProductModal({
                       name={[field.name, "count"]}
                       rules={[
                         { required: true, message: "개수를 입력해주세요" },
+                        {
+                          type: "number",
+                          validator: (_, value) =>
+                            value === undefined || value === null || value > 0
+                              ? Promise.resolve()
+                              : Promise.reject(
+                                  new Error("개수는 0보다 커야 합니다")
+                                ),
+                        },
                       ]}
                     >
                       <InputNumber

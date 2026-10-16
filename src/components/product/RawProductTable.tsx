@@ -35,12 +35,13 @@ export function RawProductTable() {
     writeJSON(STORAGE_KEY.PRODUCT, snapshot);
 
     upload(
-      { products: snapshot },
+      // 서버는 id를 무시하므로 보내지 않는다
+      { products: snapshot.map(({ id, ...product }) => product) },
       {
         onSuccess: (saved) => {
           setBaseline(snapshot);
           modal.info({
-            title: "저장되었습니다.",
+            title: `${formatNumber(saved.length)}개 물품이 추가되었습니다.`,
             content: <ProductNameList products={saved} />,
             okText: "확인",
           });
@@ -63,19 +64,28 @@ export function RawProductTable() {
 
     modal.confirm({
       title: "저장하시겠습니까?",
-      content:
-        sections.length === 0 ? (
-          <Typography.Text>변경된 물품이 없습니다.</Typography.Text>
-        ) : (
-          sections.map(({ label, items }) => (
-            <div key={label}>
-              <Typography.Text strong>
-                {label} {formatNumber(items.length)}개
-              </Typography.Text>
-              <ProductNameList products={items} />
-            </div>
-          ))
-        ),
+      content: (
+        <>
+          <Typography.Paragraph type='secondary'>
+            일괄 저장은 서버에 없는 이름의 물품만 추가합니다. 이미 있는 물품의
+            수정·삭제는 반영되지 않으니 '물품 리스트'에서 해주세요.
+          </Typography.Paragraph>
+          {sections.length === 0 ? (
+            <Typography.Text>
+              마지막 저장 이후 바뀐 물품이 없습니다.
+            </Typography.Text>
+          ) : (
+            sections.map(({ label, items }) => (
+              <div key={label}>
+                <Typography.Text strong>
+                  {label} {formatNumber(items.length)}개
+                </Typography.Text>
+                <ProductNameList products={items} />
+              </div>
+            ))
+          )}
+        </>
+      ),
       onOk: () => save(snapshot),
       okText: "확인",
       cancelText: "취소",

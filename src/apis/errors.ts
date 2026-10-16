@@ -2,7 +2,7 @@ import axios from "axios";
 
 // 서버가 내려주는 에러 응답 본문
 export interface ErrorResponseBody {
-  statusCode: string;
+  statusCode: number;
   message: string;
   error: string;
 }

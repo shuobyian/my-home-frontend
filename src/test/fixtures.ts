@@ -24,6 +24,8 @@ export function createResult(overrides: Partial<Result> = {}): Result {
     product: createProduct(),
     name: "나무 의자",
     level: 1,
+    tool: ToolType.WOOD,
+    category: CategoryType.NORMAL,
     craftingPrice: 100,
     materials: [{ name: "원목", count: 1, price: 500 }],
     totalPrice: 500,

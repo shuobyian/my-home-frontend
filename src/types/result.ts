@@ -16,6 +16,9 @@ export interface Result {
   product: Product;
   name: string;
   level: number;
+  // 물품의 tool·category를 복사한 값
+  tool: Tool;
+  category: Category;
   craftingPrice: number;
   materials: MaterialCost[];
   totalPrice: number;
