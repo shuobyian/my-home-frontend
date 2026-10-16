@@ -17,6 +17,8 @@ const columns: TableColumnsType<Product> = productColumns;
 interface ProductTableViewProps {
   datas: Product[];
   total: number;
+  // 조회 중 표시. 이전 목록을 유지하는 동안(keepPreviousData) 조작을 막는다
+  loading?: boolean;
   openModal: () => void;
   onRemove?: () => void;
   onSave?: () => void;
@@ -41,6 +43,7 @@ interface ProductTableViewProps {
 export function ProductTableView({
   datas,
   total,
+  loading,
   openModal,
   onRemove,
   onSave,
@@ -109,6 +112,7 @@ export function ProductTableView({
           </Typography.Text>
         </div>
         <Table
+          loading={loading}
           pagination={pagination}
           onRow={(record) => {
             return {

@@ -18,7 +18,7 @@ export function AppHeader() {
       }}
     >
       <Space direction='vertical' size={0}>
-        <Link to={ROUTES.HOME}>
+        <Link to={ROUTES.HOME} className='app-home-link'>
           <Typography.Title level={3} style={{ margin: 0 }}>
             놀러와 마이홈 제작 계산기
           </Typography.Title>

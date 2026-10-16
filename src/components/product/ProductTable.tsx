@@ -7,7 +7,7 @@ import {
   useUpdateProductMutation,
 } from "queries/product";
 import { useCreateResultsMutation } from "queries/result";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Product } from "types/product";
 import { ProductTableView } from "components/product/ProductTableView";
 
@@ -18,7 +18,14 @@ export function ProductTable() {
   const [size, setSize] = useState(10);
   const [name, setName] = useState("");
 
-  const { data: product } = useProductsQuery({ page, size, name });
+  const { data: product, isFetching } = useProductsQuery({ page, size, name });
+
+  // 마지막 페이지의 물품을 모두 지우면(삭제 후 재조회) 이전 페이지로 이동한다
+  useEffect(() => {
+    if (product && product.content.length === 0 && page > 0) {
+      setPage((prev) => prev - 1);
+    }
+  }, [product, page]);
 
   const { mutate: add } = useCreateProductMutation();
   const { mutate: edit } = useUpdateProductMutation();
@@ -107,6 +114,7 @@ export function ProductTable() {
       <ProductTableView
         datas={product?.content || []}
         total={product?.totalElements ?? 0}
+        loading={isFetching}
         openModal={openModal}
         onRemove={onRemove}
         add={onAdd}
