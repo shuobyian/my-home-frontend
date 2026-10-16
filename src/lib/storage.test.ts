@@ -1,7 +1,15 @@
-import { readJSON, removeItem, writeJSON } from "lib/storage";
+import {
+  readJSON,
+  readSession,
+  removeItem,
+  removeSession,
+  writeJSON,
+  writeSession,
+} from "lib/storage";
 
 beforeEach(() => {
   localStorage.clear();
+  sessionStorage.clear();
 });
 
 describe("storage", () => {
@@ -34,5 +42,28 @@ describe("storage", () => {
     writeJSON("key", 1);
     removeItem("key");
     expect(readJSON("key")).toBeUndefined();
+  });
+});
+
+describe("session", () => {
+  it("sessionStorage에 저장·읽기·삭제한다", () => {
+    expect(writeSession("s", true)).toBe(true);
+    expect(readSession("s")).toBe(true);
+    expect(localStorage.getItem("s")).toBeNull();
+    removeSession("s");
+    expect(readSession("s")).toBeUndefined();
+  });
+
+  it("손상된 값이나 저장 실패에도 예외를 던지지 않는다", () => {
+    sessionStorage.setItem("broken", "{not json");
+    expect(readSession("broken")).toBeUndefined();
+
+    const spy = jest
+      .spyOn(Storage.prototype, "setItem")
+      .mockImplementation(() => {
+        throw new Error("QuotaExceededError");
+      });
+    expect(writeSession("s", true)).toBe(false);
+    spy.mockRestore();
   });
 });
