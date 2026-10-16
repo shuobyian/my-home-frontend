@@ -1,5 +1,5 @@
 import { Divider, Modal, Typography, message } from "antd";
-import MyHomeError from "apis/lib/error/MyHomeError";
+import { getErrorMessage } from "apis/lib/error/MyHomeError";
 import { Product } from "apis/product/getProducts";
 import { usePostProductsMutation } from "queries/product/useProductMutation";
 import { useRef, useState } from "react";
@@ -80,7 +80,7 @@ export default function RawProductTable() {
           });
         },
         onError: (error) => {
-          message.error((error as MyHomeError).getErrorMessage());
+          message.error(getErrorMessage(error));
         },
       }
     );

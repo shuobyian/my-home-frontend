@@ -19,7 +19,7 @@ export function calculateItem(results: StorageResult) {
         materials[item.name] = {
           name: item.name,
           count: materials[item.name].count + item.count,
-          price: materials[item.name].price + item.count,
+          price: materials[item.name].price + item.price,
         };
       } else {
         materials = {

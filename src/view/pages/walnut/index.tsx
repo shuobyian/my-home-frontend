@@ -1,6 +1,6 @@
 import { Button, Input, Typography, message } from "antd";
 import { WalnutReqParams, WalnutResBody } from "apis/experience/postWalnut";
-import MyHomeError from "apis/lib/error/MyHomeError";
+import { getErrorMessage } from "apis/lib/error/MyHomeError";
 import { useWalnutMutation } from "queries/experience/useWalnutMutation";
 import { useState } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
@@ -25,7 +25,7 @@ export function Walnut() {
         setWalnutResult(data);
       },
       onError: (error) => {
-        message.error((error as MyHomeError).getErrorMessage());
+        message.error(getErrorMessage(error));
       },
     });
   };

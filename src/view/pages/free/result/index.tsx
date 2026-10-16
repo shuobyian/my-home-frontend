@@ -3,7 +3,7 @@ import { Result } from "apis/result/getResults";
 import { IMarket } from "apis/market/putMarkets";
 import { useCalculatorQuery } from "queries/result/useCalculatorQuery";
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { RESULT } from "util/constant/LOCAL_STORAGE_KEY";
 import { ResultList } from "view/components/home/ResultList";
 
@@ -12,11 +12,16 @@ const RESULT_LIST = localStorage.getItem(RESULT);
 export function FreeResult() {
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  const {
-    state: { markets },
-  } = useLocation() as { state: { markets: IMarket[] } };
+  // 주소로 직접 들어오면 state가 없다. 이때는 시세 입력 화면으로 돌려보낸다.
+  const { state } = useLocation() as {
+    state: { markets?: IMarket[] } | null;
+  };
+  const markets = state?.markets;
 
-  const { isLoading, isError, data } = useCalculatorQuery({ markets });
+  const { isLoading, isError, data } = useCalculatorQuery(
+    { markets: markets ?? [] },
+    { enabled: !!markets }
+  );
 
   const [resultList, setResultList] = useState<Result[]>([]);
   const [name, setName] = useState("");
@@ -38,6 +43,8 @@ export function FreeResult() {
   useEffect(() => {
     setResultList(RESULT_LIST ? JSON.parse(RESULT_LIST) : data);
   }, [data]);
+
+  if (!markets) return <Navigate to='/free' replace />;
 
   return (
     <Space direction='vertical'>

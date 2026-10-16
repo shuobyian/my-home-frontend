@@ -1,5 +1,5 @@
 import { Button, Modal, Typography, message } from "antd";
-import MyHomeError from "apis/lib/error/MyHomeError";
+import { getErrorMessage } from "apis/lib/error/MyHomeError";
 import { Product } from "apis/product/getProducts";
 import {
   useDeleteProductsMutation,
@@ -99,7 +99,7 @@ export default function ProductTable() {
               message.success("결과가 생성되었습니다.");
             },
             onError: (error) => {
-              message.error((error as MyHomeError).getErrorMessage());
+              message.error(getErrorMessage(error));
             },
           })
         }

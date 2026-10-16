@@ -1,48 +1,18 @@
-import { IErrorResponse, IMyHomeError } from "apis/lib/error/Error";
 import MyHomeError from "apis/lib/error/MyHomeError";
 import axios from "axios";
 
-declare module "axios" {
-  interface AxiosRequestConfig {
-    pathParams?: Record<string, string>;
-  }
-}
-
-const myAxios = axios.create();
-
-myAxios.interceptors.request.use(async (config) => {
-  if (!config.headers || !config.url) return config;
-
-  const baseURL =
-    process.env.REACT_APP_PROFILE === "DEV"
-      ? "http://localhost:8123"
-      : "http://43.200.90.33:8123";
-  const currentUrl = new URL(`${baseURL}${config.url}`);
-
-  Object.entries(config.pathParams || {}).forEach(([k, v]) => {
-    currentUrl.pathname = currentUrl.pathname.replace(
-      `:${k}`,
-      encodeURIComponent(v)
-    );
-  });
-
-  return {
-    ...config,
-    baseURL: `${currentUrl.protocol}//${currentUrl.host}`,
-    url: currentUrl.pathname,
-  };
+// API 서버 주소는 환경별 .env 파일의 REACT_APP_API_BASE_URL로 정한다.
+// (pnpm start → .env.development, pnpm build → .env.production)
+const myAxios = axios.create({
+  baseURL: process.env.REACT_APP_API_BASE_URL,
+  // 응답이 없을 때 무한 로딩 대신 오류로 처리한다
+  timeout: 30000,
 });
 
+// 모든 API 에러를 MyHomeError로 정규화한다 (응답이 없는 네트워크 오류 포함)
 myAxios.interceptors.response.use(
   (response) => response,
-  (error) => {
-    return Promise.reject(
-      new MyHomeError({
-        request: error.response.request.responseURL,
-        errorResponse: error as IErrorResponse<IMyHomeError>,
-      })
-    );
-  }
+  (error) => Promise.reject(MyHomeError.from(error))
 );
 
 export default myAxios;

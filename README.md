@@ -32,10 +32,15 @@ typecheck → lint → format:check → test:ci → build 순서로 검증합니
 
 ## 환경 변수
 
-로컬 `.env`(git 미추적)에 설정합니다.
+API 서버 주소는 환경별 `.env` 파일로 정합니다. 두 파일은 커밋되어 있습니다.
 
-| 변수                | 설명                                                                                             |
-| ------------------- | ------------------------------------------------------------------------------------------------ |
-| `REACT_APP_PROFILE` | `DEV`이면 API 요청을 `http://localhost:8123`으로 보냅니다. 그 외에는 운영 API 서버를 사용합니다. |
+| 파일               | 사용 시점                | `REACT_APP_API_BASE_URL` |
+| ------------------ | ------------------------ | ------------------------ |
+| `.env.development` | `pnpm start` (개발 서버) | `http://localhost:8123`  |
+| `.env.production`  | `pnpm build` (운영 빌드) | 운영 API 서버            |
 
-> `.env`는 `pnpm build`에도 적용됩니다. 운영 배포용 빌드를 만들 때는 `REACT_APP_PROFILE=DEV`가 설정되어 있지 않은지 확인하세요.
+개발 중에 다른 서버를 쓰려면 `.env.development.local`(git 미추적)에 덮어씁니다.
+
+```bash
+echo "REACT_APP_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
+```

@@ -154,7 +154,7 @@ export function ProductModal({
                       <Button onClick={() => remove(field.name)}>-</Button>
                     )}
                     {field.name === materials.length - 1 && field.name < 4 && (
-                      <Button onClick={() => add({ base: true })}>+</Button>
+                      <Button onClick={() => add({ basic: true })}>+</Button>
                     )}
                   </Space>
                 ))}
