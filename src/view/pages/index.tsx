@@ -1,4 +1,5 @@
 import { Layout } from "antd";
+import { RouteErrorBoundary } from "app/RouteErrorBoundary";
 import { Outlet, Route, Routes } from "react-router-dom";
 import { ManageRoute } from "view/components/manage/ManageRoute";
 import { Calculation } from "view/pages/calculation";
@@ -22,7 +23,9 @@ export function Router() {
               padding: window.outerWidth > 500 ? "10px 100px" : "10px",
             }}
           >
-            <Outlet />
+            <RouteErrorBoundary>
+              <Outlet />
+            </RouteErrorBoundary>
           </Layout>
         }
       >

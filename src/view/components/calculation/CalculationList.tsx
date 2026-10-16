@@ -1,17 +1,20 @@
 import { Avatar, Collapse, List, Space, Typography } from "antd";
 import { useMemo } from "react";
-import { useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 import { calculateItem } from "util/calculateItem";
 import { StorageResult } from "util/hook/useSelectedResults";
 import { StringUtil } from "util/StringUtil";
 import { MaterialTable } from "view/components/shared/MaterialTable";
 
+const EMPTY_RESULTS: StorageResult = {};
+
 export function CalculationList() {
-  const {
-    state: { selectedResults, totalCount },
-  } = useLocation() as {
-    state: { selectedResults: StorageResult; totalCount: number };
+  // 주소로 직접 들어오면 state가 없다. 이때는 홈으로 돌려보낸다.
+  const { state } = useLocation() as {
+    state: { selectedResults?: StorageResult; totalCount?: number } | null;
   };
+  const selectedResults = state?.selectedResults ?? EMPTY_RESULTS;
+  const totalCount = state?.totalCount ?? 0;
 
   const itemList = useMemo(
     () => Object.values(selectedResults),
@@ -23,6 +26,8 @@ export function CalculationList() {
       calculateItem(selectedResults).reduce((acc, curr) => acc + curr.price, 0),
     [selectedResults]
   );
+
+  if (!state?.selectedResults) return <Navigate to='/' replace />;
 
   return (
     <div style={{ width: "100%" }}>
