@@ -46,7 +46,7 @@ export function MaterialTable({ materials }: MaterialTableProps) {
     <Table
       size='small'
       columns={columns}
-      dataSource={materials.map((b) => ({ ...b, key: b.name })) || []}
+      dataSource={materials.map((b) => ({ ...b, key: b.name }))}
       pagination={{
         total: materials.length,
         showSizeChanger: true,

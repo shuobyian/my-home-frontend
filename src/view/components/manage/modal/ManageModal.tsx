@@ -13,7 +13,6 @@ export function ManageModal() {
 
   return (
     <Modal
-      className='manage'
       maskClosable={false}
       keyboard={false}
       centered

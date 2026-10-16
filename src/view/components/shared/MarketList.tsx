@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import { Button, Input, InputNumber } from "antd";
 import Table, { ColumnsType } from "antd/es/table";
 import { IMarket } from "apis/market/putMarkets";
@@ -62,6 +61,7 @@ export function MarketList({ isUsedLocalStorage }: IMarketListProps) {
       reset({ markets: MARKET_LIST ? JSON.parse(MARKET_LIST) : data });
 
     if (!isUsedLocalStorage) resetData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- 시세 데이터를 받았을 때만 폼을 초기화한다
   }, [data]);
 
   return (

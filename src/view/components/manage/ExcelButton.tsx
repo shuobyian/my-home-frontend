@@ -48,10 +48,8 @@ export function ExcelButton({
       const data = XLSX.utils.sheet_to_json(rawData);
 
       const newData = convertExcelToTable(data as Item[]);
-      if (newData) {
-        setDatas(newData);
-        originalDatas.current = newData;
-      }
+      setDatas(newData);
+      originalDatas.current = newData;
     };
   };
 
