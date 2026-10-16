@@ -1,5 +1,6 @@
 import { Table, TableColumnsType } from "antd";
 import { MaterialCost } from "types/result";
+import { toMung } from "domain/result";
 import { formatNumber } from "lib/format";
 
 const columns: TableColumnsType<MaterialCost> = [
@@ -21,7 +22,7 @@ const columns: TableColumnsType<MaterialCost> = [
     dataIndex: "count",
     key: "count",
     render: (count) =>
-      count >= 99 ? `${formatNumber(Math.floor(count / 99))}뭉` : "-",
+      toMung(count) > 0 ? `${formatNumber(toMung(count))}뭉` : "-",
     align: "right",
   },
   {

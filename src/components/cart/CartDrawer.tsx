@@ -1,14 +1,7 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import {
-  Avatar,
-  Button,
-  Drawer,
-  InputNumber,
-  List,
-  Space,
-  Typography,
-} from "antd";
+import { Button, Drawer, InputNumber, List, Space, Typography } from "antd";
 import { ROUTES } from "app/routes";
+import { ItemImage } from "components/common/ItemImage";
 import { CART_SOURCE_LABEL } from "domain/cart";
 import { formatGold } from "lib/format";
 import { useNavigate } from "react-router-dom";
@@ -54,12 +47,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           renderItem={({ key, source, item, count }) => (
             <List.Item key={key}>
               <List.Item.Meta
-                avatar={
-                  <Avatar
-                    size='large'
-                    src={`${process.env.PUBLIC_URL}/images/${item.name}.jpg`}
-                  />
-                }
+                avatar={<ItemImage name={item.name} />}
                 title={item.name}
                 description={
                   <Space direction='vertical' style={{ width: "100%" }}>

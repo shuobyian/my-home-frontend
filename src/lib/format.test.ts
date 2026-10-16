@@ -15,7 +15,16 @@ describe("formatNumber", () => {
     expect(formatNumber(input)).toBe("");
   });
 
-  it.todo("소수 값의 소수부에도 콤마가 들어가는 문제 수정 (R45)");
+  it.each([
+    [1234.5678, "1,234.57"],
+    [0.5, "0.5"],
+    [1000000.1, "1,000,000.1"],
+  ])(
+    "소수부에는 구분 기호를 넣지 않고 둘째 자리까지 쓴다: %p → %p",
+    (input, expected) => {
+      expect(formatNumber(input)).toBe(expected);
+    }
+  );
 });
 
 describe("formatGold", () => {

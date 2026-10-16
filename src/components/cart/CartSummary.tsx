@@ -1,5 +1,6 @@
-import { Avatar, Button, Collapse, Empty, List, Space, Typography } from "antd";
+import { Button, Collapse, Empty, List, Space, Typography } from "antd";
 import { ROUTES } from "app/routes";
+import { ItemImage } from "components/common/ItemImage";
 import { MaterialTable } from "components/result/MaterialTable";
 import { CART_SOURCE_LABEL, sumPrice } from "domain/cart";
 import { formatGold, formatNumber } from "lib/format";
@@ -50,12 +51,7 @@ export function CartSummary() {
                       renderItem={({ key, source, item, count }) => (
                         <List.Item key={key}>
                           <List.Item.Meta
-                            avatar={
-                              <Avatar
-                                size='large'
-                                src={`${process.env.PUBLIC_URL}/images/${item.name}.jpg`}
-                              />
-                            }
+                            avatar={<ItemImage name={item.name} />}
                             title={item.name}
                             description={`${formatNumber(count)}개 · ${
                               CART_SOURCE_LABEL[source]

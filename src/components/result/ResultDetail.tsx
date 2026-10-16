@@ -1,6 +1,8 @@
 import { Space, Typography } from "antd";
+import { ItemImage } from "components/common/ItemImage";
+import { getTotalCost, requiresAffinity } from "domain/result";
 import { Result } from "types/result";
-import { formatNumber } from "lib/format";
+import { formatGold, formatNumber } from "lib/format";
 import { InfoRow } from "components/common/InfoRow";
 import { MaterialTable } from "components/result/MaterialTable";
 
@@ -30,24 +32,17 @@ export function ResultDetail({ result }: ResultDetailProps) {
             <InfoRow title='물품명' value={result.name} />
             <InfoRow
               title={
-                result.name.includes("미미") ? "필요 미미 호감도" : "필요 레벨"
+                requiresAffinity(result) ? "필요 미미 호감도" : "필요 레벨"
               }
               value={`Lv.${result.level} 이상`}
             />
             <InfoRow
               title='필요 금액'
-              value={`${formatNumber(
-                result.totalPrice + result.craftingPrice
-              )}골드 (재료비: ${formatNumber(
+              value={`${formatGold(getTotalCost(result))} (재료비: ${formatGold(
                 result.totalPrice
-              )}골드 + 제작비: ${formatNumber(result.craftingPrice)}골드)`}
+              )} + 제작비: ${formatGold(result.craftingPrice)})`}
             />
-            <img
-              style={{ marginTop: "10px" }}
-              src={`${process.env.PUBLIC_URL}/images/${result.name}.jpg`}
-              width='300'
-              alt='물품 사진'
-            />
+            <ItemImage name={result.name} variant='detail' />
           </Space>
           <Space style={{ gap: "10px" }} direction='vertical'>
             {result.product.materials.map((material) => (
