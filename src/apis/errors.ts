@@ -13,8 +13,6 @@ const NETWORK_ERROR_MESSAGE =
   "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요.";
 
 export class MyHomeError extends Error {
-  // 요청 url
-  request?: string;
   // HTTP 상태 코드 (응답을 받지 못한 경우 없음)
   status?: number;
   // 서버 에러 응답 본문
@@ -22,12 +20,10 @@ export class MyHomeError extends Error {
 
   constructor({
     message,
-    request,
     status,
     data,
   }: {
     message: string;
-    request?: string;
     status?: number;
     data?: Partial<ErrorResponseBody>;
   }) {
@@ -35,7 +31,6 @@ export class MyHomeError extends Error {
     // Babel로 Error를 상속하면 prototype이 끊길 수 있어 instanceof를 보장한다
     Object.setPrototypeOf(this, MyHomeError.prototype);
     this.name = "MyHomeError";
-    this.request = request;
     this.status = status;
     this.data = data;
   }
@@ -46,12 +41,9 @@ export class MyHomeError extends Error {
     if (error instanceof MyHomeError) return error;
 
     if (axios.isAxiosError(error)) {
-      const { response, config } = error;
+      const { response } = error;
       if (!response) {
-        return new MyHomeError({
-          message: NETWORK_ERROR_MESSAGE,
-          request: config?.url,
-        });
+        return new MyHomeError({ message: NETWORK_ERROR_MESSAGE });
       }
 
       const data = response.data as Partial<ErrorResponseBody> | undefined;
@@ -60,7 +52,6 @@ export class MyHomeError extends Error {
           typeof data?.message === "string" && data.message
             ? data.message
             : UNKNOWN_ERROR_MESSAGE,
-        request: response.request?.responseURL ?? config?.url,
         status: response.status,
         data,
       });

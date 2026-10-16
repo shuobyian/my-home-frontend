@@ -2,12 +2,12 @@ import {
   App,
   Button,
   Divider,
-  Input,
   Space,
   Table,
   TableColumnsType,
   Typography,
 } from "antd";
+import { SearchBar } from "@/components/common/SearchBar";
 import { productColumns } from "@/components/product/productColumns";
 import { ProductModal } from "@/components/product/ProductModal";
 import { ProductNameList } from "@/components/product/ProductNameList";
@@ -68,11 +68,9 @@ export function ProductTableView({
   // 페이지를 넘겨도 선택을 유지한다(preserveSelectedRowKeys). 검색어가 바뀌면 초기화한다.
   const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
   const [editing, setEditing] = useState<{ product?: Product } | null>(null);
-  const [keyword, setKeyword] = useState("");
-
-  const search = () => {
+  const search = (keyword: string) => {
     setSelection(EMPTY_SELECTION);
-    onSearch?.(keyword.trim());
+    onSearch?.(keyword);
   };
 
   const confirmRemove = () => {
@@ -114,17 +112,7 @@ export function ProductTableView({
       </div>
       <Divider type='horizontal' />
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-        {onSearch && (
-          <Space.Compact style={{ width: "100%" }}>
-            <Input
-              placeholder='물품 이름'
-              value={keyword}
-              onChange={(e) => setKeyword(e.target.value)}
-              onPressEnter={search}
-            />
-            <Button onClick={search}>검색</Button>
-          </Space.Compact>
-        )}
+        {onSearch && <SearchBar placeholder='물품 이름' onSearch={search} />}
         <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Typography.Text strong>
             선택된 물품 {formatNumber(selection.rows.length)}개

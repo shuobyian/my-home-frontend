@@ -31,7 +31,6 @@ describe("MyHomeError.from", () => {
     expect(error.getErrorMessage()).toBe("이미 존재하는 물품입니다.");
     expect(error.status).toBe(400);
     expect(error.data?.statusCode).toBe(400);
-    expect(error.request).toBe("http://localhost:8123/product");
   });
 
   it("5xx 응답 본문(error 키 없음)의 message를 쓴다", () => {
@@ -62,7 +61,6 @@ describe("MyHomeError.from", () => {
       "서버에 연결할 수 없습니다. 잠시 후 다시 시도해주세요."
     );
     expect(error.status).toBeUndefined();
-    expect(error.request).toBe("/product");
   });
 
   it("이미 MyHomeError면 그대로 반환한다", () => {

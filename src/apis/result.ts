@@ -15,7 +15,8 @@ export async function fetchResults(params: ResultSearchParams) {
   return data;
 }
 
-// 서버에 저장된 물품과 시세로 결과 리스트를 다시 생성한다 (관리자)
+// 결과가 아직 없는 물품의 결과를 서버에 저장된 시세로 새로 만든다 (관리자).
+// 이미 모두 있으면 서버가 400("추가할 결과가 없습니다.")을 돌려준다.
 export async function createResults() {
   await client.post(ENDPOINTS.RESULT);
 }

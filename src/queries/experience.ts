@@ -13,6 +13,8 @@ export const useExperienceQuery = () =>
   useQuery({
     queryKey: experienceKeys.list(),
     queryFn: fetchExperience,
+    // 레벨별 경험치 표는 거의 바뀌지 않으므로 이 탭에서는 한 번만 받는다(새로고침하면 다시 받음)
+    staleTime: Infinity,
   });
 
 // 호두작 계산(GET). 조건이 같으면 캐시를 쓰고, 조건이 없으면 요청하지 않는다.
