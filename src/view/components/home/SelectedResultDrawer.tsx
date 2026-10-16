@@ -92,6 +92,8 @@ export function SelectedResultDrawer({
                       <Button onClick={() => sub(item.id)}>-</Button>
                       <StyledInputNumber
                         value={count}
+                        min={1}
+                        precision={0}
                         onChange={(value: number | string | null) => {
                           if (value) {
                             update(item.id, Number(value));
