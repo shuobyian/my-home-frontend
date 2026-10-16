@@ -8,11 +8,11 @@
   },
   "dependencies": {
     "@ant-design/icons": "5.2.6",
+    "@tanstack/react-query": "5.104.1",
     "antd": "^5.11.5",
     "axios": "^1.4.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-query": "^3.39.3",
     "react-router-dom": "^6.14.2",
     "react-scripts": "5.0.1",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.3/xlsx-0.20.3.tgz"
@@ -163,7 +163,7 @@
                   "message": "API 호출은 apis/와 queries/ 훅을 통해서만 합니다."
                 },
                 {
-                  "name": "react-query",
+                  "name": "@tanstack/react-query",
                   "message": "서버 상태는 queries/의 훅으로만 다룹니다."
                 }
               ]
@@ -199,7 +199,7 @@
                   "message": "domain·types·lib는 HTTP에 의존하지 않습니다."
                 },
                 {
-                  "name": "react-query",
+                  "name": "@tanstack/react-query",
                   "message": "domain·types·lib는 서버 상태에 의존하지 않습니다."
                 }
               ]

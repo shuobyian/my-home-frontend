@@ -49,7 +49,7 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
   const {
     data: results,
     isFetching,
-    isPreviousData,
+    isPlaceholderData,
   } = useResultsQuery({
     page: search.page,
     size: PAGE_SIZE,
@@ -75,7 +75,7 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
 
   // 주소의 페이지가 결과 범위를 넘으면(오래된 링크 등) 마지막 페이지로 바로잡는다
   useEffect(() => {
-    if (!results || isPreviousData) return;
+    if (!results || isPlaceholderData) return;
     const lastPage = Math.max(
       0,
       Math.ceil(results.totalElements / PAGE_SIZE) - 1
@@ -85,7 +85,7 @@ export function ResultSearch({ onSelect }: ResultSearchProps) {
         replace: true,
       });
     }
-  }, [results, isPreviousData, search, setSearchParams]);
+  }, [results, isPlaceholderData, search, setSearchParams]);
 
   const submit = (values: SearchFormValues) => {
     navigateTo({

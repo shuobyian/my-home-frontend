@@ -50,7 +50,7 @@ export function ProductTable() {
       <Button
         style={{ float: "right" }}
         type='primary'
-        loading={createResults.isLoading}
+        loading={createResults.isPending}
         onClick={() =>
           createResults.mutate(undefined, {
             onSuccess: () => {

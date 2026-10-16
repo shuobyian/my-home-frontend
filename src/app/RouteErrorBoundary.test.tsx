@@ -1,7 +1,12 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MyHomeError } from "apis/errors";
 import { RouteErrorBoundary } from "app/RouteErrorBoundary";
-import { QueryClient, QueryClientProvider, useQuery } from "react-query";
+import {
+  keepPreviousData,
+  QueryClient,
+  QueryClientProvider,
+  useQuery,
+} from "@tanstack/react-query";
 import {
   Link,
   MemoryRouter,
@@ -36,7 +41,7 @@ function BrokenPage(): never {
 
 function renderApp(fetcher: () => Promise<string>, initialPath = "/") {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 0, useErrorBoundary: true } },
+    defaultOptions: { queries: { retry: 0, throwOnError: true } },
   });
 
   return render(
@@ -71,14 +76,14 @@ function SearchPage({ fetcher }: { fetcher: (q: string) => Promise<string> }) {
     queryKey: ["search", q],
     queryFn: () => fetcher(q),
     // 실제 검색 화면처럼 조건이 바뀌는 동안 이전 결과를 유지한다
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
   return <div>{data ? `검색: ${data}` : "로딩 중"}</div>;
 }
 
 function renderSearch(fetcher: (q: string) => Promise<string>) {
   const queryClient = new QueryClient({
-    defaultOptions: { queries: { retry: 0, useErrorBoundary: true } },
+    defaultOptions: { queries: { retry: 0, throwOnError: true } },
   });
 
   return render(

@@ -3,7 +3,7 @@ import { login } from "apis/auth";
 import { MyHomeError } from "apis/errors";
 import { RequireAdmin } from "app/RequireAdmin";
 import { SESSION_KEY } from "lib/storage";
-import { QueryClient, QueryClientProvider } from "react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "state/auth";
 
@@ -62,8 +62,6 @@ describe("RequireAdmin", () => {
   });
 
   it("비밀번호가 틀리면 서버 메시지를 보여 주고 관리 화면은 그리지 않는다", async () => {
-    // react-query가 mutation 에러를 console.error로 기록하므로 테스트 출력에서 숨긴다
-    jest.spyOn(console, "error").mockImplementation(() => {});
     mockedLogin.mockRejectedValue(
       new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
     );

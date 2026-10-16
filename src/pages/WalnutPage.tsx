@@ -1,4 +1,4 @@
-import { Alert, Button, Space } from "antd";
+import { Alert, Button, Space, Spin } from "antd";
 import { getErrorMessage } from "apis/errors";
 import { ROUTES } from "app/routes";
 import { useAddToCart } from "components/cart/useAddToCart";
@@ -23,7 +23,8 @@ export function WalnutPage() {
     [queryString]
   );
 
-  const { data, isFetching, isError, error, refetch } = useWalnutQuery(params);
+  const { data, isFetching, isPlaceholderData, isError, error, refetch } =
+    useWalnutQuery(params);
 
   const submit = (values: WalnutParams) => {
     const next = toWalnutSearchParams(values);
@@ -60,7 +61,14 @@ export function WalnutPage() {
         />
       )}
       {data && !isError && (
-        <WalnutResult result={data} onSelectAmple={addToCart} />
+        // 새 조건을 계산하는 동안 보이는 이전 결과는 흐리게 두고 장바구니에 담지 못하게 한다.
+        // (v5는 마지막으로 성공한 결과를 보여 주므로 직전 계산이 실패했어도 그 전 결과가 보일 수 있다)
+        <Spin spinning={isPlaceholderData}>
+          <WalnutResult
+            result={data}
+            onSelectAmple={isPlaceholderData ? undefined : addToCart}
+          />
+        </Spin>
       )}
     </Space>
   );

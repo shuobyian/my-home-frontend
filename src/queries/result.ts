@@ -1,5 +1,10 @@
 import { calculateResults, createResults, fetchResults } from "apis/result";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { Page } from "types/page";
 import {
   CalculatorRequest,
@@ -39,7 +44,7 @@ export const useResultsQuery = (params: ResultSearchParams) =>
     queryFn: () => fetchResults(params),
     select: selectSortedPage,
     // 페이지·검색 조건이 바뀌는 동안 이전 목록을 유지해 깜빡임을 없앤다
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
 export const useCreateResultsMutation = () => {
@@ -47,7 +52,7 @@ export const useCreateResultsMutation = () => {
   return useMutation({
     mutationFn: createResults,
     onSuccess: () => {
-      queryClient.invalidateQueries(resultKeys.all);
+      queryClient.invalidateQueries({ queryKey: resultKeys.all });
     },
   });
 };
@@ -62,5 +67,5 @@ export const useCalculateResultsQuery = (
     select: selectResults,
     enabled,
     // 화면에서 isError를 직접 처리하므로 ErrorBoundary로 던지지 않는다
-    useErrorBoundary: false,
+    throwOnError: false,
   });

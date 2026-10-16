@@ -5,7 +5,12 @@ import {
   fetchProducts,
   updateProduct,
 } from "apis/product";
-import { useMutation, useQuery, useQueryClient } from "react-query";
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from "@tanstack/react-query";
 import { ProductSearchParams } from "types/product";
 
 export const productKeys = {
@@ -19,7 +24,7 @@ export const useProductsQuery = (params: ProductSearchParams) =>
     queryKey: productKeys.list(params),
     queryFn: () => fetchProducts(params),
     // 페이지·검색어가 바뀌는 동안 이전 목록을 유지해 깜빡임을 없앤다
-    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
 // 물품이 바뀌면 물품 목록을 다시 불러온다.
@@ -27,7 +32,7 @@ export const useProductsQuery = (params: ProductSearchParams) =>
 function useInvalidateProducts() {
   const queryClient = useQueryClient();
   return () => {
-    queryClient.invalidateQueries(productKeys.all);
+    queryClient.invalidateQueries({ queryKey: productKeys.all });
   };
 }
 

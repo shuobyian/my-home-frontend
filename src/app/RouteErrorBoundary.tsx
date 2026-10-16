@@ -6,7 +6,7 @@ import { Component, ReactNode, useEffect, useRef } from "react";
 import {
   QueryErrorResetBoundary,
   useQueryErrorResetBoundary,
-} from "react-query";
+} from "@tanstack/react-query";
 import { useLocation, useNavigate } from "react-router-dom";
 
 interface ErrorBoundaryProps {
@@ -119,7 +119,7 @@ function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
   );
 }
 
-// 라우트 화면에서 발생한 렌더 에러와 react-query 에러(useErrorBoundary)를 잡아
+// 라우트 화면에서 발생한 렌더 에러와 react-query 에러(throwOnError)를 잡아
 // 흰 화면 대신 재시도 UI를 보여 준다. '다시 시도' 시 실패한 쿼리를 다시 요청한다.
 export function RouteErrorBoundary({ children }: { children: ReactNode }) {
   return (
