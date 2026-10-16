@@ -1,4 +1,5 @@
 import {
+  App,
   Button,
   Divider,
   Input,
@@ -7,58 +8,87 @@ import {
   TableColumnsType,
   Typography,
 } from "antd";
-import { Product } from "types/product";
-import { formatNumber } from "lib/format";
 import { productColumns } from "components/product/productColumns";
 import { ProductModal } from "components/product/ProductModal";
+import { ProductNameList } from "components/product/ProductNameList";
+import { formatNumber } from "lib/format";
+import { Key, ReactNode, useState } from "react";
+import { Product, ProductCreateRequest } from "types/product";
 
-const columns: TableColumnsType<Product> = productColumns;
+const columns: TableColumnsType<Product> = productColumns.map((column) => ({
+  ...column,
+  ellipsis: true,
+}));
+
+const scrollX = productColumns.reduce(
+  (acc, { width }) => acc + Number(width ?? 0),
+  0
+);
 
 interface ProductTableViewProps {
-  datas: Product[];
+  products: Product[];
   total: number;
-  // 조회 중 표시. 이전 목록을 유지하는 동안(keepPreviousData) 조작을 막는다
   loading?: boolean;
-  openModal: () => void;
-  onRemove?: () => void;
-  onSave?: () => void;
-  add: (data: Omit<Product, "id">) => void;
-  edit: (data: Product) => void;
-  selectedRow: Product | undefined;
-  setSelectedRow: React.Dispatch<React.SetStateAction<Product | undefined>>;
-  selectedRows: Product[];
-  setSelectedRows: React.Dispatch<React.SetStateAction<Product[]>>;
-  isModalOpened: boolean;
-  setIsModalOpened: React.Dispatch<React.SetStateAction<boolean>>;
-  name?: string;
-  setName?: React.Dispatch<React.SetStateAction<string>>;
+  // 서버 페이지네이션. 없으면 표가 클라이언트에서 나눈다.
   pagination?: {
     current: number;
     pageSize: number;
-    total: number;
-    onChange: (page: number, size: number) => void;
+    onChange: (page: number, pageSize: number) => void;
   };
+  // 이름 검색. 있으면 검색창을 보여 준다.
+  onSearch?: (name: string) => void;
+  // 아래 콜백은 실패하면 reject한다(모달·선택 상태를 유지).
+  onAdd: (product: ProductCreateRequest) => Promise<void>;
+  onEdit: (product: Product) => Promise<void>;
+  onRemove: (products: Product[]) => Promise<void>;
+  toolbarExtra?: ReactNode;
 }
 
+interface Selection {
+  keys: Key[];
+  rows: Product[];
+}
+
+const EMPTY_SELECTION: Selection = { keys: [], rows: [] };
+
+// 물품 표. 선택·모달·검색어 상태는 이 컴포넌트가 갖고, 데이터 변경은 콜백으로 위임한다.
 export function ProductTableView({
-  datas,
+  products,
   total,
   loading,
-  openModal,
-  onRemove,
-  onSave,
-  add,
-  edit,
-  selectedRow,
-  setSelectedRow,
-  selectedRows,
-  setSelectedRows,
-  isModalOpened,
-  setIsModalOpened,
-  name,
-  setName,
   pagination,
+  onSearch,
+  onAdd,
+  onEdit,
+  onRemove,
+  toolbarExtra,
 }: ProductTableViewProps) {
+  const { modal } = App.useApp();
+
+  // 페이지를 넘겨도 선택을 유지한다(preserveSelectedRowKeys). 검색어가 바뀌면 초기화한다.
+  const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
+  const [editing, setEditing] = useState<{ product?: Product } | null>(null);
+  const [keyword, setKeyword] = useState("");
+
+  const search = () => {
+    setSelection(EMPTY_SELECTION);
+    onSearch?.(keyword.trim());
+  };
+
+  const confirmRemove = () => {
+    const targets = selection.rows;
+    modal.confirm({
+      title: `${formatNumber(targets.length)}개 물품을 삭제하시겠습니까?`,
+      content: <ProductNameList products={targets} />,
+      okText: "삭제",
+      cancelText: "취소",
+      onOk: async () => {
+        await onRemove(targets);
+        setSelection(EMPTY_SELECTION);
+      },
+    });
+  };
+
   return (
     <>
       <div
@@ -69,101 +99,61 @@ export function ProductTableView({
         }}
       >
         <Space direction='horizontal'>
-          <Button onClick={openModal}>추가</Button>
-          {onRemove && (
-            <Button onClick={onRemove} disabled={selectedRows.length < 1}>
-              삭제
-            </Button>
-          )}
-        </Space>
-        {onSave && (
-          <Button onClick={onSave} type='primary'>
-            저장
+          <Button onClick={() => setEditing({})}>추가</Button>
+          <Button onClick={confirmRemove} disabled={selection.rows.length < 1}>
+            삭제
           </Button>
-        )}
+        </Space>
+        {toolbarExtra}
       </div>
       <Divider type='horizontal' />
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: 10,
-        }}
-      >
-        {setName && (
-          <Input
-            placeholder='물품 이름'
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          />
+      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+        {onSearch && (
+          <Space.Compact style={{ width: "100%" }}>
+            <Input
+              placeholder='물품 이름'
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              onPressEnter={search}
+            />
+            <Button onClick={search}>검색</Button>
+          </Space.Compact>
         )}
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
+        <div style={{ display: "flex", justifyContent: "space-between" }}>
           <Typography.Text strong>
-            선택된 물품 {formatNumber(selectedRows.length)}개
+            선택된 물품 {formatNumber(selection.rows.length)}개
           </Typography.Text>
           <Typography.Text strong>
             총 물품 {formatNumber(total)}개
           </Typography.Text>
         </div>
         <Table
+          rowKey='id'
           loading={loading}
-          pagination={pagination}
-          onRow={(record) => {
-            return {
-              onClick: () => {
-                setSelectedRow(record);
-                setIsModalOpened(true);
-              },
-            };
-          }}
+          columns={columns}
+          dataSource={products}
+          pagination={pagination ? { ...pagination, total } : undefined}
+          scroll={{ x: scrollX }}
+          onRow={(record) => ({
+            onClick: () => setEditing({ product: record }),
+          })}
           rowSelection={{
             type: "checkbox",
-            onSelect: (record: Product, selected: boolean) => {
-              if (!selected) {
-                setSelectedRows((prev) =>
-                  prev.filter((p) => p.id !== record.id)
-                );
-              }
-            },
-            onChange: (_, records: Product[], { type }) => {
-              if (type === "all") setSelectedRows(records);
-              else {
-                setSelectedRows((prev) =>
-                  [...prev, ...records].reduce<Product[]>(
-                    (ac, v) =>
-                      ac.find((a) => a.id === v.id) ? ac : [...ac, v],
-                    []
-                  )
-                );
-              }
-            },
-          }}
-          columns={columns.map((column) => ({ ...column, ellipsis: true }))}
-          dataSource={datas.map((data) => ({
-            key: data.id,
-            ...data,
-          }))}
-          scroll={{
-            x: columns.reduce((acc, cur) => (acc += Number(cur.width)), 0),
+            selectedRowKeys: selection.keys,
+            preserveSelectedRowKeys: true,
+            onChange: (keys, rows) => setSelection({ keys, rows }),
           }}
         />
       </div>
-      {isModalOpened && (
+      {editing && (
         <ProductModal
-          prevData={selectedRow}
-          add={add}
-          edit={edit}
-          open={isModalOpened}
-          onCancel={() => {
-            setIsModalOpened(false);
-            setSelectedRow(undefined);
-          }}
+          product={editing.product}
+          onSubmit={(value) =>
+            editing.product
+              ? onEdit(value as Product)
+              : onAdd(value as ProductCreateRequest)
+          }
+          onClose={() => setEditing(null)}
         />
       )}
     </>

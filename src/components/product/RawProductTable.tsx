@@ -1,84 +1,47 @@
-import { App, Divider, Typography } from "antd";
+import { App, Button, Divider, Space, Typography } from "antd";
 import { getErrorMessage } from "apis/errors";
-import { useCreateProductsMutation } from "queries/product";
-import { useRef, useState } from "react";
-import { Product } from "types/product";
-import { parseSavedProducts } from "domain/productExcel";
-import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
 import { ExcelButton } from "components/product/ExcelButton";
+import { ProductNameList } from "components/product/ProductNameList";
 import { ProductTableView } from "components/product/ProductTableView";
+import {
+  diffProducts,
+  nextProductId,
+  parseSavedProducts,
+} from "domain/productExcel";
+import { formatNumber } from "lib/format";
+import { readJSON, STORAGE_KEY, writeJSON } from "lib/storage";
+import { useCreateProductsMutation } from "queries/product";
+import { useState } from "react";
+import { Product } from "types/product";
 
+// 엑셀로 가져온 물품을 브라우저에서 편집하고 서버에 일괄 저장한다
 export function RawProductTable() {
   const { message, modal } = App.useApp();
-
   const { mutate: upload } = useCreateProductsMutation();
 
   // 저장된 값은 마운트할 때 한 번 읽는다(모듈 최상단에서 읽으면 앱 시작 시점 값에 고정된다)
-  const [datas, setDatas] = useState<Product[]>(() =>
+  const [products, setProducts] = useState<Product[]>(() =>
     parseSavedProducts(readJSON(STORAGE_KEY.PRODUCT))
   );
-  const originalDatas = useRef<Product[]>(datas);
+  // 마지막으로 가져오거나 저장한 시점의 목록(변경 사항 비교 기준)
+  const [baseline, setBaseline] = useState<Product[]>(products);
 
-  const [isModalOpened, setIsModalOpened] = useState(false);
-  const [selectedRow, setSelectedRow] = useState<Product>();
-  const [selectedRows, setSelectedRows] = useState<Product[]>([]);
-
-  const openModal = () => {
-    setIsModalOpened(true);
+  const importProducts = (imported: Product[]) => {
+    setProducts(imported);
+    setBaseline(imported);
   };
 
-  const add = (data: Omit<Product, "id">) => {
-    setDatas((prev) => [{ ...data, id: (datas.at(-1)?.id ?? 0) + 1 }, ...prev]);
-    message.success("추가되었습니다");
-  };
-
-  const edit = (data: Product) => {
-    setDatas((prevs) =>
-      prevs.map((prev) => (prev.id === data.id ? data : prev))
-    );
-    message.success("수정되었습니다");
-  };
-
-  const remove = () => {
-    setDatas((prevs) =>
-      prevs.filter((prev) => !selectedRows.find((row) => row.id === prev.id))
-    );
-    setSelectedRows([]);
-    message.success("삭제되었습니다");
-  };
-
-  const onRemove = () => {
-    modal.confirm({
-      title: "삭제하시겠습니까?",
-      content: (
-        <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-          {selectedRows.map(({ id, name }) => (
-            <li key={id}>{name}</li>
-          ))}
-        </ul>
-      ),
-      onOk: remove,
-      okText: "삭제",
-      cancelText: "취소",
-    });
-  };
-
-  const save = () => {
-    writeJSON(STORAGE_KEY.PRODUCT, datas);
+  const save = (snapshot: Product[]) => {
+    writeJSON(STORAGE_KEY.PRODUCT, snapshot);
 
     upload(
-      { products: datas },
+      { products: snapshot },
       {
-        onSuccess: (data) => {
+        onSuccess: (saved) => {
+          setBaseline(snapshot);
           modal.info({
             title: "저장되었습니다.",
-            content: (
-              <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-                {data.map(({ id, name }) => (
-                  <li key={id}>{name}</li>
-                ))}
-              </ul>
-            ),
+            content: <ProductNameList products={saved} />,
             okText: "확인",
           });
         },
@@ -89,21 +52,31 @@ export function RawProductTable() {
     );
   };
 
-  const onSave = () => {
-    const changeDatas = datas.filter(
-      (data) => !originalDatas.current.find(({ name }) => name === data.name)
-    );
+  const confirmSave = () => {
+    const snapshot = products;
+    const { added, updated, removed } = diffProducts(baseline, snapshot);
+    const sections = [
+      { label: "추가", items: added },
+      { label: "수정", items: updated },
+      { label: "삭제", items: removed },
+    ].filter(({ items }) => items.length > 0);
 
     modal.confirm({
       title: "저장하시겠습니까?",
-      content: (
-        <ul style={{ maxHeight: 400, overflow: "scroll" }}>
-          {changeDatas.map(({ id, name }) => (
-            <li key={id}>{name}</li>
-          ))}
-        </ul>
-      ),
-      onOk: save,
+      content:
+        sections.length === 0 ? (
+          <Typography.Text>변경된 물품이 없습니다.</Typography.Text>
+        ) : (
+          sections.map(({ label, items }) => (
+            <div key={label}>
+              <Typography.Text strong>
+                {label} {formatNumber(items.length)}개
+              </Typography.Text>
+              <ProductNameList products={items} />
+            </div>
+          ))
+        ),
+      onOk: () => save(snapshot),
       okText: "확인",
       cancelText: "취소",
     });
@@ -113,26 +86,36 @@ export function RawProductTable() {
     <>
       <Typography.Title level={4}>Raw 엑셀 데이터</Typography.Title>
       <ProductTableView
-        datas={datas}
-        total={datas.length}
-        openModal={openModal}
-        onRemove={onRemove}
-        onSave={onSave}
-        add={add}
-        edit={edit}
-        selectedRow={selectedRow}
-        setSelectedRow={setSelectedRow}
-        selectedRows={selectedRows}
-        setSelectedRows={setSelectedRows}
-        isModalOpened={isModalOpened}
-        setIsModalOpened={setIsModalOpened}
+        products={products}
+        total={products.length}
+        onAdd={async (product) => {
+          setProducts((prev) => [
+            { ...product, id: nextProductId(prev) },
+            ...prev,
+          ]);
+          message.success("추가되었습니다");
+        }}
+        onEdit={async (product) => {
+          setProducts((prev) =>
+            prev.map((p) => (p.id === product.id ? product : p))
+          );
+          message.success("수정되었습니다");
+        }}
+        onRemove={async (targets) => {
+          const ids = new Set(targets.map(({ id }) => id));
+          setProducts((prev) => prev.filter(({ id }) => !ids.has(id)));
+          message.success("삭제되었습니다");
+        }}
+        toolbarExtra={
+          <Button onClick={confirmSave} type='primary'>
+            저장
+          </Button>
+        }
       />
       <Divider type='horizontal' />
-      <ExcelButton
-        originalDatas={originalDatas}
-        datas={datas}
-        setDatas={setDatas}
-      />
+      <Space>
+        <ExcelButton products={products} onImport={importProducts} />
+      </Space>
     </>
   );
 }

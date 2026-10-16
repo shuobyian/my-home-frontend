@@ -1,6 +1,9 @@
 import { Category, Tool } from "types/enums";
 import { Product } from "types/product";
 
+// 물품 하나에 넣을 수 있는 재료 수(엑셀 재료 슬롯 수)
+export const MAX_MATERIAL_SLOTS = 5;
+
 // 관리 화면 엑셀의 한 행. 재료 슬롯은 5개(nameN/baseN/countN)다.
 // baseN은 Product의 basic과 의미가 반대다(1이면 하위재료가 있음).
 export interface ProductExcelRow {
@@ -103,4 +106,33 @@ export function parseSavedProducts(value: unknown): Product[] {
       typeof item.name === "string" &&
       Array.isArray(item.materials)
   );
+}
+
+// 로컬 편집 중인 목록에서 새 행에 쓸 id(현재 최댓값 + 1)
+export function nextProductId(products: Product[]) {
+  return products.reduce((max, { id }) => Math.max(max, id), 0) + 1;
+}
+
+export interface ProductDiff {
+  added: Product[];
+  updated: Product[];
+  removed: Product[];
+}
+
+// 저장 전 목록과 현재 목록을 id 기준으로 비교한다
+export function diffProducts(
+  original: Product[],
+  current: Product[]
+): ProductDiff {
+  const originalById = new Map(original.map((p) => [p.id, p]));
+  const currentIds = new Set(current.map(({ id }) => id));
+
+  return {
+    added: current.filter(({ id }) => !originalById.has(id)),
+    updated: current.filter((p) => {
+      const prev = originalById.get(p.id);
+      return prev !== undefined && JSON.stringify(prev) !== JSON.stringify(p);
+    }),
+    removed: original.filter(({ id }) => !currentIds.has(id)),
+  };
 }

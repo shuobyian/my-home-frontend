@@ -1,7 +1,10 @@
 import { CategoryType, ToolType } from "types/enums";
 import { createProduct } from "test/fixtures";
 import {
+  diffProducts,
   excelRowsToProducts,
+  nextProductId,
+  parseSavedProducts,
   ProductExcelRow,
   productsToExcelRows,
 } from "domain/productExcel";
@@ -166,5 +169,53 @@ describe("엑셀 왕복 변환", () => {
     expect(excelRowsToProducts(productsToExcelRows(products))).toEqual(
       products
     );
+  });
+});
+
+describe("nextProductId", () => {
+  it("현재 최댓값 + 1을 반환한다(앞에 추가해도 중복되지 않는다)", () => {
+    expect(nextProductId([])).toBe(1);
+    expect(
+      nextProductId([createProduct({ id: 7 }), createProduct({ id: 3 })])
+    ).toBe(8);
+  });
+});
+
+describe("diffProducts", () => {
+  it("id 기준으로 추가·수정·삭제를 구분한다", () => {
+    const a = createProduct({ id: 1, name: "A" });
+    const b = createProduct({ id: 2, name: "B" });
+    const c = createProduct({ id: 3, name: "C" });
+    const bEdited = { ...b, level: 99 };
+    const d = createProduct({ id: 4, name: "D" });
+
+    expect(diffProducts([a, b, c], [d, a, bEdited])).toEqual({
+      added: [d],
+      updated: [bEdited],
+      removed: [c],
+    });
+  });
+
+  it("변경이 없으면 모두 빈 배열", () => {
+    const list = [createProduct({ id: 1 })];
+    expect(diffProducts(list, JSON.parse(JSON.stringify(list)))).toEqual({
+      added: [],
+      updated: [],
+      removed: [],
+    });
+  });
+});
+
+describe("parseSavedProducts", () => {
+  it("표에 필요한 필드를 갖춘 항목만 남긴다", () => {
+    const valid = createProduct({ id: 1 });
+    expect(
+      parseSavedProducts([valid, { id: "2", name: "x", materials: [] }, null])
+    ).toEqual([valid]);
+  });
+
+  it("배열이 아니면 빈 배열", () => {
+    expect(parseSavedProducts(undefined)).toEqual([]);
+    expect(parseSavedProducts({})).toEqual([]);
   });
 });
