@@ -37,7 +37,7 @@ export const productColumns: TableColumnsType<Product> = [
     key: "materials",
     dataIndex: "",
     render: (item: Product) => (
-      <Space direction='vertical'>
+      <Space orientation='vertical'>
         {item.materials
           .filter((m) => m.name)
           .map((m) => (

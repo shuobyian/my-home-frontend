@@ -64,7 +64,7 @@ export function ManageHomePage() {
       title: "서버에 저장하시겠습니까?",
       width: 520,
       content: (
-        <Space direction='vertical' style={{ width: "100%" }}>
+        <Space orientation='vertical' style={{ width: "100%" }}>
           <Typography.Text type='secondary'>
             일괄 저장은 서버에 없는 이름의 물품만 추가합니다. 서버에 이미 있는
             이름은 건너뜁니다.
@@ -137,7 +137,7 @@ export function ManageHomePage() {
           </Button>
         }
       />
-      <Divider type='horizontal' />
+      <Divider />
       <Space>
         <ExcelButton products={products} onImport={importProducts} />
       </Space>

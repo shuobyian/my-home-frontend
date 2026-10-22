@@ -102,7 +102,7 @@ export function ProductTableView({
           width: "100%",
         }}
       >
-        <Space direction='horizontal'>
+        <Space orientation='horizontal'>
           <Button onClick={() => setEditing({})}>추가</Button>
           <Button onClick={confirmRemove} disabled={selection.rows.length < 1}>
             삭제
@@ -110,7 +110,7 @@ export function ProductTableView({
         </Space>
         {toolbarExtra}
       </div>
-      <Divider type='horizontal' />
+      <Divider />
       <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
         {onSearch && <SearchBar placeholder='물품 이름' onSearch={search} />}
         <div style={{ display: "flex", justifyContent: "space-between" }}>

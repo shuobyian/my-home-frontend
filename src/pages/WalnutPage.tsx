@@ -37,7 +37,7 @@ export function WalnutPage() {
   };
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }} size='large'>
+    <Space orientation='vertical' style={{ width: "100%" }} size='large'>
       {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
       <Flex
         justify='space-between'
@@ -60,7 +60,7 @@ export function WalnutPage() {
         <Alert
           type='error'
           showIcon
-          message='계산할 수 없습니다.'
+          title='계산할 수 없습니다.'
           description={getErrorMessage(error)}
         />
       )}

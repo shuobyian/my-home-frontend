@@ -48,7 +48,7 @@ export function ProductManagePage() {
   };
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }}>
+    <Space orientation='vertical' style={{ width: "100%" }}>
       <Flex justify='space-between' align='center' wrap gap={8}>
         <Typography.Title level={4} style={{ margin: 0 }}>
           물품 리스트

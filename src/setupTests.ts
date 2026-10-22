@@ -17,6 +17,20 @@ Object.defineProperty(window, "matchMedia", {
   }),
 });
 
+// antd 6(@rc-component/resize-observer)은 폴리필 없이 브라우저의 ResizeObserver를 쓴다.
+// jsdom에는 없으므로 아무 일도 하지 않는 구현을 둔다(테스트에서는 크기 변화가 없다).
+if (!("ResizeObserver" in globalThis)) {
+  class ResizeObserverStub {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  }
+  Object.defineProperty(globalThis, "ResizeObserver", {
+    writable: true,
+    value: ResizeObserverStub,
+  });
+}
+
 // jsdom은 의사 요소(::before 등)의 스타일 계산을 지원하지 않아 antd가 호출할 때마다
 // "Not implemented" 경고를 낸다. 테스트에서는 의사 요소 인자를 무시한다.
 const getComputedStyle = window.getComputedStyle.bind(window);

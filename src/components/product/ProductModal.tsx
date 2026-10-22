@@ -72,7 +72,7 @@ export function ProductModal({
       confirmLoading={submitting}
       // 저장 중에는 닫지 못하게 해서, 실패 시 입력을 유지하고 늦게 온 응답이 다른 모달을 닫지 않게 한다
       closable={!submitting}
-      maskClosable={!submitting}
+      mask={{ closable: !submitting }}
       keyboard={!submitting}
       cancelButtonProps={{ disabled: submitting }}
     >
@@ -131,15 +131,15 @@ export function ProductModal({
         >
           <Select options={CATEGORY_OPTIONS} placeholder='카테고리' />
         </Form.Item>
-        <Space direction='vertical'>
+        <Space orientation='vertical'>
           <Typography.Text>
             필요 재료 (최대 {MAX_MATERIAL_SLOTS}개)
           </Typography.Text>
           <Form.List name='materials'>
             {(fields, { add: addMaterial, remove: removeMaterial }) => (
-              <Space direction='vertical'>
+              <Space orientation='vertical'>
                 {fields.map((field, index) => (
-                  <Space direction='horizontal' key={field.key}>
+                  <Space orientation='horizontal' key={field.key}>
                     <Form.Item
                       style={{ margin: 0 }}
                       name={[field.name, "name"]}

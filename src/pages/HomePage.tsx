@@ -57,8 +57,8 @@ export function HomePage() {
   }, [results, isPlaceholderData, search, setSearchParams]);
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }}>
-      <Space direction='vertical' size={0}>
+    <Space orientation='vertical' style={{ width: "100%" }}>
+      <Space orientation='vertical' size={0}>
         <Typography.Text>
           물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.
         </Typography.Text>

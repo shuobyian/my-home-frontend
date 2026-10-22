@@ -19,7 +19,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
         width: "100%",
       }}
     >
-      <Space style={{ gap: "20px", width: "100%" }} direction='vertical'>
+      <Space style={{ gap: "20px", width: "100%" }} orientation='vertical'>
         <Space
           style={{
             width: "100%",
@@ -30,7 +30,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
             flexWrap: "wrap",
           }}
         >
-          <Space style={{ gap: "15px" }} direction='vertical'>
+          <Space style={{ gap: "15px" }} orientation='vertical'>
             <InfoRow title='물품명' value={result.name} />
             <InfoRow
               title={
@@ -46,7 +46,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
             />
             <ItemImage name={result.name} variant='detail' />
           </Space>
-          <Space style={{ gap: "10px" }} direction='vertical'>
+          <Space style={{ gap: "10px" }} orientation='vertical'>
             {result.product.materials.map((material) => (
               <Typography.Text
                 key={material.name}
@@ -57,7 +57,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
             ))}
           </Space>
         </Space>
-        <Space direction='vertical' style={{ width: "100%" }}>
+        <Space orientation='vertical' style={{ width: "100%" }}>
           <Typography.Text strong>기초 재료</Typography.Text>
           <MaterialTable materials={result.materials} />
         </Space>

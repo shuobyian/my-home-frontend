@@ -20,7 +20,7 @@ export function AppHeader() {
         marginBottom: "10px",
       }}
     >
-      <Space direction='vertical' size={0}>
+      <Space orientation='vertical' size={0}>
         <Link
           to={ROUTES.HOME}
           className='app-home-link'

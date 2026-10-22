@@ -52,7 +52,7 @@ export function RequireAdmin() {
   )?.value;
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }} size='large'>
+    <Space orientation='vertical' style={{ width: "100%" }} size='large'>
       <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
         <Segmented
           options={MANAGE_MENU}

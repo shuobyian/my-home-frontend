@@ -1,6 +1,6 @@
-import { Button, Collapse, Empty, List, Space, Typography } from "antd";
+import { Button, Collapse, Empty, Space, Typography } from "antd";
 import { ROUTES } from "@/app/routes";
-import { ItemImage } from "@/components/common/ItemImage";
+import { CartEntryList } from "@/components/cart/CartEntryList";
 import { MaterialTable } from "@/components/result/MaterialTable";
 import { CART_SOURCE_LABEL, sumPrice } from "@/domain/cart";
 import { formatGold, formatNumber } from "@/lib/format";
@@ -26,7 +26,7 @@ export function CartSummary() {
           </Button>
         </Empty>
       ) : (
-        <Space direction='vertical' style={{ width: "100%" }}>
+        <Space orientation='vertical' style={{ width: "100%" }}>
           <Typography.Text type='secondary'>
             가격은 물품을 담은 시점의 시세로 계산됩니다.
           </Typography.Text>
@@ -45,19 +45,12 @@ export function CartSummary() {
                 ),
                 children: (
                   <div style={{ maxHeight: "300px", overflow: "auto" }}>
-                    <List
-                      itemLayout='horizontal'
-                      dataSource={entries}
-                      renderItem={({ key, source, item, count }) => (
-                        <List.Item key={key}>
-                          <List.Item.Meta
-                            avatar={<ItemImage name={item.name} />}
-                            title={item.name}
-                            description={`${formatNumber(count)}개 · ${
-                              CART_SOURCE_LABEL[source]
-                            }`}
-                          />
-                        </List.Item>
+                    <CartEntryList
+                      entries={entries}
+                      renderDescription={({ source, count }) => (
+                        <Typography.Text type='secondary'>
+                          {formatNumber(count)}개 · {CART_SOURCE_LABEL[source]}
+                        </Typography.Text>
                       )}
                     />
                   </div>
@@ -65,7 +58,7 @@ export function CartSummary() {
               },
             ]}
           />
-          <Space direction='vertical' style={{ width: "100%" }}>
+          <Space orientation='vertical' style={{ width: "100%" }}>
             <Space style={{ width: "100%", justifyContent: "space-between" }}>
               <Typography.Text strong>기초 재료</Typography.Text>
               <Typography.Text strong>
