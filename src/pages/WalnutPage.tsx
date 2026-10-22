@@ -8,7 +8,7 @@ import { WalnutResult } from "@/components/walnut/WalnutResult";
 import { parseWalnutParams, toWalnutSearchParams } from "@/domain/experience";
 import { useWalnutQuery } from "@/queries/experience";
 import { useMemo } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router";
 import { WalnutParams } from "@/types/experience";
 
 // 호두작 계산. 계산 조건은 URL에 두어 경험치 표에 다녀오거나 새로고침해도 결과가 유지된다.

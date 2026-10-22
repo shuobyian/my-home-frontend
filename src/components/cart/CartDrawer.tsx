@@ -4,7 +4,7 @@ import { ROUTES } from "@/app/routes";
 import { ItemImage } from "@/components/common/ItemImage";
 import { CART_SOURCE_LABEL } from "@/domain/cart";
 import { formatGold } from "@/lib/format";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { useCart } from "@/state/cart";
 
 interface CartDrawerProps {

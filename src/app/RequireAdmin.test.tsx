@@ -5,9 +5,8 @@ import { preloadManagePages } from "@/app/managePages";
 import { RequireAdmin } from "@/app/RequireAdmin";
 import { SESSION_KEY } from "@/lib/storage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { AuthProvider } from "@/state/auth";
-import { ROUTER_FUTURE } from "@/app/routes";
 
 vi.mock("@/apis/auth", () => ({ login: vi.fn() }));
 const mockedLogin = vi.mocked(login);
@@ -22,7 +21,7 @@ function renderManage(initialPath = "/manage") {
   return render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <MemoryRouter future={ROUTER_FUTURE} initialEntries={[initialPath]}>
+        <MemoryRouter initialEntries={[initialPath]}>
           <Routes>
             <Route element={<RequireAdmin />}>
               <Route path='/manage' element={<div>관리 내용</div>} />

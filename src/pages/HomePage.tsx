@@ -9,7 +9,7 @@ import {
 } from "@/domain/resultSearch";
 import { useResultsQuery } from "@/queries/result";
 import { useEffect, useMemo } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router";
 
 const PAGE_SIZE = 10;
 

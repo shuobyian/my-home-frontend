@@ -5,7 +5,7 @@ import { parseMarketList } from "@/domain/market";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import { useMarketsQuery } from "@/queries/market";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 import { Market } from "@/types/market";
 
 export function FreePage() {

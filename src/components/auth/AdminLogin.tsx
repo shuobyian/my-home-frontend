@@ -1,7 +1,7 @@
 import { Alert, Button, Form, Input, Space, Typography } from "antd";
 import { ROUTES } from "@/app/routes";
 import { Panel } from "@/components/common/Panel";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router";
 
 interface AdminLoginProps {
   onSubmit: (password: string) => void;

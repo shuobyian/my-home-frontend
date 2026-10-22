@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
 import { App } from "antd";
-import { ROUTER_FUTURE, ROUTES } from "@/app/routes";
+import { ROUTES } from "@/app/routes";
 import { FreeResultPage } from "@/pages/FreeResultPage";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { CartProvider } from "@/state/cart";
 
 // 계산 API는 부르지 않아야 한다(시세가 올바를 때만 계산)
@@ -21,7 +21,6 @@ function renderWithState(state: unknown) {
       <App>
         <CartProvider>
           <MemoryRouter
-            future={ROUTER_FUTURE}
             initialEntries={[{ pathname: ROUTES.FREE_RESULT, state }]}
           >
             <Routes>

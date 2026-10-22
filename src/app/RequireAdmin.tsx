@@ -6,7 +6,7 @@ import { ROUTES } from "@/app/routes";
 import { AdminLogin } from "@/components/auth/AdminLogin";
 import { useLoginMutation } from "@/queries/auth";
 import { Suspense, useEffect, useState } from "react";
-import { matchPath, Outlet, useLocation, useNavigate } from "react-router-dom";
+import { matchPath, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/state/auth";
 
 const MANAGE_MENU = [
