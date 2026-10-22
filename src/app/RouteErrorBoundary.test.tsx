@@ -14,9 +14,8 @@ import {
   Route,
   Routes,
   useSearchParams,
-} from "react-router-dom";
+} from "react-router";
 import { silenceExpectedErrors } from "@/test/silenceErrors";
-import { ROUTER_FUTURE } from "@/app/routes";
 
 // 실패 횟수만큼 실패한 뒤 성공하는 쿼리 함수
 function createFlakyFetcher(failures: number) {
@@ -48,7 +47,7 @@ function renderApp(fetcher: () => Promise<string>, initialPath = "/") {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter future={ROUTER_FUTURE} initialEntries={[initialPath]}>
+      <MemoryRouter initialEntries={[initialPath]}>
         <Link to='/other'>다른 화면</Link>
         <Link to='/'>처음 화면</Link>
         <Link to='/broken'>고장 난 화면</Link>
@@ -90,7 +89,7 @@ function renderSearch(fetcher: (q: string) => Promise<string>) {
 
   return render(
     <QueryClientProvider client={queryClient}>
-      <MemoryRouter future={ROUTER_FUTURE} initialEntries={["/search?q=a"]}>
+      <MemoryRouter initialEntries={["/search?q=a"]}>
         <Link to='/search?q=b'>다음 검색</Link>
         <Routes>
           <Route

@@ -1,9 +1,8 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { App } from "antd";
-import { ROUTER_FUTURE } from "@/app/routes";
 import { HomePage } from "@/pages/HomePage";
-import { MemoryRouter, useLocation, useNavigate } from "react-router-dom";
+import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { ResultSearchParams } from "@/types/result";
@@ -34,7 +33,7 @@ function renderHome(initialPath: string) {
     >
       <App>
         <CartProvider>
-          <MemoryRouter future={ROUTER_FUTURE} initialEntries={[initialPath]}>
+          <MemoryRouter initialEntries={[initialPath]}>
             <HomePage />
             <LocationProbe />
           </MemoryRouter>

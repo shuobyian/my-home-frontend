@@ -25,7 +25,7 @@ export default defineConfig({
           groups: [
             {
               name: "react",
-              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-router|react-router-dom|@remix-run)[\\/]/,
+              test: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/,
               priority: 2,
             },
             {

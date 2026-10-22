@@ -2,7 +2,7 @@ import { Grid, Layout, Spin } from "antd";
 import { AppHeader } from "@/app/AppHeader";
 import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import { Suspense } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet } from "react-router";
 
 // 공통 레이아웃. 헤더는 오류 화면에 가려지지 않도록 ErrorBoundary 밖에 둔다.
 export function AppLayout() {

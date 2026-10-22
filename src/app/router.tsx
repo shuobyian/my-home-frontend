@@ -13,7 +13,7 @@ import { FreeResultPage } from "@/pages/FreeResultPage";
 import { HomePage } from "@/pages/HomePage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { WalnutPage } from "@/pages/WalnutPage";
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router";
 
 export function AppRoutes() {
   return (

@@ -2,7 +2,7 @@ import { Button, Space, theme, Typography } from "antd";
 import { ROUTES } from "@/app/routes";
 import { CartButton } from "@/components/cart/CartButton";
 import { CSSProperties } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router";
 
 // 모든 화면 공통 헤더. 제목을 누르면 홈으로 간다.
 export function AppHeader() {

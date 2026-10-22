@@ -10,7 +10,7 @@ import { parseResultList } from "@/domain/result";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import { useCalculateResultsQuery } from "@/queries/result";
 import { useState } from "react";
-import { Navigate, useLocation } from "react-router-dom";
+import { Navigate, useLocation } from "react-router";
 import { Result } from "@/types/result";
 
 export function FreeResultPage() {
