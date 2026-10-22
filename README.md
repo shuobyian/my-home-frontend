@@ -43,7 +43,7 @@ API 서버 주소는 환경별 `.env` 파일로 정합니다. 두 파일은 커�
 개발 중에 다른 서버를 쓰려면 `.env.development.local`(git 미추적)에 덮어씁니다.
 
 ```bash
-echo "VITE_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
+echo "VITE_API_BASE_URL=https://my-home-backend-jqsu.onrender.com" > .env.development.local
 ```
 
 ## 배포 (Vercel)
