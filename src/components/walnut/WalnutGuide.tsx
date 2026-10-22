@@ -3,7 +3,7 @@ import { Space, Typography } from "antd";
 // 호두작 안내문
 export function WalnutGuide() {
   return (
-    <Space direction='vertical' size={0}>
+    <Space orientation='vertical' size={0}>
       <Typography.Title level={4}>
         자세한 설명은{" "}
         <a

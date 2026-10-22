@@ -14,7 +14,7 @@ interface WalnutResultProps {
 export function WalnutResult({ result, onSelectAmple }: WalnutResultProps) {
   return (
     <Panel>
-      <Space direction='vertical' style={{ width: "100%" }}>
+      <Space orientation='vertical' style={{ width: "100%" }}>
         <Typography.Text>
           남은 경험치: {formatNumber(result.remindExperience)}
         </Typography.Text>

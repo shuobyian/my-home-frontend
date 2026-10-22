@@ -56,7 +56,7 @@ export function FreeResultPage() {
   if (!markets) return <Navigate to={ROUTES.FREE} replace />;
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }}>
+    <Space orientation='vertical' style={{ width: "100%" }}>
       <Space style={{ width: "100%", justifyContent: "space-between" }} wrap>
         <Typography.Title level={5} style={{ margin: 0 }}>
           {showSaved ? "저장된 결과" : "입력한 시세로 계산한 결과"}

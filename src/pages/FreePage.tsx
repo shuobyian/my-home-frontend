@@ -24,8 +24,8 @@ export function FreePage() {
   };
 
   return (
-    <Space direction='vertical' style={{ width: "100%" }}>
-      <Space direction='vertical' size={0}>
+    <Space orientation='vertical' style={{ width: "100%" }}>
+      <Space orientation='vertical' size={0}>
         <Typography.Title level={4}>
           자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.
         </Typography.Title>

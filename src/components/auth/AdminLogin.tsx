@@ -40,7 +40,7 @@ export function AdminLogin({ onSubmit, loading, error }: AdminLoginProps) {
           <Alert
             type='error'
             showIcon
-            message={error}
+            title={error}
             style={{ marginBottom: 16 }}
           />
         )}
