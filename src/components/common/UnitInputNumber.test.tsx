@@ -1,7 +1,7 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
-import { Form, FormInstance } from "antd";
+import { Form, FormInstance, InputNumber } from "antd";
 import { UnitInputNumber } from "@/components/common/UnitInputNumber";
-import { createRef } from "react";
+import { ComponentRef, createRef } from "react";
 
 function setupPriceForm() {
   const formRef = createRef<FormInstance>();
@@ -30,6 +30,14 @@ describe("UnitInputNumber", () => {
     expect(screen.getByText("골드")).toBeInTheDocument();
     // ref도 실제 입력으로 이어진다(getFieldInstance 등)
     expect(formRef.current?.getFieldInstance("price")).toBeTruthy();
+  });
+
+  it("ref를 prop으로 받아 실제 입력 요소에 연결한다", () => {
+    const ref = createRef<ComponentRef<typeof InputNumber>>();
+    render(<UnitInputNumber unit='개' ref={ref} aria-label='개수' />);
+
+    act(() => ref.current?.focus());
+    expect(screen.getByLabelText("개수")).toHaveFocus();
   });
 
   it("검증에 실패하면 입력을 오류 상태로 표시한다", async () => {

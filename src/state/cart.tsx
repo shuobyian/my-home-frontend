@@ -12,7 +12,7 @@ import { readJSON, removeItem, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import {
   createContext,
   ReactNode,
-  useContext,
+  use,
   useEffect,
   useMemo,
   useReducer,
@@ -66,11 +66,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     [cart]
   );
 
-  return <CartContext.Provider value={value}>{children}</CartContext.Provider>;
+  return <CartContext value={value}>{children}</CartContext>;
 }
 
 export function useCart() {
-  const context = useContext(CartContext);
+  const context = use(CartContext);
   if (!context) {
     throw new Error("useCart는 CartProvider 안에서만 사용할 수 있습니다.");
   }
