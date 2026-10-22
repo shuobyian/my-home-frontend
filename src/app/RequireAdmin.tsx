@@ -64,7 +64,7 @@ export function RequireAdmin() {
       {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴·'관리 종료'는 그대로 둔다 */}
       <RouteErrorBoundary>
         <Suspense
-          fallback={<Spin style={{ display: "block", margin: "40px auto" }} />}
+          fallback={<Spin style={{ display: "flex", margin: "40px auto" }} />}
         >
           <Outlet />
         </Suspense>

@@ -37,6 +37,14 @@ function pressEscape() {
 }
 
 describe("ProductModal", () => {
+  it("열리면 물품명 입력에 포커스를 둔다(닫기 버튼에 두면 Enter 한 번에 닫힌다)", async () => {
+    openProductModal(() => Promise.resolve());
+
+    await waitFor(() =>
+      expect(screen.getAllByPlaceholderText("물품명")[0]).toHaveFocus()
+    );
+  });
+
   it("평소에는 바깥 클릭이나 Esc로 닫힌다", () => {
     const onClose = openProductModal(() => Promise.resolve());
 
