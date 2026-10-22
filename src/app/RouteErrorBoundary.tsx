@@ -1,13 +1,14 @@
 import { Button, Result, Space } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
+import { useNavigateTo } from "@/app/useNavigateTo";
 import { isChunkLoadError } from "@/lib/chunk";
 import { Component, ReactNode, useEffect, useState } from "react";
 import {
   QueryErrorResetBoundary,
   useQueryErrorResetBoundary,
 } from "@tanstack/react-query";
-import { useLocation, useNavigate } from "react-router";
+import { useLocation } from "react-router";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -89,7 +90,7 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
 function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
   // pathname이 아니라 key를 쓴다: 홈에서 '홈으로'처럼 같은 경로로 이동해도 초기화된다
   const { key } = useLocation();
-  const navigate = useNavigate();
+  const navigateTo = useNavigateTo();
   const { reset, clearReset } = useQueryErrorResetBoundary();
 
   // 화면을 이동하면 캐시에 에러로 남은 쿼리를 마운트 시 다시 요청하도록 표시한다.
@@ -101,18 +102,21 @@ function RouteErrorBoundaryInner({ children }: { children: ReactNode }) {
     reset();
   }
 
-  // 이동이 반영되면 표시를 다시 내린다. 표시가 남아 있는 동안에는 쿼리 에러가
+  // 커밋되면 표시를 다시 내린다. 표시가 남아 있는 동안에는 쿼리 에러가
   // 오류 화면으로 올라가지 않는데, 새로 마운트되는 쿼리만 이를 내려 주므로
   // 검색 조건만 바뀌는 화면(같은 컴포넌트 유지)에서는 계속 남아 있게 된다.
+  // key가 바뀔 때만이 아니라 매 커밋마다 내린다: transition으로 처리되던 이동 렌더가
+  // 커밋되지 않고 버려지면(코드를 받는 중에 뒤로 가기 등) 렌더 중에 켠 표시만 남기 때문이다.
+  // (돌아간 곳이 히스토리의 첫 항목이면 다시 렌더되지 않아 남을 수 있다. 다음 이동 때 내려간다)
   useEffect(() => {
     clearReset();
-  }, [key, clearReset]);
+  });
 
   return (
     <ErrorBoundary
       resetKey={key}
       onReset={reset}
-      onGoHome={() => navigate(ROUTES.HOME)}
+      onGoHome={() => navigateTo(ROUTES.HOME)}
     >
       {children}
     </ErrorBoundary>

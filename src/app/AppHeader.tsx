@@ -1,12 +1,13 @@
 import { Button, Space, theme, Typography } from "antd";
 import { ROUTES } from "@/app/routes";
+import { useNavigateTo } from "@/app/useNavigateTo";
 import { CartButton } from "@/components/cart/CartButton";
 import { CSSProperties } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link } from "react-router";
 
 // 모든 화면 공통 헤더. 제목을 누르면 홈으로 간다.
 export function AppHeader() {
-  const navigate = useNavigate();
+  const navigateTo = useNavigateTo();
   const { token } = theme.useToken();
 
   return (
@@ -34,8 +35,8 @@ export function AppHeader() {
         <Typography.Text type='secondary'>제작자: 늘흰</Typography.Text>
       </Space>
       <Space>
-        <Button onClick={() => navigate(ROUTES.WALNUT)}>호두작</Button>
-        <Button onClick={() => navigate(ROUTES.FREE)}>자유 모드</Button>
+        <Button onClick={() => navigateTo(ROUTES.WALNUT)}>호두작</Button>
+        <Button onClick={() => navigateTo(ROUTES.FREE)}>자유 모드</Button>
         <CartButton />
       </Space>
     </header>
