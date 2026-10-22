@@ -46,6 +46,31 @@ API 서버 주소는 환경별 `.env` 파일로 정합니다. 두 파일은 커�
 echo "VITE_API_BASE_URL=http://43.200.90.33:8123" > .env.development.local
 ```
 
+## 배포 (Vercel)
+
+Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습니다.
+
+- 빌드: `pnpm install --frozen-lockfile` → `pnpm build`, 출력 폴더 `build/`
+- `BrowserRouter`를 쓰므로 정적 파일이 아닌 모든 경로를 `index.html`로 보냅니다(새로고침해도 404가 나지 않음).
+- 해시가 붙은 `assets/` 파일은 1년 동안 캐시합니다.
+
+처음 한 번만 설정합니다.
+
+1. [Vercel](https://vercel.com)에서 **Add New > Project**로 이 저장소를 가져옵니다. Framework Preset은 Vite로 잡히고, 나머지 빌드 설정은 `vercel.json`을 따릅니다.
+2. **Settings > Environment Variables**(Production)에 다음을 넣습니다.
+
+   | 이름                           | 값                                                            |
+   | ------------------------------ | ------------------------------------------------------------- |
+   | `VITE_API_BASE_URL`            | Render 백엔드 주소 (예: `https://<서비스 이름>.onrender.com`) |
+   | `ENABLE_EXPERIMENTAL_COREPACK` | `1` (`packageManager`의 pnpm 12를 쓰도록 함)                  |
+
+   빌드 때 설정한 환경변수가 `.env.production`보다 우선합니다. 페이지는 HTTPS로 서비스되므로 API 주소도 `https://`여야 브라우저가 막지 않습니다.
+
+3. Node.js 버전은 `package.json`의 `engines.node`(>=24)를 따릅니다.
+
+이후 `main`에 푸시하면 운영에 배포되고, PR마다 미리보기 주소가 만들어집니다.
+환경변수를 바꾼 뒤에는 다시 배포해야 반영됩니다(Vite는 빌드할 때 값을 넣음).
+
 ## 폴더 구조
 
 `src/` 아래는 레이어로 나뉘고, import는 `@/` 별칭(`@/apis/client` 등)으로 씁니다.
