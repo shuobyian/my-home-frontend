@@ -9,7 +9,7 @@ import { App } from "antd";
 import { ProductModal } from "@/components/product/ProductModal";
 import { createProduct } from "@/test/fixtures";
 
-function renderModal(onSubmit: () => Promise<void>) {
+function openProductModal(onSubmit: () => Promise<void>) {
   const onClose = vi.fn();
   render(
     <App>
@@ -38,7 +38,7 @@ function pressEscape() {
 
 describe("ProductModal", () => {
   it("평소에는 바깥 클릭이나 Esc로 닫힌다", () => {
-    const onClose = renderModal(() => Promise.resolve());
+    const onClose = openProductModal(() => Promise.resolve());
 
     clickOutside();
     expect(onClose).toHaveBeenCalledTimes(1);
@@ -49,7 +49,7 @@ describe("ProductModal", () => {
 
   it("저장 중에는 바깥 클릭·Esc로 닫히지 않고, 저장이 끝나면 닫힌다", async () => {
     let finish: () => void = () => {};
-    const onClose = renderModal(
+    const onClose = openProductModal(
       () => new Promise<void>((resolve) => (finish = resolve))
     );
 
