@@ -2,7 +2,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { App } from "antd";
 import { WalnutPage } from "@/pages/WalnutPage";
-import { Link, MemoryRouter } from "react-router";
+import { Link, MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider, useCart } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { WalnutResponse } from "@/types/experience";
@@ -25,6 +25,18 @@ function CartCount() {
   return <div>담긴 개수: {entries.length}</div>;
 }
 
+// 현재 주소와 뒤로 가기
+function LocationProbe() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  return (
+    <>
+      <div data-testid='search'>{location.search}</div>
+      <button onClick={() => navigate(-1)}>뒤로</button>
+    </>
+  );
+}
+
 function renderWalnut() {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: 0 } },
@@ -40,6 +52,7 @@ function renderWalnut() {
               다음 조건
             </Link>
             <CartCount />
+            <LocationProbe />
             <WalnutPage />
           </MemoryRouter>
         </CartProvider>
@@ -77,5 +90,39 @@ describe("WalnutPage", () => {
     fireEvent.click(await screen.findByText("앰플 재료"));
 
     expect(screen.getByText("담긴 개수: 1")).toBeInTheDocument();
+  });
+
+  it("새 조건으로 계산하면 히스토리에 쌓아, 뒤로 가면 이전 조건으로 돌아간다", async () => {
+    mockedCalculate.mockResolvedValue(response(1000));
+    renderWalnut();
+    await screen.findByText("남은 경험치: 1,000");
+
+    fireEvent.change(screen.getByLabelText("목표 레벨"), {
+      target: { value: "80" },
+    });
+    fireEvent.click(screen.getByRole("button", { name: /계산하기/ }));
+    await waitFor(() =>
+      expect(screen.getByTestId("search")).toHaveTextContent(
+        "objectiveLevel=80"
+      )
+    );
+
+    fireEvent.click(screen.getByText("뒤로"));
+    await waitFor(() =>
+      expect(screen.getByTestId("search")).toHaveTextContent(
+        "objectiveLevel=70"
+      )
+    );
+  });
+
+  it("같은 조건으로 다시 누르면 다시 계산한다(실패 후 재시도 포함)", async () => {
+    mockedCalculate.mockResolvedValue(response(1000));
+    renderWalnut();
+    await screen.findByText("남은 경험치: 1,000");
+    expect(mockedCalculate).toHaveBeenCalledTimes(1);
+
+    fireEvent.click(screen.getByRole("button", { name: /계산하기/ }));
+
+    await waitFor(() => expect(mockedCalculate).toHaveBeenCalledTimes(2));
   });
 });
