@@ -27,7 +27,9 @@ export function CartEntryList({
   }
 
   return (
-    <ul style={{ listStyle: "none", margin: 0, padding: 0 }}>
+    // list-style: none인 목록은 Safari(VoiceOver)가 목록 역할을 지우므로 role을 명시한다
+    // eslint-disable-next-line jsx-a11y-x/no-redundant-roles
+    <ul role='list' style={{ listStyle: "none", margin: 0, padding: 0 }}>
       {entries.map((entry, index) => (
         <li
           key={entry.key}

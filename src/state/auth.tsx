@@ -4,7 +4,7 @@ import {
   SESSION_KEY,
   writeSession,
 } from "@/lib/storage";
-import { createContext, ReactNode, useContext, useMemo, useState } from "react";
+import { createContext, ReactNode, use, useMemo, useState } from "react";
 
 interface AuthContextValue {
   // 이 탭에서 관리자 비밀번호를 확인했는지
@@ -37,11 +37,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [isAdmin]
   );
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+  return <AuthContext value={value}>{children}</AuthContext>;
 }
 
 export function useAuth() {
-  const context = useContext(AuthContext);
+  const context = use(AuthContext);
   if (!context) {
     throw new Error("useAuth는 AuthProvider 안에서만 사용할 수 있습니다.");
   }

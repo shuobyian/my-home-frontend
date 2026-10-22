@@ -95,7 +95,13 @@ export function ProductModal({
             NO_COMMA_RULE,
           ]}
         >
-          <Input placeholder='물품명' />
+          <Input
+            placeholder='물품명'
+            // antd 6 모달은 열릴 때 첫 포커스 요소(닫기 버튼)로 포커스를 옮겨, 바로 Enter를 누르면
+            // 모달이 닫힌다. 첫 입력에 포커스를 두어 이를 막고 바로 입력할 수 있게 한다.
+            // eslint-disable-next-line jsx-a11y-x/no-autofocus
+            autoFocus
+          />
         </Form.Item>
         <Form.Item
           name='level'
