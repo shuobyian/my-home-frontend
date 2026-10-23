@@ -38,12 +38,30 @@ function pressEscape() {
 }
 
 describe("ProductModal", () => {
-  it("열리면 물품명 입력에 포커스를 둔다(닫기 버튼에 두면 Enter 한 번에 닫힌다)", async () => {
+  it("열리면 바로 입력할 수 있게 물품명 입력에 포커스를 둔다", async () => {
     openProductModal(() => Promise.resolve());
 
     await waitFor(() =>
-      expect(screen.getAllByPlaceholderText("물품명")[0]).toHaveFocus()
+      expect(
+        screen.getAllByRole("textbox", { name: "물품명" })[0]
+      ).toHaveFocus()
     );
+  });
+
+  it("필수 칸은 라벨을 숨겨도 필수임을 보조 기술에 알린다", () => {
+    openProductModal(() => Promise.resolve());
+
+    for (const field of [
+      ...screen.getAllByRole("textbox", { name: "물품명" }),
+      screen.getByRole("spinbutton", { name: "레벨" }),
+      screen.getByRole("spinbutton", { name: "크래프팅 가격" }),
+      screen.getByRole("combobox", { name: "도구" }),
+      screen.getByRole("combobox", { name: "카테고리" }),
+      screen.getByRole("radiogroup", { name: "하위재료 여부" }),
+      screen.getByRole("spinbutton", { name: "개수" }),
+    ]) {
+      expect(field).toHaveAttribute("aria-required", "true");
+    }
   });
 
   it("평소에는 바깥 클릭이나 Esc로 닫힌다", () => {

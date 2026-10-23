@@ -17,7 +17,6 @@ import {
   useForm,
   useToast,
 } from "@/ui";
-import styles from "./ProductModal.module.css";
 
 interface MaterialValues {
   // 줄의 React key(제출할 때 뺀다)
@@ -73,10 +72,8 @@ function validate(values: ProductValues): FormErrors {
   return errors;
 }
 
-// 칸 이름은 접근 이름으로만 쓰고 화면에는 placeholder만 보인다
-const hiddenLabel = (text: string) => (
-  <span className='ui-sr-only'>{text}</span>
-);
+// 재료 한 줄의 칸은 아래 여백 없이 붙여 놓는다(줄 사이는 Stack 간격)
+const ROW_FIELD_STYLE = { marginBottom: 0 };
 
 interface ProductModalProps {
   // 수정할 물품. 없으면 추가 모드
@@ -170,11 +167,8 @@ export function ProductModal({
           () => toast.error("정보를 다시 확인해주세요")
         )}
       >
-        <Field
-          className={styles.field}
-          label={hiddenLabel("물품명")}
-          error={errors.name}
-        >
+        {/* 칸 이름은 접근 이름으로만 쓰고(hideLabel) 화면에는 placeholder만 보인다 */}
+        <Field label='물품명' hideLabel required error={errors.name}>
           <Input
             value={values.name ?? ""}
             onChange={(name) => set("name", name)}
@@ -184,11 +178,7 @@ export function ProductModal({
             autoFocus
           />
         </Field>
-        <Field
-          className={styles.field}
-          label={hiddenLabel("레벨")}
-          error={errors.level}
-        >
+        <Field label='레벨' hideLabel required error={errors.level}>
           <NumberInput
             value={values.level ?? null}
             onChange={(level) => set("level", level)}
@@ -199,8 +189,9 @@ export function ProductModal({
           />
         </Field>
         <Field
-          className={styles.field}
-          label={hiddenLabel("크래프팅 가격")}
+          label='크래프팅 가격'
+          hideLabel
+          required
           error={errors.craftingPrice}
         >
           <NumberInput
@@ -212,11 +203,7 @@ export function ProductModal({
             placeholder='크래프팅 가격'
           />
         </Field>
-        <Field
-          className={styles.field}
-          label={hiddenLabel("도구")}
-          error={errors.tool}
-        >
+        <Field label='도구' hideLabel required error={errors.tool}>
           <Select
             value={values.tool}
             onChange={(tool) => set("tool", tool)}
@@ -224,11 +211,7 @@ export function ProductModal({
             placeholder='도구'
           />
         </Field>
-        <Field
-          className={styles.field}
-          label={hiddenLabel("카테고리")}
-          error={errors.category}
-        >
+        <Field label='카테고리' hideLabel required error={errors.category}>
           <Select
             value={values.category}
             onChange={(category) => set("category", category)}
@@ -239,10 +222,12 @@ export function ProductModal({
         <Stack vertical>
           <Text>필요 재료 (최대 {MAX_MATERIAL_SLOTS}개)</Text>
           {materials.map((material, index) => (
-            <Stack key={material.key} className={styles.material}>
+            <Stack key={material.key}>
               <Field
-                className={styles.field}
-                label={hiddenLabel("물품명")}
+                label='물품명'
+                hideLabel
+                required
+                style={ROW_FIELD_STYLE}
                 error={errors[`materials.${index}.name`]}
               >
                 <Input
@@ -252,8 +237,10 @@ export function ProductModal({
                 />
               </Field>
               <Field
-                className={styles.field}
-                label={hiddenLabel("하위재료 여부")}
+                label='하위재료 여부'
+                hideLabel
+                required
+                style={ROW_FIELD_STYLE}
                 error={errors[`materials.${index}.basic`]}
               >
                 <Segmented
@@ -263,8 +250,10 @@ export function ProductModal({
                 />
               </Field>
               <Field
-                className={styles.field}
-                label={hiddenLabel("개수")}
+                label='개수'
+                hideLabel
+                required
+                style={ROW_FIELD_STYLE}
                 error={errors[`materials.${index}.count`]}
               >
                 <NumberInput

@@ -56,4 +56,46 @@ describe("ProductManagePage", () => {
     // 이전 목록(빈 3쪽)을 보여 주는 동안 한 번 더 넘어가 1쪽까지 가지 않는다
     expect(screen.queryByText("물품 1")).not.toBeInTheDocument();
   });
+
+  it("쪽당 개수를 바꾸면 보던 쪽을 서버에 그대로 요청하고, 그 쪽이 사라지면 마지막 쪽을 요청한다", async () => {
+    const TOTAL = 60;
+    mockedFetchProducts.mockImplementation(
+      async ({ page, size }: ProductSearchParams) => ({
+        content: productsOf(
+          page * size + 1,
+          Math.min(size, TOTAL - page * size)
+        ),
+        totalElements: TOTAL,
+      })
+    );
+    renderTable();
+    expect(await screen.findByText("물품 1")).toBeInTheDocument();
+    const requestedPageSizes = () =>
+      mockedFetchProducts.mock.calls.map(([params]) => {
+        const { page, size } = params as ProductSearchParams;
+        return { page, size };
+      });
+
+    fireEvent.click(screen.getByRole("button", { name: "3 페이지" }));
+    expect(await screen.findByText("물품 21")).toBeInTheDocument();
+
+    // 3쪽(서버 page 2)을 20개씩으로 보면 41~60번째 물품이다
+    const sizeSelect = screen.getByRole("combobox", { name: "페이지당 개수" });
+    fireEvent.change(sizeSelect, { target: { value: "20" } });
+    expect(await screen.findByText("물품 41")).toBeInTheDocument();
+
+    // 50개씩이면 3쪽이 없으므로 마지막 쪽(서버 page 1)으로 맞춘다
+    fireEvent.change(sizeSelect, { target: { value: "50" } });
+    await waitFor(() =>
+      expect(requestedPageSizes()).toEqual([
+        { page: 0, size: 10 },
+        { page: 2, size: 10 },
+        { page: 2, size: 20 },
+        { page: 1, size: 50 },
+      ])
+    );
+    expect(
+      await screen.findByRole("button", { name: "2 페이지", current: "page" })
+    ).toBeInTheDocument();
+  });
 });
