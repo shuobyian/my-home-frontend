@@ -2,10 +2,12 @@
 export const ENDPOINTS = {
   PRODUCT: "/product",
   PRODUCT_ALL: "/product/all",
-  LOGIN: "/product/login",
   RESULT: "/result",
   CALCULATOR: "/result/calculator",
   MARKET: "/market",
   EXPERIENCE: "/experience",
   WALNUT: "/experience/walnut",
+  AUTH_SIGNUP: "/auth/signup",
+  AUTH_LOGIN: "/auth/login",
+  AUTH_LOGOUT: "/auth/logout",
 } as const;

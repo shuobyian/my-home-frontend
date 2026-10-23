@@ -1,18 +1,34 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
 import { login } from "@/apis/auth";
-import { MyHomeError } from "@/apis/errors";
 import { preloadManagePages } from "@/app/managePages";
 import { RequireAdmin } from "@/app/RequireAdmin";
-import { SESSION_KEY } from "@/lib/storage";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { MemoryRouter, Route, Routes } from "react-router";
-import { AuthProvider } from "@/state/auth";
+import {
+  clearAuthSession,
+  getAuthSession,
+  saveAuthSession,
+} from "@/lib/authSession";
+import { createSession } from "@/test/fixtures";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router";
 
-vi.mock("@/apis/auth", () => ({ login: vi.fn() }));
-const mockedLogin = vi.mocked(login);
 // 관리 화면 코드를 실제로 받지 않고 미리 받기 요청 여부만 본다
 vi.mock("@/app/managePages", () => ({ preloadManagePages: vi.fn() }));
 const mockedPreload = vi.mocked(preloadManagePages);
+vi.mock("@/apis/auth", () => ({ login: vi.fn() }));
+const mockedLogin = vi.mocked(login);
+
+// 로그인 화면 대신, 로그인 뒤 돌아올 주소(state.from)를 보여 준다
+function LoginProbe() {
+  const { state } = useLocation();
+  return <div data-testid='login-from'>{state?.from}</div>;
+}
 
 function renderManage(initialPath = "/manage") {
   const queryClient = new QueryClient({
@@ -20,139 +36,124 @@ function renderManage(initialPath = "/manage") {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <MemoryRouter initialEntries={[initialPath]}>
-          <Routes>
-            <Route element={<RequireAdmin />}>
-              <Route path='/manage' element={<div>관리 내용</div>} />
-              <Route path='/manage/product' element={<div>물품 관리</div>} />
-            </Route>
-            <Route path='/' element={<div>홈 화면</div>} />
-          </Routes>
-        </MemoryRouter>
-      </AuthProvider>
+      <MemoryRouter initialEntries={[initialPath]}>
+        <Routes>
+          <Route element={<RequireAdmin />}>
+            <Route path='/manage' element={<div>관리 내용</div>} />
+            <Route path='/manage/product' element={<div>물품 관리</div>} />
+            {/* 저장하지 않은 입력이 남는지 보려는 화면 */}
+            <Route
+              path='/manage/market'
+              element={<input aria-label='시세' />}
+            />
+          </Route>
+          <Route path='/login' element={<LoginProbe />} />
+          <Route path='/' element={<div>홈 화면</div>} />
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
 
-function submitPassword(password: string) {
-  fireEvent.change(screen.getByPlaceholderText("비밀번호 입력"), {
-    target: { value: password },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "확인" }));
-}
-
 beforeEach(() => {
-  sessionStorage.clear();
+  clearAuthSession();
 });
 
 describe("RequireAdmin", () => {
-  it("비밀번호를 확인하기 전에는 관리 화면을 그리지 않는다", () => {
-    renderManage();
+  it("로그인하지 않았으면 관리 화면 대신 로그인 화면으로 보내고, 돌아올 주소를 넘긴다", async () => {
+    renderManage("/manage/product?page=2");
 
-    expect(screen.getByText("관리자만 입장 가능합니다.")).toBeInTheDocument();
-    // 라벨은 화면에서 숨겨도 접근 이름과 필수 표시는 남는다
-    expect(screen.getByLabelText("비밀번호")).toHaveAttribute(
-      "aria-required",
-      "true"
+    expect(await screen.findByTestId("login-from")).toHaveTextContent(
+      "/manage/product?page=2"
     );
-    expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
+    expect(screen.queryByText("물품 관리")).not.toBeInTheDocument();
     // 관리 화면 코드도 받지 않는다
     expect(mockedPreload).not.toHaveBeenCalled();
   });
 
-  it("비밀번호가 맞으면 관리 화면을 보여 주고 이 탭에서 기억한다", async () => {
-    mockedLogin.mockResolvedValue(undefined);
+  it("관리자가 아닌 회원에게는 안내만 보여 준다", async () => {
+    saveAuthSession(createSession({}, { username: "member", isAdmin: false }));
     renderManage();
 
-    submitPassword("pw");
-
-    expect(await screen.findByText("관리 내용")).toBeInTheDocument();
-    expect(mockedLogin).toHaveBeenCalledWith("pw");
-    expect(sessionStorage.getItem(SESSION_KEY.ADMIN)).toBe("true");
-    // 확인 뒤에는 메뉴 이동이 바로 반응하도록 관리 화면 코드를 미리 받는다
-    expect(mockedPreload).toHaveBeenCalledTimes(1);
-  });
-
-  it("비밀번호가 틀리면 서버 메시지를 보여 주고 관리 화면은 그리지 않는다", async () => {
-    mockedLogin.mockRejectedValue(
-      new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
-    );
-    renderManage();
-
-    submitPassword("wrong");
-
-    expect(
-      await screen.findByText("비밀번호가 올바르지 않습니다.")
-    ).toBeInTheDocument();
+    expect(screen.getByText("관리자만 입장 가능합니다.")).toBeInTheDocument();
     expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
+    expect(mockedPreload).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "홈으로" }));
+    expect(await screen.findByText("홈 화면")).toBeInTheDocument();
   });
 
-  it("다시 제출하면 확인하는 동안 이전 실패 메시지를 지우고 버튼을 로딩 상태로 둔다", async () => {
-    mockedLogin
-      .mockRejectedValueOnce(
-        new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
-      )
-      .mockReturnValueOnce(new Promise(() => {}));
-    renderManage();
-
-    submitPassword("wrong");
-    expect(
-      await screen.findByText("비밀번호가 올바르지 않습니다.")
-    ).toBeInTheDocument();
-
-    submitPassword("pw");
-
-    await waitFor(() =>
-      expect(
-        screen.queryByText("비밀번호가 올바르지 않습니다.")
-      ).not.toBeInTheDocument()
-    );
-    expect(screen.getByRole("button", { name: "확인" })).toHaveAttribute(
-      "aria-busy",
-      "true"
-    );
-  });
-
-  it("실패 → 성공 → '관리 종료' 뒤 다시 보이는 확인 화면에는 이전 실패 메시지가 없다", async () => {
-    mockedLogin
-      .mockRejectedValueOnce(
-        new MyHomeError({ message: "비밀번호가 올바르지 않습니다." })
-      )
-      .mockResolvedValueOnce(undefined);
-    renderManage();
-
-    submitPassword("wrong");
-    await screen.findByText("비밀번호가 올바르지 않습니다.");
-    submitPassword("pw");
-    expect(await screen.findByText("관리 내용")).toBeInTheDocument();
-
-    fireEvent.click(screen.getByRole("button", { name: "관리 종료" }));
-
-    expect(
-      await screen.findByText("관리자만 입장 가능합니다.")
-    ).toBeInTheDocument();
-    expect(
-      screen.queryByText("비밀번호가 올바르지 않습니다.")
-    ).not.toBeInTheDocument();
-  });
-
-  it("이 탭에서 이미 확인했으면 바로 관리 화면을 보여 주고, '관리 종료'로 다시 잠근다", async () => {
-    sessionStorage.setItem(SESSION_KEY.ADMIN, "true");
+  it("관리자면 관리 화면을 보여 주고 관리 화면 코드를 미리 받는다", () => {
+    saveAuthSession(createSession());
     renderManage();
 
     expect(screen.getByText("관리 내용")).toBeInTheDocument();
+    // 메뉴 이동이 바로 반응하도록 관리 화면 코드를 미리 받는다
+    expect(mockedPreload).toHaveBeenCalledTimes(1);
+  });
 
-    fireEvent.click(screen.getByRole("button", { name: "관리 종료" }));
+  it("보는 중에 로그인이 풀리면(만료·토큰 거절·다른 탭) 화면과 입력을 그대로 두고 그 위에서 다시 로그인하게 한다", async () => {
+    const renewed = createSession({ token: "token-2" });
+    mockedLogin
+      .mockResolvedValueOnce(
+        createSession({}, { username: "member", isAdmin: false })
+      )
+      .mockResolvedValueOnce(renewed);
+    saveAuthSession(createSession());
+    renderManage("/manage/market");
+    fireEvent.change(screen.getByLabelText("시세"), {
+      target: { value: "저장 전 입력" },
+    });
 
+    act(() => clearAuthSession());
+
+    const dialog = await screen.findByRole("dialog", {
+      name: "다시 로그인해주세요",
+    });
+    expect(screen.getByLabelText("시세")).toHaveValue("저장 전 입력");
+    const submit = (username: string) => {
+      fireEvent.change(within(dialog).getByLabelText("아이디"), {
+        target: { value: username },
+      });
+      fireEvent.change(within(dialog).getByLabelText("비밀번호"), {
+        target: { value: "pw" },
+      });
+      fireEvent.click(within(dialog).getByRole("button", { name: "로그인" }));
+    };
+
+    // 관리자가 아닌 계정으로 로그인하면 창을 그대로 두고 입력도 지킨다
+    submit("member");
+    expect(
+      await within(dialog).findByText(/member 계정은 관리자가 아닙니다/)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("dialog")).toBe(dialog);
+    expect(screen.getByLabelText("시세")).toHaveValue("저장 전 입력");
+
+    submit("admin");
     await waitFor(() =>
-      expect(screen.queryByText("관리 내용")).not.toBeInTheDocument()
+      expect(screen.queryByRole("dialog")).not.toBeInTheDocument()
     );
-    expect(sessionStorage.getItem(SESSION_KEY.ADMIN)).toBeNull();
+    expect(getAuthSession()).toBe(renewed);
+    expect(screen.getByLabelText("시세")).toHaveValue("저장 전 입력");
+  });
+
+  it("다시 로그인 창을 닫으면 관리 화면에서 나간다", async () => {
+    saveAuthSession(createSession());
+    renderManage();
+    act(() => clearAuthSession());
+
+    fireEvent.click(
+      within(
+        await screen.findByRole("dialog", { name: "다시 로그인해주세요" })
+      ).getByRole("button", { name: "닫기" })
+    );
+
+    expect(await screen.findByText("홈 화면")).toBeInTheDocument();
+    expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
   });
 
   it("관리 메뉴는 현재 화면을 표시하고(끝 슬래시 포함) 누르면 이동한다", async () => {
-    sessionStorage.setItem(SESSION_KEY.ADMIN, "true");
+    saveAuthSession(createSession());
     renderManage("/manage/");
 
     expect(screen.getByText("관리 내용")).toBeInTheDocument();

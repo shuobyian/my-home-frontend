@@ -1,8 +1,25 @@
-import { login } from "@/apis/auth";
+import { login, logout, signup } from "@/apis/auth";
+import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
+import { Credentials } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
+// 성공하면 세션을 저장한다. 화면은 state/auth의 useCurrentUser로 바로 반영된다.
+// v5는 두 번째 인자로 뮤테이션 컨텍스트를 넘기므로 API 함수에는 입력값만 전달한다.
 export const useLoginMutation = () =>
   useMutation({
-    // v5는 두 번째 인자로 뮤테이션 컨텍스트를 넘기므로 API 함수에는 비밀번호만 전달한다
-    mutationFn: (password: string) => login(password),
+    mutationFn: (body: Credentials) => login(body),
+    onSuccess: (session) => saveAuthSession(session),
+  });
+
+export const useSignupMutation = () =>
+  useMutation({
+    mutationFn: (body: Credentials) => signup(body),
+    onSuccess: (session) => saveAuthSession(session),
+  });
+
+// 서버 요청이 실패해도(네트워크 오류 등) 이 기기에서는 로그아웃한다.
+// 그때 서버의 토큰은 만료될 때까지 남는다.
+export const useLogoutMutation = () =>
+  useMutation({
+    mutationFn: () => logout().finally(clearAuthSession),
   });
