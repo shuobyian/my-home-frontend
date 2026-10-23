@@ -39,7 +39,7 @@ function submitPassword(password: string) {
   fireEvent.change(screen.getByPlaceholderText("비밀번호 입력"), {
     target: { value: password },
   });
-  fireEvent.click(screen.getByRole("button", { name: /^확\s?인$/ }));
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
 }
 
 beforeEach(() => {
@@ -103,7 +103,7 @@ describe("RequireAdmin", () => {
         screen.queryByText("비밀번호가 올바르지 않습니다.")
       ).not.toBeInTheDocument()
     );
-    expect(screen.getByRole("button", { name: /확\s?인/ })).toHaveAttribute(
+    expect(screen.getByRole("button", { name: "확인" })).toHaveAttribute(
       "aria-busy",
       "true"
     );

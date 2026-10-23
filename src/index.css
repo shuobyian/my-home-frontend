@@ -1,4 +1,10 @@
-/* 공통 헤더의 홈 링크: 키보드 포커스(외곽선 색은 전역 :focus-visible)와 마우스 오버 표시 */
+/* 공통 헤더의 홈 링크: 제목처럼 보이게 링크 기본 밑줄·색을 없앤다.
+   키보드 포커스 외곽선 색은 전역 :focus-visible이 정한다 */
+.app-home-link {
+  color: inherit;
+  text-decoration: none;
+}
+
 .app-home-link:focus-visible {
   border-radius: var(--ui-radius-sm);
 }
