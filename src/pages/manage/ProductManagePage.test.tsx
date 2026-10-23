@@ -1,9 +1,9 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { App } from "antd";
 import { ProductManagePage } from "@/pages/manage/ProductManagePage";
 import { createProduct } from "@/test/fixtures";
 import { ProductSearchParams } from "@/types/product";
+import { UIProvider } from "@/ui";
 
 // 화면 코드는 apis/를 직접 가져오지 않으므로(레이어 규칙) 모듈 경로로만 모킹한다
 const mockedFetchProducts = vi.hoisted(() => vi.fn());
@@ -23,9 +23,9 @@ function renderTable() {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <App>
+      <UIProvider>
         <ProductManagePage />
-      </App>
+      </UIProvider>
     </QueryClientProvider>
   );
 }
@@ -49,7 +49,7 @@ describe("ProductManagePage", () => {
     renderTable();
     expect(await screen.findByText("물품 1")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByTitle("3"));
+    fireEvent.click(screen.getByRole("button", { name: "3 페이지" }));
 
     expect(await screen.findByText("물품 11")).toBeInTheDocument();
     await waitFor(() => expect(requestedPages()).toEqual([0, 2, 1]));

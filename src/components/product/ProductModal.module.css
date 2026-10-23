@@ -1,0 +1,9 @@
+/* 라벨은 화면에서 숨기므로(ui-sr-only) 라벨 자리의 아래 여백을 없앤다 */
+.field > :first-child {
+  padding-bottom: 0;
+}
+
+/* 재료 한 줄의 칸은 아래 여백 없이 붙여 놓는다(줄 사이는 Stack 간격) */
+.material .field {
+  margin-bottom: 0;
+}
