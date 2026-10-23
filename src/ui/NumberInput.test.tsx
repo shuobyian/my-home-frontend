@@ -88,6 +88,25 @@ describe("NumberInput", () => {
     expect(input).toHaveValue("5");
   });
 
+  test("쉼표·공백·단위 글자는 지우고 읽는다(붙여 넣은 금액)", () => {
+    const onChange = vi.fn();
+    render(<Controlled initial={5} onChange={onChange} />);
+    const input = screen.getByRole("spinbutton");
+
+    type("1,234");
+    expect(onChange).toHaveBeenLastCalledWith(1234);
+
+    type("12,500골드");
+    expect(onChange).toHaveBeenLastCalledWith(12500);
+    fireEvent.blur(input);
+    expect(input).toHaveValue("12500");
+
+    // 숫자가 아닌 영문자는 지우지 않으므로 여전히 읽을 수 없다
+    type("abc");
+    fireEvent.blur(input);
+    expect(input).toHaveValue("12500");
+  });
+
   test("↑/↓로 step만큼 바꾸고 범위를 넘지 않는다", () => {
     const onChange = vi.fn();
     render(<Controlled initial={9} max={10} step={2} onChange={onChange} />);

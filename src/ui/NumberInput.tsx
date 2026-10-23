@@ -37,11 +37,12 @@ export type NumberInputProps = Omit<
 
 const NUMBER_PATTERN = /^-?(\d+\.?\d*|\.\d+)$/;
 
-// 빈 글자는 null, 숫자로 읽을 수 없으면(입력 중인 "-" 등) undefined
+// 빈 글자는 null, 숫자로 읽을 수 없으면(입력 중인 "-" 등) undefined.
+// 쉼표·공백·단위 글자("12,500골드")는 지우고 읽는다(antd 기본 파서와 같은 규칙)
 function parse(text: string) {
-  const trimmed = text.trim();
-  if (trimmed === "") return null;
-  return NUMBER_PATTERN.test(trimmed) ? Number(trimmed) : undefined;
+  const cleaned = text.replace(/[^\w.-]+/g, "");
+  if (cleaned === "") return null;
+  return NUMBER_PATTERN.test(cleaned) ? Number(cleaned) : undefined;
 }
 
 const format = (value: number | null | undefined) =>
