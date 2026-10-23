@@ -97,6 +97,16 @@ hr {
   border-top: 1px solid var(--ui-color-border-secondary);
 }
 
+/* 링크: 기본 파란 밑줄 대신 주 색으로 */
+a {
+  color: var(--ui-color-primary);
+  text-decoration: none;
+}
+
+a:hover {
+  color: var(--ui-color-primary-hover);
+}
+
 /* 키보드 포커스 표시. 미지원 브라우저는 기본 외곽선이 그대로 보인다(이 규칙만 따로 둔다) */
 :focus-visible {
   outline: 2px solid var(--ui-color-primary);
