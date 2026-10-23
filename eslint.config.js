@@ -60,6 +60,34 @@ const COMPONENT_ZONES = [
 
 const LAYER_ZONES = [
   {
+    target: "./src/ui",
+    from: [
+      "./src/app",
+      "./src/pages",
+      "./src/components",
+      "./src/state",
+      "./src/queries",
+      "./src/apis",
+      "./src/domain",
+      "./src/lib",
+      "./src/types",
+    ],
+    message:
+      "ui(디자인 시스템)는 앱 레이어를 가져오지 않습니다. React와 ui 안의 파일만 씁니다.",
+  },
+  {
+    target: [
+      "./src/state",
+      "./src/queries",
+      "./src/apis",
+      "./src/domain",
+      "./src/lib",
+      "./src/types",
+    ],
+    from: "./src/ui",
+    message: "화면이 아닌 레이어는 ui를 가져오지 않습니다.",
+  },
+  {
     target: "./src/components",
     from: "./src/queries",
     message:
@@ -223,10 +251,6 @@ export default defineConfig([
             {
               name: "react",
               message: "domain·types·lib는 React에 의존하지 않습니다.",
-            },
-            {
-              name: "antd",
-              message: "domain·types·lib는 UI 라이브러리에 의존하지 않습니다.",
             },
             {
               name: "axios",

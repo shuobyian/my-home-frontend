@@ -1,4 +1,3 @@
-import { App, Button, Space, Typography } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useAddToCart } from "@/components/cart/useAddToCart";
@@ -12,9 +11,10 @@ import { useCalculateResultsQuery } from "@/queries/result";
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router";
 import { Result } from "@/types/result";
+import { Button, Stack, Text, Title, useToast } from "@/ui";
 
 export function FreeResultPage() {
-  const { message } = App.useApp();
+  const toast = useToast();
   const addToCart = useAddToCart("free");
 
   // 시세 입력 화면이 넘긴 시세. 주소로 직접 들어왔거나 형식이 맞지 않으면 입력 화면으로 돌려보낸다.
@@ -44,24 +44,24 @@ export function FreeResultPage() {
   const onSave = () => {
     if (!data) return;
     if (!writeJSON(STORAGE_KEY.RESULT, data)) {
-      message.error(
+      toast.error(
         "브라우저에 저장하지 못했습니다. 저장 공간이나 사이트 데이터 설정을 확인해주세요."
       );
       return;
     }
     setSaved(data);
-    message.success("현재 결과를 브라우저에 저장했습니다.");
+    toast.success("현재 결과를 브라우저에 저장했습니다.");
   };
 
   if (!markets) return <Navigate to={ROUTES.FREE} replace />;
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }}>
-      <Space style={{ width: "100%", justifyContent: "space-between" }} wrap>
-        <Typography.Title level={5} style={{ margin: 0 }}>
+    <Stack vertical>
+      <Stack justify='space-between' wrap>
+        <Title level={5} style={{ margin: 0 }}>
           {showSaved ? "저장된 결과" : "입력한 시세로 계산한 결과"}
-        </Typography.Title>
-        <Space wrap>
+        </Title>
+        <Stack wrap>
           {showSaved ? (
             <Button onClick={() => setShowSaved(false)}>
               새 계산 결과 보기
@@ -71,22 +71,26 @@ export function FreeResultPage() {
               저장된 결과 불러오기
             </Button>
           )}
-          <Button type='primary' onClick={onSave} disabled={showSaved || !data}>
+          <Button
+            variant='primary'
+            onClick={onSave}
+            disabled={showSaved || !data}
+          >
             로컬에 저장하기
           </Button>
-        </Space>
-      </Space>
-      <Typography.Text type='secondary'>
+        </Stack>
+      </Stack>
+      <Text tone='secondary'>
         이 결과는 서버에 저장되지 않으며 현재 접속 중인 브라우저에 저장할 수
         있습니다.
-      </Typography.Text>
+      </Text>
       <Panel>
         <SearchBar onSearch={setQuery} />
       </Panel>
       {isError && !showSaved ? (
-        <Typography.Text type='danger'>
+        <Text tone='danger'>
           결과를 계산할 수 없습니다. {getErrorMessage(error)}
-        </Typography.Text>
+        </Text>
       ) : (
         <ResultTable
           loading={isLoading && !showSaved}
@@ -94,6 +98,6 @@ export function FreeResultPage() {
           onRowClick={addToCart}
         />
       )}
-    </Space>
+    </Stack>
   );
 }

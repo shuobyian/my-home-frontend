@@ -1,9 +1,9 @@
-import { Button, Form, Input, Select } from "antd";
 import { Panel } from "@/components/common/Panel";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
 import { ResultSearchState } from "@/domain/resultSearch";
-import { useEffect } from "react";
+import { useState } from "react";
 import { Category, Tool } from "@/types/enums";
+import { Button, Input, Select, Stack, useForm } from "@/ui";
 
 const ALL = "ALL";
 
@@ -34,17 +34,27 @@ interface ResultSearchFormProps {
 
 // 홈 결과 검색 입력(물품명·도구·카테고리)
 export function ResultSearchForm({ filter, onSearch }: ResultSearchFormProps) {
-  const [form] = Form.useForm<SearchFormValues>();
+  const { values, set, setValues, handleSubmit } = useForm(
+    () => toFormValues(filter),
+    () => ({})
+  );
 
-  // 검색 조건이 바뀌었을 때만 입력창을 맞춘다(페이지만 바뀔 때는 제출하지 않은 입력을 지우지 않는다)
+  // 검색 조건이 바뀌었을 때만 입력창을 맞춘다(페이지만 바뀔 때는 제출하지 않은 입력을 지우지 않는다).
+  // 다시 마운트하면 검색 뒤 입력창·버튼의 포커스가 사라지므로 렌더 중에 값만 바꾼다.
   const { name, tool, category } = filter;
-  useEffect(() => {
-    form.setFieldsValue(toFormValues({ name, tool, category }));
-  }, [form, name, tool, category]);
+  const [synced, setSynced] = useState({ name, tool, category });
+  if (
+    synced.name !== name ||
+    synced.tool !== tool ||
+    synced.category !== category
+  ) {
+    setSynced({ name, tool, category });
+    setValues(toFormValues({ name, tool, category }));
+  }
 
   const submit = (values: SearchFormValues) => {
     onSearch({
-      name: values.name ?? "",
+      name: values.name,
       tool: values.tool === ALL ? undefined : values.tool,
       category: values.category === ALL ? undefined : values.category,
     });
@@ -52,35 +62,38 @@ export function ResultSearchForm({ filter, onSearch }: ResultSearchFormProps) {
 
   return (
     <Panel>
-      <Form
-        form={form}
-        layout='inline'
-        initialValues={toFormValues(filter)}
-        onFinish={submit}
-        style={{ rowGap: 10 }}
-      >
-        <Form.Item name='name'>
-          <Input placeholder='물품명 입력' allowClear />
-        </Form.Item>
-        <Form.Item name='tool'>
+      <form onSubmit={handleSubmit(submit)}>
+        <Stack wrap gap={16} style={{ rowGap: 10 }}>
+          <Input
+            aria-label='물품명'
+            placeholder='물품명 입력'
+            allowClear
+            style={{ width: 200 }}
+            value={values.name}
+            onChange={(value) => set("name", value)}
+          />
           <Select
+            aria-label='도구'
             style={{ width: "120px" }}
+            value={values.tool}
+            onChange={(value) => set("tool", value)}
             options={[{ value: ALL, label: "도구-전체" }, ...TOOL_OPTIONS]}
           />
-        </Form.Item>
-        <Form.Item name='category'>
           <Select
+            aria-label='카테고리'
             style={{ width: "130px" }}
+            value={values.category}
+            onChange={(value) => set("category", value)}
             options={[
               { value: ALL, label: "카테고리-전체" },
               ...CATEGORY_OPTIONS,
             ]}
           />
-        </Form.Item>
-        <Button type='primary' htmlType='submit'>
-          검색
-        </Button>
-      </Form>
+          <Button variant='primary' type='submit'>
+            검색
+          </Button>
+        </Stack>
+      </form>
     </Panel>
   );
 }

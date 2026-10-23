@@ -39,7 +39,7 @@ function submitPassword(password: string) {
   fireEvent.change(screen.getByPlaceholderText("비밀번호 입력"), {
     target: { value: password },
   });
-  fireEvent.click(screen.getByRole("button", { name: /^확\s?인$/ }));
+  fireEvent.click(screen.getByRole("button", { name: "확인" }));
 }
 
 beforeEach(() => {
@@ -51,6 +51,11 @@ describe("RequireAdmin", () => {
     renderManage();
 
     expect(screen.getByText("관리자만 입장 가능합니다.")).toBeInTheDocument();
+    // 라벨은 화면에서 숨겨도 접근 이름과 필수 표시는 남는다
+    expect(screen.getByLabelText("비밀번호")).toHaveAttribute(
+      "aria-required",
+      "true"
+    );
     expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
     // 관리 화면 코드도 받지 않는다
     expect(mockedPreload).not.toHaveBeenCalled();
@@ -103,8 +108,9 @@ describe("RequireAdmin", () => {
         screen.queryByText("비밀번호가 올바르지 않습니다.")
       ).not.toBeInTheDocument()
     );
-    expect(screen.getByRole("button", { name: /확\s?인/ })).toHaveClass(
-      "ant-btn-loading"
+    expect(screen.getByRole("button", { name: "확인" })).toHaveAttribute(
+      "aria-busy",
+      "true"
     );
   });
 

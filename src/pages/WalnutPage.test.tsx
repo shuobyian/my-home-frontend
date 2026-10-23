@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { App } from "antd";
 import { WalnutPage } from "@/pages/WalnutPage";
 import { Link, MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider, useCart } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { WalnutResponse } from "@/types/experience";
+import { UIProvider } from "@/ui";
 
 // 화면 코드는 apis/를 직접 가져오지 않으므로(레이어 규칙) 모듈 경로로만 모킹한다.
 // vi.mock은 파일 맨 위로 끌어올려지므로 모의 함수도 vi.hoisted로 함께 올린다.
@@ -43,7 +43,7 @@ function renderWalnut() {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <App>
+      <UIProvider>
         <CartProvider>
           <MemoryRouter
             initialEntries={["/walnut?presentLevel=60&objectiveLevel=70"]}
@@ -56,7 +56,7 @@ function renderWalnut() {
             <WalnutPage />
           </MemoryRouter>
         </CartProvider>
-      </App>
+      </UIProvider>
     </QueryClientProvider>
   );
 }
@@ -113,6 +113,30 @@ describe("WalnutPage", () => {
         "objectiveLevel=70"
       )
     );
+    // 입력창도 이전 조건으로 맞춘다
+    expect(screen.getByLabelText("목표 레벨")).toHaveValue("70");
+  });
+
+  it("새 조건을 제출해도 입력 폼을 다시 그리지 않아 버튼 포커스가 남는다", async () => {
+    mockedCalculate.mockResolvedValue(response(1000));
+    renderWalnut();
+    await screen.findByText("남은 경험치: 1,000");
+
+    fireEvent.change(screen.getByLabelText("목표 레벨"), {
+      target: { value: "80" },
+    });
+    const button = screen.getByRole("button", { name: /계산하기/ });
+    button.focus();
+    fireEvent.click(button);
+    await waitFor(() =>
+      expect(screen.getByTestId("search")).toHaveTextContent(
+        "objectiveLevel=80"
+      )
+    );
+    await waitFor(() => expect(mockedCalculate).toHaveBeenCalledTimes(2));
+
+    expect(screen.getByRole("button", { name: /계산하기/ })).toBe(button);
+    expect(button).toHaveFocus();
   });
 
   it("같은 조건으로 다시 누르면 다시 계산한다(실패 후 재시도 포함)", async () => {

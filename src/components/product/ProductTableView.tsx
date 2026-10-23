@@ -1,29 +1,17 @@
-import {
-  App,
-  Button,
-  Divider,
-  Space,
-  Table,
-  TableColumnsType,
-  Typography,
-} from "antd";
 import { SearchBar } from "@/components/common/SearchBar";
 import { productColumns } from "@/components/product/productColumns";
 import { ProductModal } from "@/components/product/ProductModal";
 import { ProductNameList } from "@/components/product/ProductNameList";
 import { formatNumber } from "@/lib/format";
-import { Key, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { Product, ProductCreateRequest } from "@/types/product";
+import { Button, Stack, Table, TableColumn, Text, useDialogs } from "@/ui";
 
-const columns: TableColumnsType<Product> = productColumns.map((column) => ({
+// 한 줄로 자르고 전체 글자는 title 속성으로 보여 준다
+const columns: TableColumn<Product>[] = productColumns.map((column) => ({
   ...column,
   ellipsis: true,
 }));
-
-const scrollX = productColumns.reduce(
-  (acc, { width }) => acc + Number(width ?? 0),
-  0
-);
 
 interface ProductTableViewProps {
   products: Product[];
@@ -44,13 +32,6 @@ interface ProductTableViewProps {
   toolbarExtra?: ReactNode;
 }
 
-interface Selection {
-  keys: Key[];
-  rows: Product[];
-}
-
-const EMPTY_SELECTION: Selection = { keys: [], rows: [] };
-
 // 물품 표. 선택·모달·검색어 상태는 이 컴포넌트가 갖고, 데이터 변경은 콜백으로 위임한다.
 export function ProductTableView({
   products,
@@ -63,82 +44,72 @@ export function ProductTableView({
   onRemove,
   toolbarExtra,
 }: ProductTableViewProps) {
-  const { modal } = App.useApp();
+  const dialogs = useDialogs();
 
-  // 페이지를 넘겨도 선택을 유지한다(preserveSelectedRowKeys). 검색어가 바뀌면 초기화한다.
-  const [selection, setSelection] = useState<Selection>(EMPTY_SELECTION);
+  // 페이지를 넘겨도 선택을 유지한다(표가 처리). 검색어가 바뀌면 초기화한다.
+  const [selection, setSelection] = useState<Product[]>([]);
   const [editing, setEditing] = useState<{ product?: Product } | null>(null);
   const search = (keyword: string) => {
-    setSelection(EMPTY_SELECTION);
+    setSelection([]);
     onSearch?.(keyword);
   };
 
   const confirmRemove = () => {
-    const targets = selection.rows;
-    // then을 붙이면 onOk가 실패(reject)해도 antd가 다시 던지지 않고 확인창을 유지한다
-    modal
-      .confirm({
-        title: `${formatNumber(targets.length)}개 물품을 삭제하시겠습니까?`,
-        content: <ProductNameList products={targets} />,
-        okText: "삭제",
-        cancelText: "취소",
-        onOk: async () => {
-          await onRemove(targets);
-          setSelection(EMPTY_SELECTION);
-        },
-      })
-      .then(
-        () => undefined,
-        () => undefined
-      );
+    const targets = selection;
+    // onOk가 실패(reject)하면 확인창을 열어 둔다
+    dialogs.confirm({
+      title: `${formatNumber(targets.length)}개 물품을 삭제하시겠습니까?`,
+      content: <ProductNameList products={targets} />,
+      okText: "삭제",
+      cancelText: "취소",
+      onOk: async () => {
+        await onRemove(targets);
+        setSelection([]);
+      },
+    });
   };
 
   return (
     <>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-        }}
-      >
-        <Space orientation='horizontal'>
+      <Stack justify='space-between'>
+        <Stack>
           <Button onClick={() => setEditing({})}>추가</Button>
-          <Button onClick={confirmRemove} disabled={selection.rows.length < 1}>
+          <Button onClick={confirmRemove} disabled={selection.length < 1}>
             삭제
           </Button>
-        </Space>
+        </Stack>
         {toolbarExtra}
-      </div>
-      <Divider />
-      <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+      </Stack>
+      <hr />
+      <Stack vertical gap={10}>
         {onSearch && <SearchBar placeholder='물품 이름' onSearch={search} />}
-        <div style={{ display: "flex", justifyContent: "space-between" }}>
-          <Typography.Text strong>
-            선택된 물품 {formatNumber(selection.rows.length)}개
-          </Typography.Text>
-          <Typography.Text strong>
-            총 물품 {formatNumber(total)}개
-          </Typography.Text>
-        </div>
+        <Stack justify='space-between'>
+          <Text strong>선택된 물품 {formatNumber(selection.length)}개</Text>
+          <Text strong>총 물품 {formatNumber(total)}개</Text>
+        </Stack>
         <Table
-          rowKey='id'
+          rowKey={({ id }) => id}
           loading={loading}
           columns={columns}
-          dataSource={products}
-          pagination={pagination ? { ...pagination, total } : undefined}
-          scroll={{ x: scrollX }}
-          onRow={(record) => ({
-            onClick: () => setEditing({ product: record }),
-          })}
-          rowSelection={{
-            type: "checkbox",
-            selectedRowKeys: selection.keys,
-            preserveSelectedRowKeys: true,
-            onChange: (keys, rows) => setSelection({ keys, rows }),
+          data={products}
+          pagination={{
+            ...(pagination && {
+              page: pagination.current,
+              pageSize: pagination.pageSize,
+              onChange: pagination.onChange,
+              total,
+            }),
+            // 50개를 넘으면 쪽당 개수를 고를 수 있게 한다
+            showSizeChanger: total > 50,
+          }}
+          onRowClick={(product) => setEditing({ product })}
+          selection={{
+            selected: selection,
+            onChange: setSelection,
+            label: ({ name }) => name,
           }}
         />
-      </div>
+      </Stack>
       {editing && (
         <ProductModal
           product={editing.product}

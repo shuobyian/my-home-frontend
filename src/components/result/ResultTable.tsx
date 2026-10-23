@@ -1,29 +1,28 @@
-import { Table, TableColumnsType, Tooltip } from "antd";
 import { getToolLabel } from "@/domain/labels";
 import { Result } from "@/types/result";
 import { ResultDetail } from "@/components/result/ResultDetail";
+import { Table, TableColumn } from "@/ui";
 
-const columns: TableColumnsType<Result> = [
+const columns: TableColumn<Result>[] = [
   {
     title: "물품명",
-    dataIndex: "name",
     key: "name",
-    render: (name) => <Tooltip title={name}>{name}</Tooltip>,
+    // 잘린 이름은 표가 title 속성으로 전체를 보여 준다
+    render: ({ name }) => name,
     ellipsis: true,
   },
   {
     title: "제작 도구",
-    dataIndex: "tool",
     key: "tool",
     align: "right",
-    render: (tool) => getToolLabel(tool),
+    render: ({ tool }) => getToolLabel(tool),
     width: 100,
   },
   {
     title: "레벨",
-    dataIndex: "level",
     key: "level",
     align: "right",
+    render: ({ level }) => level,
     width: 80,
   },
 ];
@@ -51,28 +50,21 @@ export function ResultTable({
     <Table
       loading={loading}
       columns={columns}
-      dataSource={contents.map((content) => ({
-        ...content,
-        key: content.id,
-      }))}
+      data={contents}
+      rowKey={(content) => content.id}
       pagination={
         pagination
           ? {
-              current: pagination.page + 1,
+              page: pagination.page + 1,
               pageSize: pagination.size,
               total: pagination.total,
               onChange: pagination.onChange,
-              showSizeChanger: false,
             }
-          : undefined
+          : // 쪽을 표에서 나눌 때는 50개를 넘으면 쪽당 개수를 고를 수 있게 한다
+            { showSizeChanger: contents.length > 50 }
       }
-      expandable={{
-        expandedRowRender: (record) => <ResultDetail result={record} />,
-      }}
-      onRow={(item) => ({
-        onClick: () => onRowClick?.(item),
-        style: onRowClick ? { cursor: "pointer" } : undefined,
-      })}
+      expandedRowRender={(record) => <ResultDetail result={record} />}
+      onRowClick={onRowClick}
     />
   );
 }

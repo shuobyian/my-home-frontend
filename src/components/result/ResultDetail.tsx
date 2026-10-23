@@ -1,67 +1,45 @@
-import { Space, theme, Typography } from "antd";
 import { ItemImage } from "@/components/common/ItemImage";
 import { getTotalCost, requiresAffinity } from "@/domain/result";
 import { Result } from "@/types/result";
 import { formatGold, formatNumber } from "@/lib/format";
 import { InfoRow } from "@/components/common/InfoRow";
 import { MaterialTable } from "@/components/result/MaterialTable";
+import { Stack, Text } from "@/ui";
 
 interface ResultDetailProps {
   result: Result;
 }
 
 export function ResultDetail({ result }: ResultDetailProps) {
-  const { token } = theme.useToken();
-
   return (
-    <div
-      style={{
-        width: "100%",
-      }}
-    >
-      <Space style={{ gap: "20px", width: "100%" }} orientation='vertical'>
-        <Space
-          style={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            gap: "20px",
-            flexWrap: "wrap",
-          }}
-        >
-          <Space style={{ gap: "15px" }} orientation='vertical'>
-            <InfoRow title='물품명' value={result.name} />
-            <InfoRow
-              title={
-                requiresAffinity(result) ? "필요 미미 호감도" : "필요 레벨"
-              }
-              value={`Lv.${result.level} 이상`}
-            />
-            <InfoRow
-              title='필요 금액'
-              value={`${formatGold(getTotalCost(result))} (재료비: ${formatGold(
-                result.totalPrice
-              )} + 제작비: ${formatGold(result.craftingPrice)})`}
-            />
-            <ItemImage name={result.name} variant='detail' />
-          </Space>
-          <Space style={{ gap: "10px" }} orientation='vertical'>
-            {result.product.materials.map((material) => (
-              <Typography.Text
-                key={material.name}
-                style={{ color: token.colorInfoText }}
-              >
-                {material.name} {formatNumber(material.count)}개
-              </Typography.Text>
-            ))}
-          </Space>
-        </Space>
-        <Space orientation='vertical' style={{ width: "100%" }}>
-          <Typography.Text strong>기초 재료</Typography.Text>
-          <MaterialTable materials={result.materials} />
-        </Space>
-      </Space>
-    </div>
+    <Stack vertical gap={20}>
+      <Stack justify='space-between' align='baseline' gap={20} wrap>
+        <Stack vertical gap={15} align='flex-start'>
+          <InfoRow title='물품명' value={result.name} />
+          <InfoRow
+            title={requiresAffinity(result) ? "필요 미미 호감도" : "필요 레벨"}
+            value={`Lv.${result.level} 이상`}
+          />
+          <InfoRow
+            title='필요 금액'
+            value={`${formatGold(getTotalCost(result))} (재료비: ${formatGold(
+              result.totalPrice
+            )} + 제작비: ${formatGold(result.craftingPrice)})`}
+          />
+          <ItemImage name={result.name} variant='detail' />
+        </Stack>
+        <Stack vertical gap={10} align='flex-start'>
+          {result.product.materials.map((material) => (
+            <Text key={material.name} tone='info'>
+              {material.name} {formatNumber(material.count)}개
+            </Text>
+          ))}
+        </Stack>
+      </Stack>
+      <Stack vertical>
+        <Text strong>기초 재료</Text>
+        <MaterialTable materials={result.materials} />
+      </Stack>
+    </Stack>
   );
 }

@@ -1,10 +1,10 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen } from "@testing-library/react";
-import { App } from "antd";
 import { ROUTES } from "@/app/routes";
 import { FreeResultPage } from "@/pages/FreeResultPage";
 import { MemoryRouter, Route, Routes } from "react-router";
 import { CartProvider } from "@/state/cart";
+import { UIProvider } from "@/ui";
 
 // 계산 API는 부르지 않아야 한다(시세가 올바를 때만 계산)
 const mockedCalculate = vi.hoisted(() => vi.fn());
@@ -18,7 +18,7 @@ function renderWithState(state: unknown) {
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
     >
-      <App>
+      <UIProvider>
         <CartProvider>
           <MemoryRouter
             initialEntries={[{ pathname: ROUTES.FREE_RESULT, state }]}
@@ -29,7 +29,7 @@ function renderWithState(state: unknown) {
             </Routes>
           </MemoryRouter>
         </CartProvider>
-      </App>
+      </UIProvider>
     </QueryClientProvider>
   );
 }

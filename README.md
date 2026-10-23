@@ -86,6 +86,7 @@ Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습�
 | `state/`      | 클라이언트 전역 상태(장바구니, 관리자 확인)        | `domain`, `lib`, `types`            |
 | `domain/`     | 계산·변환 같은 순수 로직(React·HTTP 없음)          | `lib`, `types`                      |
 | `lib/`        | 범용 유틸(저장소, 숫자 표시, 엑셀, 이미지 주소 등) | `types`                             |
+| `ui/`         | 디자인 시스템: 토큰, 공용 UI 컴포넌트              | 없음(React만)                       |
 | `types/`      | 서버 응답·요청 타입                                | 없음                                |
 | `test/`       | 테스트 도우미                                      | —                                   |
 
@@ -94,3 +95,15 @@ Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습�
 - `components`의 도메인 폴더(`cart`, `product` 등)끼리는 서로 가져오지 않습니다. 함께 쓰는 것은 `common`과 결과 표시(`result`)뿐이고, 그 밖의 조합은 `pages`에서 합니다.
 - 화면은 `app/`에서 경로 상수인 `app/routes`만 가져옵니다.
 - `localStorage`는 `lib/storage`로만 다루고, `xlsx`는 첫 화면 번들에서 빠지도록 `lib/excel`에서 동적으로 불러옵니다.
+- `app`·`pages`·`components`만 `@/ui`를 가져옵니다. 그 밖의 레이어는 UI에 의존하지 않습니다.
+
+## 디자인 시스템 (`src/ui/`)
+
+UI 라이브러리 없이 앱에 필요한 컴포넌트만 직접 만들어 씁니다. 설계와 결정 근거는 [`claudedocs/design-system-plan.md`](claudedocs/design-system-plan.md)에 있습니다.
+
+- 화면 코드는 `import { Button, Table, useToast } from "@/ui"`처럼 배럴에서만 가져옵니다.
+- 색·간격·모서리 등은 `src/ui/global.styles.ts`의 CSS 변수(`var(--ui-color-primary)` 등)로 쓰고, 값을 직접 적지 않습니다.
+- 스타일은 emotion의 css prop으로 씁니다. `<Name>.styles.ts`에 `` css`...` ``로 두고 `css={[styles.a, cond && styles.b]}`처럼 조합합니다. 배열은 클래스 하나로 합쳐져 뒤 항목이 이기지만, 최상위 선언은 앞 항목의 `&:hover`·`@media` 같은 중첩 규칙을 이기지 못합니다. 템플릿 안의 `/* */` 주석은 번들에 그대로 남으므로, 주석은 템플릿 밖에 `//`로 답니다.
+- 앱 최상단의 `UIProvider`가 토스트(`useToast`)와 확인 대화상자(`useDialogs`)를 제공합니다. 이 훅을 쓰는 컴포넌트를 테스트할 때는 `<UIProvider>`로 감쌉니다.
+- 폼은 `useForm`(값·검증) + `Field`(라벨·도움말·오류 연결) + 입력 컴포넌트로 만듭니다.
+- 지원 브라우저(Chrome 87·Safari 14 등)에 없는 `<dialog>`, `inert`, `:is()`/`:where()`/`:has()`는 쓰지 않습니다.

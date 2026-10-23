@@ -1,4 +1,3 @@
-import { Space, Typography } from "antd";
 import { ROUTES } from "@/app/routes";
 import { MarketPriceForm } from "@/components/market/MarketPriceForm";
 import { parseMarketList } from "@/domain/market";
@@ -7,6 +6,7 @@ import { useMarketsQuery } from "@/queries/market";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Market } from "@/types/market";
+import { Stack, Text, Title } from "@/ui";
 
 export function FreePage() {
   const navigate = useNavigate();
@@ -24,28 +24,28 @@ export function FreePage() {
   };
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }}>
-      <Space orientation='vertical' size={0}>
-        <Typography.Title level={4}>
+    <Stack vertical>
+      <Stack vertical gap={0}>
+        <Title level={4}>
           자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.
-        </Typography.Title>
-        <Typography.Title level={5} style={{ marginTop: 0 }}>
+        </Title>
+        <Title level={5}>
           입력한 시세에 따라 계산된 결과를 확인할 수 있습니다.
-        </Typography.Title>
-        <Typography.Text>
+        </Title>
+        <Text>
           1. '시세 불러오기' 버튼을 클릭하면 기본 시세 데이터를 불러올 수
           있습니다.
-        </Typography.Text>
-        <Typography.Text>
+        </Text>
+        <Text>
           2. 시세 입력 후 '결과 만들기' 클릭하면 결과를 확인할 수 있습니다.
-        </Typography.Text>
-      </Space>
+        </Text>
+      </Stack>
       <MarketPriceForm
         serverMarkets={serverMarkets}
         initialMarkets={savedMarkets}
         submitText='결과 만들기'
         onSubmit={onSubmit}
       />
-    </Space>
+    </Stack>
   );
 }

@@ -1,7 +1,7 @@
-import { Empty, Flex, theme, Typography } from "antd";
 import { ItemImage } from "@/components/common/ItemImage";
 import { CartEntry } from "@/domain/cart";
 import { ReactNode } from "react";
+import { Empty, Stack, Text } from "@/ui";
 
 interface CartEntryListProps {
   entries: CartEntry[];
@@ -11,19 +11,14 @@ interface CartEntryListProps {
   emptyText?: string;
 }
 
-// 장바구니 물품 목록(사진·이름·설명).
-// antd 6에서 List가 폐기 예정이 되어, 목록 시맨틱(ul/li)을 지키도록 직접 그린다.
+// 장바구니 물품 목록(사진·이름·설명). 목록 시맨틱(ul/li)을 지키도록 직접 그린다.
 export function CartEntryList({
   entries,
   renderDescription,
   emptyText,
 }: CartEntryListProps) {
-  const { token } = theme.useToken();
-
   if (entries.length === 0) {
-    return (
-      <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={emptyText} />
-    );
+    return <Empty description={emptyText} />;
   }
 
   return (
@@ -34,20 +29,20 @@ export function CartEntryList({
         <li
           key={entry.key}
           style={{
-            padding: `${token.paddingSM}px 0`,
+            padding: "var(--ui-space-3) 0",
             borderBottom:
               index < entries.length - 1
-                ? `${token.lineWidth}px ${token.lineType} ${token.colorSplit}`
+                ? "1px solid var(--ui-color-border-secondary)"
                 : undefined,
           }}
         >
-          <Flex gap='middle' align='flex-start'>
+          <Stack gap={16} align='flex-start'>
             <ItemImage name={entry.item.name} />
-            <Flex vertical gap={4} flex={1} style={{ minWidth: 0 }}>
-              <Typography.Text strong>{entry.item.name}</Typography.Text>
+            <Stack vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
+              <Text strong>{entry.item.name}</Text>
               {renderDescription(entry)}
-            </Flex>
-          </Flex>
+            </Stack>
+          </Stack>
         </li>
       ))}
     </ul>

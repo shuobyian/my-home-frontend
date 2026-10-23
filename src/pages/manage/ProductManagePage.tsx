@@ -1,4 +1,3 @@
-import { App, Button, Flex, Space, Typography } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ProductTableView } from "@/components/product/ProductTableView";
 import {
@@ -10,10 +9,11 @@ import {
 import { useCreateResultsMutation } from "@/queries/result";
 import { useState } from "react";
 import { ProductSearchParams } from "@/types/product";
+import { Button, Stack, Title, useToast } from "@/ui";
 
 // 서버에 저장된 물품 목록 관리(조회·추가·수정·삭제, 결과 리스트 생성)
 export function ProductManagePage() {
-  const { message } = App.useApp();
+  const toast = useToast();
 
   const [params, setParams] = useState<ProductSearchParams>({
     page: 0,
@@ -40,36 +40,36 @@ export function ProductManagePage() {
   const run = async (task: () => Promise<unknown>, successMessage: string) => {
     try {
       await task();
-      message.success(successMessage);
+      toast.success(successMessage);
     } catch (error) {
-      message.error(getErrorMessage(error));
+      toast.error(getErrorMessage(error));
       throw error;
     }
   };
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }}>
-      <Flex justify='space-between' align='center' wrap gap={8}>
-        <Typography.Title level={4} style={{ margin: 0 }}>
+    <Stack vertical>
+      <Stack justify='space-between' wrap>
+        <Title level={4} style={{ margin: 0 }}>
           물품 리스트
-        </Typography.Title>
+        </Title>
         <Button
-          type='primary'
+          variant='primary'
           loading={createResults.isPending}
           onClick={() =>
             createResults.mutate(undefined, {
               onSuccess: () => {
-                message.success("결과가 생성되었습니다.");
+                toast.success("결과가 생성되었습니다.");
               },
               onError: (error) => {
-                message.error(getErrorMessage(error));
+                toast.error(getErrorMessage(error));
               },
             })
           }
         >
           결과 리스트 생성
         </Button>
-      </Flex>
+      </Stack>
       <ProductTableView
         products={data?.content ?? []}
         total={data?.totalElements ?? 0}
@@ -95,6 +95,6 @@ export function ProductManagePage() {
           )
         }
       />
-    </Space>
+    </Stack>
   );
 }

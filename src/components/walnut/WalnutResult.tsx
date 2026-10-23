@@ -1,9 +1,9 @@
-import { Space, Typography } from "antd";
 import { Panel } from "@/components/common/Panel";
 import { ResultTable } from "@/components/result/ResultTable";
 import { formatNumber } from "@/lib/format";
 import { WalnutResponse } from "@/types/experience";
 import { Result } from "@/types/result";
+import { Stack, Text } from "@/ui";
 
 interface WalnutResultProps {
   result: WalnutResponse;
@@ -14,20 +14,16 @@ interface WalnutResultProps {
 export function WalnutResult({ result, onSelectAmple }: WalnutResultProps) {
   return (
     <Panel>
-      <Space orientation='vertical' style={{ width: "100%" }}>
-        <Typography.Text>
-          남은 경험치: {formatNumber(result.remindExperience)}
-        </Typography.Text>
-        <Typography.Text>
-          필요한 앰플 개수: {formatNumber(result.remindCount)}
-        </Typography.Text>
-        <Typography.Text strong>필요한 앰플 재료</Typography.Text>
+      <Stack vertical>
+        <Text>남은 경험치: {formatNumber(result.remindExperience)}</Text>
+        <Text>필요한 앰플 개수: {formatNumber(result.remindCount)}</Text>
+        <Text strong>필요한 앰플 재료</Text>
         <ResultTable
           loading={false}
           contents={[result.ample.result]}
           onRowClick={onSelectAmple}
         />
-      </Space>
+      </Stack>
     </Panel>
   );
 }
