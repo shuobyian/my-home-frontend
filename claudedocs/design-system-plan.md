@@ -10,7 +10,7 @@ antd 6과 `@ant-design/icons`를 걷어 내고, 앱이 실제로 쓰는 만큼�
 
 ## 2. 원칙
 
-- **새 런타임 의존성 없음.** 스타일은 CSS Modules(Vite 기본 지원), 값은 `:root`의 CSS 변수(`--ui-` 접두사)로 둔다.
+- **런타임 의존성은 `@emotion/react` 하나.** 스타일은 css prop(`` css`...` ``), 값은 `:root`의 CSS 변수(`--ui-` 접두사)로 둔다. 처음에는 CSS Modules로 만들었고 뒤에 emotion으로 옮겼다(7단계의 6).
 - **네이티브 요소 우선.** `<button>`, `<select>`, `<input type="radio">`, `<details>`, `<hr>`, `title` 속성 툴팁을 쓴다.
 - **브라우저 대상 유지**(chrome87·edge88·firefox78·safari14). 그래서 `<dialog>`(Safari 15.4+), `inert`(Chrome 102+), `:is()`/`:where()`(Chrome 88+)는 쓰지 않는다. `:focus-visible`은 기본 외곽선을 지우지 않고 덧붙이는 용도로만 쓴다(미지원 브라우저는 기본 외곽선이 보인다).
 - **앱이 쓰는 기능만 만든다.** 다크 모드, 크기 변형, 이미지 미리보기, 툴팁 컴포넌트, 범용 Form 엔진은 만들지 않는다.
@@ -20,10 +20,10 @@ antd 6과 `@ant-design/icons`를 걷어 내고, 앱이 실제로 쓰는 만큼�
 
 ```
 src/ui/
-  global.css        토큰(:root 변수) + 전역 기본 스타일, index.tsx에서 한 번 가져온다
+  global.styles.ts  토큰(:root 변수) + 전역 기본 스타일, UIProvider가 <Global>로 넣는다
   index.ts          공개 API 배럴 — 앱 코드는 `@/ui`에서만 가져온다
   icons.tsx         직접 그린 SVG 아이콘(장식용, aria-hidden)
-  <Name>.tsx + <Name>.module.css
+  <Name>.tsx + <Name>.styles.ts(css``)
 ```
 
 레이어 규칙(ESLint `import-x/no-restricted-paths`):
@@ -49,7 +49,7 @@ src/ui/
 
 ## 5. 컴포넌트 API
 
-공통: 모든 컴포넌트는 `className`·`style`을 루트에 넘긴다(해당되는 것만). 버튼·입력은 HTML 속성을 그대로 받는다.
+공통: 모든 컴포넌트는 `className`·`style`을 루트에 넘긴다(해당되는 것만). 부모의 css prop은 className으로 바뀌어 들어와 컴포넌트 스타일 뒤에 합쳐진다. 버튼·입력은 HTML 속성을 그대로 받는다.
 
 ### 기본
 
@@ -93,7 +93,7 @@ src/ui/
 
 | antd                                      | ui                                                           |
 | ----------------------------------------- | ------------------------------------------------------------ |
-| `ConfigProvider`·`App`·`theme.useToken`   | `UIProvider`, `global.css` 토큰(`var(--ui-…)`)               |
+| `ConfigProvider`·`App`·`theme.useToken`   | `UIProvider`, `global.styles.ts` 토큰(`var(--ui-…)`)         |
 | `App.useApp().message` / `.modal`         | `useToast()` / `useDialogs()`                                |
 | `Space`·`Flex`                            | `Stack`                                                      |
 | `Typography.Title/Text/Paragraph`         | `Title`/`Text`/`Paragraph`                                   |
@@ -114,11 +114,12 @@ src/ui/
 
 ## 7. 단계와 검증
 
-1. 기반: `global.css`, 아이콘, Button·Typography·Stack·Spin·Empty·Result·Alert, ESLint `ui` 영역.
+1. 기반: 토큰·전역 스타일, 아이콘, Button·Typography·Stack·Spin·Empty·Result·Alert, ESLint `ui` 영역.
 2. 디자인 시스템 병렬 구현: 폼 컨트롤 / 겹침 화면 + UIProvider / 표. 사소하지 않은 동작(useForm, NumberInput, Overlay, toast·confirm, Table)은 테스트를 함께 둔다.
 3. 사용처 교체: app / common·auth·walnut / product·manage / cart·market·result. 기존 테스트의 antd 의존(`ant-btn-loading`, `.ant-modal-wrap`, antd `App` 래퍼)은 역할·속성 기반으로 바꾼다.
 4. 정리: `antd`·`@ant-design/icons` 제거, Vite 청크 그룹·경고 한도, ESLint 금지 목록, setupTests의 antd 대응 코드, README.
 5. 검증: `typecheck` → `lint` → `format:check` → `test:ci` → `build`, 내장 브라우저로 주요 화면 확인.
+6. emotion 전환: `<Name>.module.css`를 `<Name>.styles.ts`로 1:1 옮긴다. 다른 클래스를 가리키던 셀렉터(`.a.b`, `.a .b`)는 조건부 배열 항목이나 요소·속성 셀렉터로 바꾸고, 원본의 특이도·순서로 정해지던 승자를 유지한다. 같은 검증을 다시 돌린다.
 
 ## 8. 하지 않는 것
 
