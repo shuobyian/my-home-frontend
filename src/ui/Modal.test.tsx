@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
-import { ComponentProps, StrictMode, useState } from "react";
+import { ComponentProps, StrictMode, useCallback, useState } from "react";
+import { flushSync } from "react-dom";
 import { Modal } from "./Modal";
 
 function openModal(props: Partial<ComponentProps<typeof Modal>> = {}) {
@@ -147,6 +148,73 @@ describe("Modal", () => {
 
     expect(second).toHaveBeenCalledTimes(1);
     expect(first).not.toHaveBeenCalled();
+  });
+
+  test("위 겹이 Esc로 곧바로 닫혀도 아래 겹은 같은 Esc로 닫히지 않는다", () => {
+    const first = vi.fn();
+    function Harness({ tick }: { tick: number }) {
+      const [secondOpen, setSecondOpen] = useState(true);
+      // 위 겹은 같은 onClose를 유지하고, 실제 브라우저처럼 리스너 사이에 커밋되게 한다
+      const [closeSecond] = useState(
+        // eslint-disable-next-line @eslint-react/dom-no-flush-sync
+        () => () => flushSync(() => setSecondOpen(false))
+      );
+      // tick이 바뀌면 새 onClose라 아래 겹의 리스너만 위 겹보다 뒤에 다시 붙는다
+      const closeFirst = useCallback(() => first(tick), [tick]);
+      return (
+        <>
+          <Modal open title='첫째' onClose={closeFirst} />
+          <Modal open={secondOpen} title='둘째' onClose={closeSecond} />
+        </>
+      );
+    }
+    const { rerender } = render(<Harness tick={0} />);
+    rerender(<Harness tick={1} />);
+
+    // act 안에서는 effect 정리가 리스너 사이에 돌지 않으므로 act 밖에서 보낸다
+    const env = globalThis as { IS_REACT_ACT_ENVIRONMENT?: boolean };
+    const actEnvironment = env.IS_REACT_ACT_ENVIRONMENT;
+    env.IS_REACT_ACT_ENVIRONMENT = false;
+    try {
+      screen.getByRole("dialog", { name: "둘째" }).dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "Escape",
+          bubbles: true,
+          cancelable: true,
+        })
+      );
+    } finally {
+      env.IS_REACT_ACT_ENVIRONMENT = actEnvironment;
+    }
+
+    expect(
+      screen.queryByRole("dialog", { name: "둘째" })
+    ).not.toBeInTheDocument();
+    expect(first).not.toHaveBeenCalled();
+  });
+
+  test("포커스가 배경으로 나가면 대화상자로 되돌리고, 위에 새로 열린 겹의 autoFocus는 지킨다", () => {
+    const page = (second: boolean) => (
+      <>
+        <button type='button'>배경</button>
+        <Modal open title='첫째' onClose={() => {}} />
+        <Modal open={second} title='둘째' onClose={() => {}}>
+          {/* eslint-disable-next-line jsx-a11y-x/no-autofocus */}
+          <input aria-label='이름' autoFocus />
+        </Modal>
+      </>
+    );
+    const { rerender } = render(page(false));
+
+    screen.getByRole("button", { name: "배경" }).focus();
+    expect(screen.getByRole("dialog", { name: "첫째" })).toHaveFocus();
+
+    rerender(page(true));
+    expect(screen.getByRole("textbox", { name: "이름" })).toHaveFocus();
+
+    // 아래 겹도 맨 위 겹의 밖이다
+    screen.getByRole("dialog", { name: "첫째" }).focus();
+    expect(screen.getByRole("dialog", { name: "둘째" })).toHaveFocus();
   });
 
   test("여러 겹이 열려도 마지막이 닫힐 때 스크롤 잠금을 푼다(StrictMode 포함)", () => {

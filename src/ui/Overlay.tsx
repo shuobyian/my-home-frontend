@@ -66,9 +66,21 @@ function Layer({
   useEffect(() => {
     const panel = panelRef.current;
     if (!panel) return;
+    // Tab만 가둬서는 브라우저가 패널 밖으로 보낸 포커스(Safari의 Tab, 주소창을 거쳐 돌아옴)를 못 막는다.
+    // 막 열리는 겹은 아직 layers에 없으므로 그 안의 autoFocus는 그대로 둔다.
+    const handleFocusIn = (event: FocusEvent) => {
+      const target = event.target;
+      if (layers[layers.length - 1] !== panel) return;
+      if (!(target instanceof Element) || panel.contains(target)) return;
+      const dialog = target.closest<HTMLElement>("[role='dialog']");
+      if (dialog && !layers.includes(dialog)) return;
+      panel.focus();
+    };
     layers.push(panel);
+    document.addEventListener("focusin", handleFocusIn);
     if (!panel.contains(document.activeElement)) panel.focus();
     return () => {
+      document.removeEventListener("focusin", handleFocusIn);
       layers.splice(layers.indexOf(panel), 1);
       // StrictMode의 가짜 언마운트는 DOM이 남아 있으므로 포커스를 옮기지 않는다
       if (
@@ -84,9 +96,13 @@ function Layer({
   // 포커스가 패널 밖(지워진 버튼 자리의 body 등)에 있어도 동작하도록 document에서 받는다
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
+      // 위 겹이 처리한 키다. 위 겹이 이 키로 곧바로 닫히면 아래 겹이 맨 위가 되므로 여기서 거른다
+      // (리렌더로 아래 겹의 리스너가 위 겹보다 뒤에 다시 붙은 경우).
+      if (event.defaultPrevented) return;
       const panel = layers[layers.length - 1];
       if (!panel || panel !== panelRef.current) return;
       if (event.key === "Escape") {
+        event.preventDefault();
         if (dismissible) onClose();
         return;
       }
