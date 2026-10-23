@@ -6,7 +6,6 @@ import {
   ReactNode,
   useState,
 } from "react";
-import { cx } from "./cx";
 import { Empty } from "./Feedback";
 import {
   ChevronLeftIcon,
@@ -15,7 +14,7 @@ import {
   PlusIcon,
 } from "./icons";
 import { Spin } from "./Spin";
-import styles from "./Table.module.css";
+import { styles } from "./Table.styles";
 
 export interface TableColumn<T> {
   key: string;
@@ -185,7 +184,7 @@ export function Table<T>({
   // 고정 열이 있으면 선택·펼침 열도 함께 고정한다
   const hasFixed = columns.some((column) => column.fixed);
   const extraCell = (left: number) => ({
-    className: cx(styles.extra, hasFixed && styles.fixed),
+    css: [styles.extra, hasFixed && styles.fixed],
     style: hasFixed ? { left } : undefined,
   });
   const selectCell = extraCell(0);
@@ -197,22 +196,22 @@ export function Table<T>({
     if (column.fixed) offset += column.width ?? 0;
   }
   const cell = (column: TableColumn<T>, index: number) => ({
-    className: cx(
+    css: [
       column.ellipsis && styles.ellipsis,
-      lefts[index] !== undefined && styles.fixed
-    ),
+      lefts[index] !== undefined && styles.fixed,
+    ],
     style: { textAlign: column.align, left: lefts[index] },
   });
 
   return (
     <Spin spinning={!!loading}>
-      <div className={styles.scroll}>
+      <div css={styles.scroll}>
         <table
-          className={cx(
+          css={[
             styles.table,
             size === "small" && styles.small,
-            columns.some((column) => column.ellipsis) && styles.fixedLayout
-          )}
+            columns.some((column) => column.ellipsis) && styles.fixedLayout,
+          ]}
           style={{ minWidth }}
         >
           <colgroup>
@@ -228,7 +227,7 @@ export function Table<T>({
                 <th scope='col' {...selectCell}>
                   <input
                     type='checkbox'
-                    className={styles.checkbox}
+                    css={styles.checkbox}
                     aria-label='현재 페이지 전체 선택'
                     checked={allSelected}
                     disabled={rows.length === 0}
@@ -259,22 +258,18 @@ export function Table<T>({
                     {column.sorter ? (
                       <button
                         type='button'
-                        className={styles.sorter}
+                        css={styles.sorter}
                         onClick={() => toggleSort(column.key)}
                       >
                         {column.title}
-                        <span className={styles.sortIcon} aria-hidden='true'>
+                        <span css={styles.sortIcon} aria-hidden='true'>
                           <span
-                            className={cx(
-                              order === "ascending" && styles.sortActive
-                            )}
+                            css={order === "ascending" && styles.sortActive}
                           >
                             ▲
                           </span>
                           <span
-                            className={cx(
-                              order === "descending" && styles.sortActive
-                            )}
+                            css={order === "descending" && styles.sortActive}
                           >
                             ▼
                           </span>
@@ -306,11 +301,11 @@ export function Table<T>({
                 return (
                   <Fragment key={key}>
                     <tr
-                      className={cx(
+                      css={[
                         styles.row,
                         selectedKeys.has(key) && styles.selected,
-                        onRowClick && styles.clickable
-                      )}
+                        onRowClick && styles.clickable,
+                      ]}
                       tabIndex={onRowClick ? 0 : undefined}
                       onClick={
                         onRowClick && ((event) => handleRowClick(event, record))
@@ -324,7 +319,7 @@ export function Table<T>({
                         <td {...selectCell}>
                           <input
                             type='checkbox'
-                            className={styles.checkbox}
+                            css={styles.checkbox}
                             aria-label={`${selection.label(record)} 선택`}
                             checked={selectedKeys.has(key)}
                             onChange={() => toggleRow(selection, record, key)}
@@ -335,7 +330,7 @@ export function Table<T>({
                         <td {...expandCell}>
                           <button
                             type='button'
-                            className={styles.expandButton}
+                            css={styles.expandButton}
                             aria-expanded={isExpanded}
                             aria-label={isExpanded ? "행 접기" : "행 펼치기"}
                             onClick={() => toggleExpanded(key)}
@@ -364,7 +359,7 @@ export function Table<T>({
                       })}
                     </tr>
                     {isExpanded && expandedRowRender && (
-                      <tr className={styles.expandedRow}>
+                      <tr css={styles.expandedRow}>
                         <td colSpan={colSpan}>{expandedRowRender(record)}</td>
                       </tr>
                     )}
@@ -417,10 +412,10 @@ function Pager({
   onChange,
 }: PagerProps) {
   return (
-    <nav aria-label='페이지 이동' className={styles.pager}>
+    <nav aria-label='페이지 이동' css={styles.pager}>
       <button
         type='button'
-        className={styles.pageButton}
+        css={styles.pageButton}
         aria-label='이전 페이지'
         disabled={page <= 1}
         onClick={() => onChange(page - 1, pageSize)}
@@ -432,7 +427,7 @@ function Pager({
           <button
             key={item}
             type='button'
-            className={styles.pageButton}
+            css={styles.pageButton}
             aria-label={`${item} 페이지`}
             aria-current={item === page ? "page" : undefined}
             onClick={() => onChange(item, pageSize)}
@@ -440,14 +435,14 @@ function Pager({
             {item}
           </button>
         ) : (
-          <span key={item} className={styles.pageGap} aria-hidden='true'>
+          <span key={item} css={styles.pageGap} aria-hidden='true'>
             …
           </span>
         )
       )}
       <button
         type='button'
-        className={styles.pageButton}
+        css={styles.pageButton}
         aria-label='다음 페이지'
         disabled={page >= pageCount}
         onClick={() => onChange(page + 1, pageSize)}
@@ -456,7 +451,7 @@ function Pager({
       </button>
       {showSizeChanger && (
         <select
-          className={styles.sizeSelect}
+          css={styles.sizeSelect}
           aria-label='페이지당 개수'
           value={pageSize}
           onChange={(event) => onChange(page, Number(event.target.value))}
