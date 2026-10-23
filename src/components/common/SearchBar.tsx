@@ -45,7 +45,17 @@ export function SearchBar({
       <Button
         type='submit'
         variant='primary'
-        style={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0 }}
+        // 맞닿는 테두리를 1px 겹쳐 한 줄로 보이게 한다
+        style={{
+          marginLeft: -1,
+          borderTopLeftRadius: 0,
+          borderBottomLeftRadius: 0,
+        }}
+        // 검색창 안에 포커스가 있으면 마우스로 눌러도 그대로 둔다
+        onMouseDown={(event) => {
+          if (event.currentTarget.form?.contains(document.activeElement))
+            event.preventDefault();
+        }}
       >
         검색
       </Button>

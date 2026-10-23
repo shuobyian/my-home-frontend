@@ -3,11 +3,12 @@ import {
   MAX_LEVEL,
   WALNUT_MIN_LEVEL,
 } from "@/domain/experience";
+import { useState } from "react";
 import { WalnutParams } from "@/types/experience";
 import { Button, Field, FormErrors, NumberInput, useForm } from "@/ui";
 
 interface WalnutFormProps {
-  // 처음 채울 값(마지막으로 계산한 조건, URL). 바뀌면 호출부가 key를 바꿔 다시 마운트한다
+  // 마지막으로 계산한 조건(URL). 바뀌면 입력창도 맞춘다
   initialValues?: WalnutParams;
   loading?: boolean;
   onSubmit: (params: WalnutParams) => void;
@@ -66,10 +67,23 @@ export function WalnutForm({
   loading,
   onSubmit,
 }: WalnutFormProps) {
-  const { values, errors, set, handleSubmit } = useForm(
+  const { values, errors, set, setValues, handleSubmit } = useForm(
     () => toValues(initialValues),
     validate
   );
+
+  // 조건이 바뀌었을 때만 입력창을 맞춘다. 다시 마운트하면 제출 뒤 버튼의 포커스가 사라지므로
+  // 렌더 중에 값만 바꾼다(매 렌더 새로 만드는 객체끼리 비교하면 끝없이 다시 그리므로 값끼리 비교한다).
+  const next = toValues(initialValues);
+  const [synced, setSynced] = useState(next);
+  if (
+    (Object.keys(next) as (keyof WalnutValues)[]).some(
+      (key) => synced[key] !== next[key]
+    )
+  ) {
+    setSynced(next);
+    setValues(next);
+  }
 
   // 입력하지 않은 선택 항목은 보내지 않는다(서버 기본값 사용)
   const submit = (submitted: WalnutValues) => {

@@ -50,9 +50,7 @@ export function WalnutPage() {
         </Button>
         <WalnutGuide />
       </Stack>
-      {/* 주소(계산 조건)가 바뀌면 다시 마운트해 입력창을 맞춘다 */}
       <WalnutForm
-        key={queryString}
         initialValues={params}
         loading={isFetching}
         onSubmit={submit}

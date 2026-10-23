@@ -113,6 +113,30 @@ describe("WalnutPage", () => {
         "objectiveLevel=70"
       )
     );
+    // 입력창도 이전 조건으로 맞춘다
+    expect(screen.getByLabelText("목표 레벨")).toHaveValue("70");
+  });
+
+  it("새 조건을 제출해도 입력 폼을 다시 그리지 않아 버튼 포커스가 남는다", async () => {
+    mockedCalculate.mockResolvedValue(response(1000));
+    renderWalnut();
+    await screen.findByText("남은 경험치: 1,000");
+
+    fireEvent.change(screen.getByLabelText("목표 레벨"), {
+      target: { value: "80" },
+    });
+    const button = screen.getByRole("button", { name: /계산하기/ });
+    button.focus();
+    fireEvent.click(button);
+    await waitFor(() =>
+      expect(screen.getByTestId("search")).toHaveTextContent(
+        "objectiveLevel=80"
+      )
+    );
+    await waitFor(() => expect(mockedCalculate).toHaveBeenCalledTimes(2));
+
+    expect(screen.getByRole("button", { name: /계산하기/ })).toBe(button);
+    expect(button).toHaveFocus();
   });
 
   it("같은 조건으로 다시 누르면 다시 계산한다(실패 후 재시도 포함)", async () => {

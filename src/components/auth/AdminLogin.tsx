@@ -33,10 +33,7 @@ export function AdminLogin({ onSubmit, loading, error }: AdminLoginProps) {
       <Paragraph>입장하시려면 비밀번호를 입력해주세요.</Paragraph>
       <form onSubmit={form.handleSubmit(({ password }) => onSubmit(password))}>
         {/* 화면에는 안내 문구만 두고 라벨은 스크린 리더에만 읽힌다 */}
-        <Field
-          label={<span className='ui-sr-only'>비밀번호</span>}
-          error={form.errors.password}
-        >
+        <Field label='비밀번호' hideLabel required error={form.errors.password}>
           <Input
             type='password'
             value={form.values.password}
@@ -49,9 +46,7 @@ export function AdminLogin({ onSubmit, loading, error }: AdminLoginProps) {
           />
         </Field>
         {error && (
-          <div style={{ marginBottom: "var(--ui-space-4)" }}>
-            <Alert title={error} />
-          </div>
+          <Alert title={error} style={{ marginBottom: "var(--ui-space-4)" }} />
         )}
         <Stack>
           <Button type='submit' variant='primary' loading={loading}>
