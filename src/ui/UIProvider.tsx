@@ -196,7 +196,7 @@ function ConfirmDialog({
             loading={loading}
             disabled={okDisabled}
             onClick={handleOk}
-            // 대화상자의 첫 포커스(antd 기본과 같다)
+            // 대화상자의 첫 포커스는 확인 버튼이다
             // eslint-disable-next-line jsx-a11y-x/no-autofocus
             autoFocus
           >

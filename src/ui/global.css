@@ -90,7 +90,7 @@ textarea {
   color: inherit;
 }
 
-/* antd Divider 대체 */
+/* 구분선 */
 hr {
   margin: var(--ui-space-5) 0;
   border: 0;

@@ -15,8 +15,6 @@ export default defineConfig({
     // 지원 브라우저 하한을 명시한다(Vite 기본값은 Safari 16.4·Chrome 111).
     // 이보다 새 문법은 빌드 때 낮춘다.
     target: ["es2020", "chrome87", "edge88", "firefox78", "safari14"],
-    // antd 묶음(gzip 약 290kB)은 한 덩어리로 캐시하므로 경고 기준을 그보다 크게 둔다
-    chunkSizeWarningLimit: 1000,
     rolldownOptions: {
       output: {
         // 자주 바뀌지 않는 라이브러리를 앱 코드와 나눠 배포 후에도 브라우저 캐시를 쓰게 한다.
@@ -26,13 +24,6 @@ export default defineConfig({
             {
               name: "react",
               test: /[\\/]node_modules[\\/](react|react-dom|scheduler|react-router)[\\/]/,
-              priority: 2,
-            },
-            {
-              name: "antd",
-              // antd 6부터 하위 컴포넌트는 모두 @rc-component/* 패키지다(rc-* 패키지는 쓰지 않는다)
-              test: /[\\/]node_modules[\\/](antd|@ant-design|@rc-component)[\\/]/,
-              priority: 1,
             },
           ],
         },

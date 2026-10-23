@@ -47,7 +47,7 @@ function parse(text: string) {
 const format = (value: number | null | undefined) =>
   value == null ? "" : String(value);
 
-// 숫자 입력(antd InputNumber 대체). 입력 중에는 읽은 숫자를 그대로 알리고,
+// 숫자 입력. 입력 중에는 읽은 숫자를 그대로 알리고,
 // 벗어날 때 범위로 고정하고 자릿수로 반올림한다.
 export function NumberInput({
   value,

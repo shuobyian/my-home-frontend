@@ -11,7 +11,7 @@ interface StackProps extends HTMLAttributes<HTMLDivElement> {
   ref?: Ref<HTMLDivElement>;
 }
 
-// antd Space·Flex를 대신하는 flex 묶음
+// 간격·정렬·줄바꿈을 정하는 flex 묶음
 export function Stack({
   vertical,
   gap = 8,

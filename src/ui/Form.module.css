@@ -1,4 +1,4 @@
-/* Field: antd Form vertical 모양(라벨 위) */
+/* Field: 라벨은 위, 컨트롤은 아래 */
 .field {
   margin-bottom: var(--ui-space-5);
 }
@@ -110,7 +110,7 @@
   border-color: var(--ui-color-border);
 }
 
-/* NumberInput: antd처럼 좁게(90px + 단위) */
+/* NumberInput: 기본 폭 90px + 단위 */
 .number {
   display: inline-flex;
   max-width: 100%;
@@ -191,7 +191,7 @@
   color: var(--ui-color-text);
 }
 
-/* Segmented: antd Segmented 모양 */
+/* Segmented: 회색 바탕에 고른 칸만 흰색 */
 .segmented {
   display: inline-flex;
   max-width: 100%;

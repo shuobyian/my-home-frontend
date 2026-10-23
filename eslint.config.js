@@ -253,10 +253,6 @@ export default defineConfig([
               message: "domain·types·lib는 React에 의존하지 않습니다.",
             },
             {
-              name: "antd",
-              message: "domain·types·lib는 UI 라이브러리에 의존하지 않습니다.",
-            },
-            {
               name: "axios",
               message: "domain·types·lib는 HTTP에 의존하지 않습니다.",
             },

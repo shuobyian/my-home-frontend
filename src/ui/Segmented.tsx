@@ -13,7 +13,7 @@ interface SegmentedProps<V> {
   className?: string;
 }
 
-// 하나를 고르는 칸 묶음(antd Segmented·Radio 버튼 묶음 대체). 네이티브 라디오라 화살표 키로 옮겨 다닌다.
+// 하나를 고르는 칸 묶음. 네이티브 라디오라 화살표 키로 옮겨 다닌다.
 // 값은 옵션 순서로 대응해 boolean 등 문자열이 아닌 값도 쓸 수 있다.
 export function Segmented<V>({
   value,
