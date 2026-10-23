@@ -1,4 +1,3 @@
-import { Space, Typography } from "antd";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { ResultSearchForm } from "@/components/result/ResultSearchForm";
 import { ResultTable } from "@/components/result/ResultTable";
@@ -10,6 +9,7 @@ import {
 import { useResultsQuery } from "@/queries/result";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
+import { Stack, Text } from "@/ui";
 
 const PAGE_SIZE = 10;
 
@@ -57,19 +57,15 @@ export function HomePage() {
   }, [results, isPlaceholderData, search, setSearchParams]);
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }}>
-      <Space orientation='vertical' size={0}>
-        <Typography.Text>
-          물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.
-        </Typography.Text>
-        <Typography.Text>
-          빈칸 입력 시 모든 물품 확인이 가능합니다.
-        </Typography.Text>
-        <Typography.Text>
+    <Stack vertical>
+      <Stack vertical gap={0}>
+        <Text>물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.</Text>
+        <Text>빈칸 입력 시 모든 물품 확인이 가능합니다.</Text>
+        <Text>
           물품을 누르면 장바구니에 담깁니다. 펼치기(+)로 상세 정보를 볼 수
           있습니다.
-        </Typography.Text>
-      </Space>
+        </Text>
+      </Stack>
       <ResultSearchForm
         filter={search}
         onSearch={(filter) => navigateTo({ ...filter, page: 0 })}
@@ -85,6 +81,6 @@ export function HomePage() {
         contents={results?.content ?? []}
         onRowClick={addToCart}
       />
-    </Space>
+    </Stack>
   );
 }

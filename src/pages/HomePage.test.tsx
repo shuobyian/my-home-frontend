@@ -1,17 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  act,
-  fireEvent,
-  render,
-  screen,
-  waitFor,
-} from "@testing-library/react";
-import { App } from "antd";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HomePage } from "@/pages/HomePage";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { ResultSearchParams } from "@/types/result";
+import { UIProvider } from "@/ui";
 
 // 화면 코드는 apis/를 직접 가져오지 않으므로(레이어 규칙) 모듈 경로로만 모킹한다
 const mockedFetchResults = vi.hoisted(() => vi.fn());
@@ -39,7 +33,7 @@ function renderHome(entries: string | string[]) {
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
     >
-      <App>
+      <UIProvider>
         <CartProvider>
           <MemoryRouter
             initialEntries={initialEntries}
@@ -49,7 +43,7 @@ function renderHome(entries: string | string[]) {
             <LocationProbe />
           </MemoryRouter>
         </CartProvider>
-      </App>
+      </UIProvider>
     </QueryClientProvider>
   );
 }
@@ -125,11 +119,8 @@ describe("HomePage", () => {
     fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
     expect(await screen.findByText("탁자 결과")).toBeInTheDocument();
 
+    // 제출은 동기라 바로 같은 주소로 바꾼다(replace)
     fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
-    // antd Form의 제출 처리는 비동기라 잠시 기다린다
-    await act(async () => {
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    });
 
     fireEvent.click(screen.getByText("뒤로"));
     await waitFor(() =>

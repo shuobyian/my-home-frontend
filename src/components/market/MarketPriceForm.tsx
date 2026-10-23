@@ -1,11 +1,9 @@
-import { Button, Form, Input, Space, Table } from "antd";
-import { UnitInputNumber } from "@/components/common/UnitInputNumber";
-import { useEffect, useRef } from "react";
+import { useId, useState } from "react";
 import { Market } from "@/types/market";
+import { Button, Input, NumberInput, Stack, Table, useForm } from "@/ui";
 
-interface MarketFormValues {
-  markets: Market[];
-}
+// 비운 시세 칸은 null로 둔다
+type MarketRow = Omit<Market, "price"> & { price: number | null };
 
 interface MarketPriceFormProps {
   // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다.
@@ -29,89 +27,109 @@ export function MarketPriceForm({
   submitting,
   onSubmit,
 }: MarketPriceFormProps) {
-  const [form] = Form.useForm<MarketFormValues>();
+  const errorId = useId();
+  const source = initialMarkets ?? serverMarkets;
+  const { values, errors, setValues, handleSubmit } = useForm<{
+    markets: MarketRow[];
+  }>(
+    () => ({ markets: source ?? [] }),
+    ({ markets }) =>
+      requirePrice
+        ? Object.fromEntries(
+            markets.map((market, index) => [
+              `markets.${index}.price`,
+              market.price == null ? "시세를 입력해주세요" : undefined,
+            ])
+          )
+        : {}
+  );
 
-  // 처음 값이 준비되면 한 번만 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록)
-  const filledRef = useRef(false);
-  useEffect(() => {
-    const markets = initialMarkets ?? serverMarkets;
-    if (filledRef.current || !markets) return;
-    form.setFieldsValue({ markets });
-    filledRef.current = true;
-  }, [form, initialMarkets, serverMarkets]);
+  // 처음 값이 준비되면 한 번만 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록).
+  // 값은 보통 마운트 뒤에 도착하고, 호출부가 key를 넘기지 않아도 되도록 렌더 중에 채운다.
+  const [filled, setFilled] = useState(!!source);
+  if (!filled && source) {
+    setFilled(true);
+    setValues({ markets: source });
+  }
 
-  const loadServerMarkets = () => {
-    if (serverMarkets) form.setFieldsValue({ markets: serverMarkets });
-  };
+  const setPrice = (index: number, price: number | null) =>
+    setValues(({ markets }) => ({
+      markets: markets.map((market, i) =>
+        i === index ? { ...market, price } : market
+      ),
+    }));
 
   return (
-    <Form
-      form={form}
-      initialValues={{ markets: [] }}
-      onFinish={({ markets }) => onSubmit(markets ?? [])}
+    <form
+      onSubmit={handleSubmit(({ markets }) =>
+        // 입력칸이 있는 값만 넘긴다. 필수가 아니면 빈 시세(null)도 그대로 넘긴다(parseMarketList가 받는다)
+        onSubmit(
+          markets.map(({ id, name, price }) => ({
+            id,
+            name,
+            price: price as number,
+          }))
+        )
+      )}
     >
-      <Space
-        style={{
-          width: "100%",
-          justifyContent: "space-between",
-          marginBottom: 10,
-        }}
-      >
-        <Button onClick={loadServerMarkets} disabled={!serverMarkets}>
+      <Stack justify='space-between' style={{ marginBottom: 10 }}>
+        <Button
+          onClick={() => {
+            if (serverMarkets) setValues({ markets: serverMarkets });
+          }}
+          disabled={!serverMarkets}
+        >
           시세 불러오기
         </Button>
-        <Button type='primary' htmlType='submit' loading={submitting}>
+        <Button variant='primary' type='submit' loading={submitting}>
           {submitText}
         </Button>
-      </Space>
-      <Form.List name='markets'>
-        {(fields) => (
-          <Table
-            rowKey='key'
-            dataSource={fields}
-            pagination={false}
-            columns={[
-              {
-                title: "물품명",
-                key: "name",
-                render: (_, field) => (
-                  <>
-                    <Form.Item name={[field.name, "id"]} hidden>
-                      <Input />
-                    </Form.Item>
-                    <Form.Item name={[field.name, "name"]} noStyle>
-                      <Input disabled />
-                    </Form.Item>
-                  </>
-                ),
-              },
-              {
-                title: "시세",
-                key: "price",
-                render: (_, field) => (
-                  <Form.Item
-                    name={[field.name, "price"]}
-                    style={{ margin: 0 }}
-                    rules={
-                      requirePrice
-                        ? [{ required: true, message: "시세를 입력해주세요" }]
-                        : []
-                    }
-                  >
-                    <UnitInputNumber
-                      unit='골드'
-                      style={{ width: 180 }}
-                      min={0}
-                      precision={requirePrice ? 0 : undefined}
-                      inputMode={requirePrice ? "numeric" : "decimal"}
-                    />
-                  </Form.Item>
-                ),
-              },
-            ]}
-          />
-        )}
-      </Form.List>
-    </Form>
+      </Stack>
+      <Table
+        rowKey={(market) => market.id}
+        data={values.markets}
+        pagination={false}
+        columns={[
+          {
+            title: "물품명",
+            key: "name",
+            render: (market) => (
+              <Input aria-label='물품명' value={market.name} disabled />
+            ),
+          },
+          {
+            title: "시세",
+            key: "price",
+            render: (market, index) => {
+              const error = errors[`markets.${index}.price`];
+              return (
+                <>
+                  <NumberInput
+                    aria-label={`${market.name} 시세`}
+                    aria-invalid={error ? true : undefined}
+                    aria-describedby={error ? `${errorId}-${index}` : undefined}
+                    suffix='골드'
+                    style={{ width: 180 }}
+                    min={0}
+                    precision={requirePrice ? 0 : undefined}
+                    value={market.price}
+                    onChange={(price) => setPrice(index, price)}
+                  />
+                  {error && (
+                    <div
+                      id={`${errorId}-${index}`}
+                      role='alert'
+                      style={{ color: "var(--ui-color-danger)" }}
+                    >
+                      {error}
+                    </div>
+                  )}
+                </>
+              );
+            },
+          },
+        ]}
+      />
+    </form>
   );
 }
