@@ -55,7 +55,7 @@ src/ui/
 
 - `Button` — `variant?: "primary" | "default"`, `danger?`, `icon?`, `loading?`, 나머지 `<button>` 속성(`type` 기본 `"button"`, `form` 등). `loading`이면 스피너, `aria-busy="true"`, 클릭·제출을 막는다(포커스는 유지).
 - `Title` — `level?: 1~5`(h1~h5). `Text` — `strong?`, `tone?: "secondary" | "success" | "warning" | "danger" | "info"`(span). `Paragraph` — p, `tone?`.
-- `Stack` — flex 묶음. `vertical?`, `gap?: number`(px, 기본 8), `align?`, `justify?`, `wrap?`. 가로는 `align-items: center`, 세로는 `stretch`가 기본이다(버튼만 세로로 쌓을 때는 `align="flex-start"`).
+- `Stack` — flex 묶음. `vertical?`, `gap?: number`(px, 기본 8), `align?`, `justify?`, `wrap?`. 가로는 `align-items: center`, 세로는 `stretch`가 기본이다(버튼만 세로로 쌓을 때는 `align="flex-start"`). flex `gap`은 Safari 14.1부터 지원한다. 대상 중 Safari 14.0만 간격이 빠지는데, antd 5도 이미 flex gap을 쓰고 있었으므로 기존 지원 범위와 같다.
 - `Spin` — 단독: 가운데 스피너 + `role="status"` "불러오는 중". `children`과 함께: `spinning`(기본 true)일 때 내용을 흐리게 하고 위에 스피너를 덮으며 `aria-busy`.
 - `Empty` — `description?`(기본 "데이터 없음"), `children`(동작 버튼 등).
 - `Result` — `status: "404" | "warning" | "error"`, `title`, `description?`, `actions?`.
