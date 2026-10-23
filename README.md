@@ -46,6 +46,12 @@ API 서버 주소는 환경별 `.env` 파일로 정합니다. 두 파일은 커�
 echo "VITE_API_BASE_URL=https://my-home-backend-jqsu.onrender.com" > .env.development.local
 ```
 
+## 로그인과 권한
+
+- `/login`·`/signup`에서 로그인·회원가입합니다. 서버가 준 토큰은 `localStorage`의 `my-home-auth`에 두고, API 요청마다 `Authorization: Bearer <토큰>`으로 보냅니다.
+- 토큰이 만료되었거나 서버가 401을 돌려주면 이 기기의 로그인을 지웁니다.
+- 관리 화면(`/manage`)과 물품·시세·결과를 바꾸는 API는 관리자 계정만 씁니다. 관리자 계정은 백엔드에서 `python manage.py createsuperuser`로 만듭니다(my-home-backend README 참고).
+
 ## 배포 (Vercel)
 
 Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습니다.
@@ -83,7 +89,7 @@ Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습�
 | `components/` | 도메인별 UI 컴포넌트(props 기반 표현)              | `state`, `domain`, `lib`, `types`   |
 | `queries/`    | react-query 훅과 쿼리 키                           | `apis`, `domain`, `lib`, `types`    |
 | `apis/`       | HTTP 클라이언트와 엔드포인트별 함수                | `domain`, `lib`, `types`            |
-| `state/`      | 클라이언트 전역 상태(장바구니, 관리자 확인)        | `domain`, `lib`, `types`            |
+| `state/`      | 클라이언트 전역 상태(장바구니, 로그인한 회원)      | `domain`, `lib`, `types`            |
 | `domain/`     | 계산·변환 같은 순수 로직(React·HTTP 없음)          | `lib`, `types`                      |
 | `lib/`        | 범용 유틸(저장소, 숫자 표시, 엑셀, 이미지 주소 등) | `types`                             |
 | `ui/`         | 디자인 시스템: 토큰, 공용 UI 컴포넌트              | 없음(React만)                       |

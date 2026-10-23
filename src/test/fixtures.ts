@@ -1,3 +1,4 @@
+import { AuthSession, User } from "@/types/auth";
 import { CategoryType, ToolType } from "@/types/enums";
 import { Product } from "@/types/product";
 import { Result } from "@/types/result";
@@ -29,6 +30,19 @@ export function createResult(overrides: Partial<Result> = {}): Result {
     craftingPrice: 100,
     materials: [{ name: "원목", count: 1, price: 500 }],
     totalPrice: 500,
+    ...overrides,
+  };
+}
+
+// 테스트용 로그인 세션(기본: 관리자, 한 시간 뒤 만료). 필요한 필드만 덮어쓴다.
+export function createSession(
+  overrides: Partial<AuthSession> = {},
+  user: Partial<User> = {}
+): AuthSession {
+  return {
+    token: "token-1",
+    expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
+    user: { id: 1, username: "admin", isAdmin: true, ...user },
     ...overrides,
   };
 }

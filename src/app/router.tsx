@@ -6,6 +6,7 @@ import {
 } from "@/app/managePages";
 import { RequireAdmin } from "@/app/RequireAdmin";
 import { ROUTES } from "@/app/routes";
+import { AuthPage } from "@/pages/AuthPage";
 import { CalculationPage } from "@/pages/CalculationPage";
 import { ExperiencePage } from "@/pages/ExperiencePage";
 import { FreePage } from "@/pages/FreePage";
@@ -25,6 +26,8 @@ export function AppRoutes() {
         <Route path={ROUTES.FREE} element={<FreePage />} />
         <Route path={ROUTES.FREE_RESULT} element={<FreeResultPage />} />
         <Route path={ROUTES.CALCULATION} element={<CalculationPage />} />
+        <Route path={ROUTES.LOGIN} element={<AuthPage mode='login' />} />
+        <Route path={ROUTES.SIGNUP} element={<AuthPage mode='signup' />} />
         <Route element={<RequireAdmin />}>
           <Route path={ROUTES.MANAGE} element={<ManageHomePage />} />
           <Route path={ROUTES.MANAGE_PRODUCT} element={<ProductManagePage />} />

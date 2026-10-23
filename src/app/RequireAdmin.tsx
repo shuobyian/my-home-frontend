@@ -1,13 +1,19 @@
-import { getErrorMessage } from "@/apis/errors";
 import { preloadManagePages } from "@/app/managePages";
 import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
 import { ROUTES } from "@/app/routes";
-import { AdminLogin } from "@/components/auth/AdminLogin";
+import { AuthForm } from "@/components/auth/AuthForm";
 import { useLoginMutation } from "@/queries/auth";
 import { Suspense, useEffect, useState } from "react";
-import { matchPath, Outlet, useLocation, useNavigate } from "react-router";
-import { useAuth } from "@/state/auth";
-import { Button, Segmented, Spin, Stack } from "@/ui";
+import {
+  createPath,
+  matchPath,
+  Navigate,
+  Outlet,
+  useLocation,
+  useNavigate,
+} from "react-router";
+import { useCurrentUser } from "@/state/auth";
+import { Button, Modal, Paragraph, Result, Segmented, Spin, Stack } from "@/ui";
 
 const MANAGE_MENU = [
   { label: "Raw 엑셀 데이터", value: ROUTES.MANAGE },
@@ -15,59 +21,104 @@ const MANAGE_MENU = [
   { label: "시세 리스트", value: ROUTES.MANAGE_MARKET },
 ];
 
-// 관리 화면 게이트. 비밀번호를 확인하기 전에는 관리 화면을 그리지 않아
+// 관리 화면 게이트. 관리자로 로그인하기 전에는 관리 화면을 그리지 않아
 // 관리 API 요청과 관리 화면 코드 다운로드가 일어나지 않는다.
-// 서버에 인증이 없으므로 화면을 숨기는 용도일 뿐이다(R10, 서버 인증은 별도 작업).
+// 실제 보호는 서버가 한다(쓰기 API는 관리자 토큰이 있어야 한다).
 export function RequireAdmin() {
-  const { isAdmin, markAdmin, logout } = useAuth();
-  const { pathname } = useLocation();
+  const user = useCurrentUser();
+  const location = useLocation();
   const navigate = useNavigate();
-  const { mutate: login, isPending } = useLoginMutation();
-  const [loginError, setLoginError] = useState<string>();
+  const isAdmin = user?.isAdmin === true;
+  // 관리 화면을 연 뒤인지. 보는 중에 관리자 로그인이 풀리면(만료·토큰 거절·로그아웃,
+  // 다른 탭에서 로그아웃하거나 일반 회원으로 로그인) 화면을 내리지 않고 그 위에서 다시 로그인하게 해,
+  // 저장하지 않은 입력을 지킨다.
+  const [opened, setOpened] = useState(isAdmin);
+  if (isAdmin && !opened) setOpened(true);
 
   // 확인이 끝나면 관리 화면 코드를 미리 받아 메뉴 이동이 바로 반응하게 한다
   useEffect(() => {
     if (isAdmin) preloadManagePages();
   }, [isAdmin]);
 
-  if (!isAdmin) {
+  if (!isAdmin && !opened) {
+    // 로그인하면 이 화면으로 돌아온다
+    if (!user) {
+      return (
+        <Navigate
+          to={ROUTES.LOGIN}
+          state={{ from: createPath(location) }}
+          replace
+        />
+      );
+    }
     return (
-      <AdminLogin
-        loading={isPending}
-        error={loginError}
-        onSubmit={(password) => {
-          setLoginError(undefined);
-          login(password, {
-            onSuccess: markAdmin,
-            onError: (error) => setLoginError(getErrorMessage(error)),
-          });
-        }}
+      <Result
+        status='warning'
+        title='관리자만 입장 가능합니다.'
+        description='관리자 계정으로 로그인해주세요.'
+        actions={
+          <Button variant='primary' onClick={() => navigate(ROUTES.HOME)}>
+            홈으로
+          </Button>
+        }
       />
     );
   }
 
   // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴를 찾는다
   const selected = MANAGE_MENU.find(({ value }) =>
-    matchPath(value, pathname)
+    matchPath(value, location.pathname)
   )?.value;
 
   return (
     <Stack vertical gap={24}>
-      <Stack wrap justify='space-between'>
+      {/* 세로 Stack이 너비를 늘리지 않도록 감싼다 */}
+      <div>
         <Segmented
           aria-label='관리 메뉴'
           options={MANAGE_MENU}
           value={selected}
           onChange={(value) => navigate(value)}
         />
-        <Button onClick={logout}>관리 종료</Button>
-      </Stack>
-      {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴·'관리 종료'는 그대로 둔다 */}
+      </div>
+      {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴는 그대로 둔다 */}
       <RouteErrorBoundary>
         <Suspense fallback={<Spin />}>
           <Outlet />
         </Suspense>
       </RouteErrorBoundary>
+      {!isAdmin && <ReLoginModal />}
     </Stack>
+  );
+}
+
+// 관리자로 다시 로그인하면 닫히고, 닫으면 관리 화면에서 나간다.
+// 로그인이 풀릴 때마다 새로 그려 지난 입력·서버 오류를 남기지 않는다.
+function ReLoginModal() {
+  const user = useCurrentUser();
+  const navigate = useNavigate();
+  const login = useLoginMutation();
+
+  return (
+    <Modal
+      open
+      title='다시 로그인해주세요'
+      width={420}
+      onClose={() => navigate(ROUTES.HOME)}
+    >
+      <Paragraph>
+        {user
+          ? `${user.username} 계정은 관리자가 아닙니다.`
+          : "로그인이 풀렸습니다."}{" "}
+        관리자 계정으로 다시 로그인하면 입력한 내용 그대로 이어서 저장할 수
+        있습니다.
+      </Paragraph>
+      <AuthForm
+        mode='login'
+        loading={login.isPending}
+        error={login.error}
+        onSubmit={(credentials) => login.mutate(credentials)}
+      />
+    </Modal>
   );
 }
