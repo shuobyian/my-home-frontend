@@ -15,4 +15,16 @@ describe("SearchBar", () => {
     fireEvent.keyDown(input, { key: "Enter", code: "Enter", keyCode: 13 });
     expect(onSearch).toHaveBeenLastCalledWith("탁자");
   });
+
+  it("지우기 버튼을 누르면 빈 검색어(전체)로 검색한다", () => {
+    const onSearch = vi.fn();
+    render(<SearchBar onSearch={onSearch} />);
+    const input = screen.getByPlaceholderText("물품명 입력");
+
+    fireEvent.change(input, { target: { value: "탁자" } });
+    fireEvent.click(screen.getByRole("button", { name: "지우기" }));
+
+    expect(input).toHaveValue("");
+    expect(onSearch).toHaveBeenLastCalledWith("");
+  });
 });

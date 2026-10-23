@@ -1,4 +1,3 @@
-import { Alert, Button, Flex, Space, Spin } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useAddToCart } from "@/components/cart/useAddToCart";
@@ -10,6 +9,7 @@ import { useWalnutQuery } from "@/queries/experience";
 import { useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router";
 import { WalnutParams } from "@/types/experience";
+import { Alert, Button, Spin, Stack } from "@/ui";
 
 // 호두작 계산. 계산 조건은 URL에 두어 경험치 표에 다녀오거나 새로고침해도 결과가 유지된다.
 export function WalnutPage() {
@@ -37,29 +37,28 @@ export function WalnutPage() {
   };
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }} size='large'>
+    <Stack vertical gap={24}>
       {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
-      <Flex
+      <Stack
         justify='space-between'
         align='flex-start'
         wrap
-        gap={8}
         style={{ flexDirection: "row-reverse" }}
       >
         <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>
           레벨별 필요한 경험치
         </Button>
         <WalnutGuide />
-      </Flex>
+      </Stack>
+      {/* 주소(계산 조건)가 바뀌면 다시 마운트해 입력창을 맞춘다 */}
       <WalnutForm
+        key={queryString}
         initialValues={params}
         loading={isFetching}
         onSubmit={submit}
       />
       {isError && (
         <Alert
-          type='error'
-          showIcon
           title='계산할 수 없습니다.'
           description={getErrorMessage(error)}
         />
@@ -74,6 +73,6 @@ export function WalnutPage() {
           />
         </Spin>
       )}
-    </Space>
+    </Stack>
   );
 }

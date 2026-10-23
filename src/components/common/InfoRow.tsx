@@ -1,12 +1,12 @@
-import { Space, Typography } from "antd";
+import { Stack, Text } from "@/ui";
 
 export function InfoRow({ title, value }: { title: string; value: string }) {
   return (
-    <Space style={{ gap: "10px" }}>
-      <Typography.Text strong style={{ minWidth: "110px" }}>
+    <Stack gap={10}>
+      <Text strong style={{ minWidth: "110px" }}>
         {title}
-      </Typography.Text>
-      <Typography.Text style={{ flexGrow: 1 }}>{value}</Typography.Text>
-    </Space>
+      </Text>
+      <Text style={{ flexGrow: 1 }}>{value}</Text>
+    </Stack>
   );
 }

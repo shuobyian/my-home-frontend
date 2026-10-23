@@ -1,11 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { App } from "antd";
 import { WalnutPage } from "@/pages/WalnutPage";
 import { Link, MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider, useCart } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { WalnutResponse } from "@/types/experience";
+import { UIProvider } from "@/ui";
 
 // 화면 코드는 apis/를 직접 가져오지 않으므로(레이어 규칙) 모듈 경로로만 모킹한다.
 // vi.mock은 파일 맨 위로 끌어올려지므로 모의 함수도 vi.hoisted로 함께 올린다.
@@ -43,7 +43,7 @@ function renderWalnut() {
   });
   return render(
     <QueryClientProvider client={queryClient}>
-      <App>
+      <UIProvider>
         <CartProvider>
           <MemoryRouter
             initialEntries={["/walnut?presentLevel=60&objectiveLevel=70"]}
@@ -56,7 +56,7 @@ function renderWalnut() {
             <WalnutPage />
           </MemoryRouter>
         </CartProvider>
-      </App>
+      </UIProvider>
     </QueryClientProvider>
   );
 }
