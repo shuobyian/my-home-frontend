@@ -7,13 +7,13 @@ export const styles = {
     border-radius: var(--ui-radius-lg);
   `,
 
+  // border-collapse는 separate라야 고정(sticky) 칸의 테두리가 함께 붙어 다닌다.
+  // 칸 규칙은 펼친 행 안에 표가 또 들어갈 수 있어 자기 칸에만 적용한다
   table: css`
     width: 100%;
     border-spacing: 0;
-    /* separate라야 고정(sticky) 칸의 테두리가 함께 붙어 다닌다 */
     border-collapse: separate;
 
-    /* 펼친 행 안에 표가 또 들어갈 수 있어 자기 칸에만 적용한다 */
     & > thead > tr > th,
     & > tbody > tr > td {
       padding: var(--ui-space-4);
@@ -59,10 +59,10 @@ export const styles = {
     }
   `,
 
+  // tr의 outline은 고정(sticky) 칸 밑에 가려지므로 포커스는 칸마다 안쪽 그림자로 그린다
   clickable: css`
     cursor: pointer;
 
-    /* tr의 outline은 고정(sticky) 칸 밑에 가려지므로 칸마다 안쪽 그림자로 그린다 */
     &:focus-visible {
       outline: none;
     }

@@ -1,8 +1,13 @@
 import { css } from "@emotion/react";
 
-// UIProvider가 <Global>로 한 번 넣는다
+// UIProvider가 <Global>로 한 번 넣는다.
+// - :root: 디자인 토큰. 컴포넌트와 화면은 값 대신 이 변수를 쓴다.
+//   상태 글자색(success·warning·danger·info)은 흰 배경과 4.5:1 이상 대비가 나는 값이다.
+//   bg-layout을 바꾸면 index.html의 첫 화면 색도 바꾼다.
+// - a: 기본 파란 밑줄 대신 주 색으로
+// - :focus-visible: 키보드 포커스 표시. 미지원 브라우저는 기본 외곽선이 그대로 보인다(이 규칙만 따로 둔다)
+// - .ui-sr-only: 화면에서는 숨기고 스크린 리더에는 읽힌다
 export const globalStyles = css`
-  /* 디자인 토큰. 컴포넌트와 화면은 값 대신 이 변수를 쓴다. */
   :root {
     --ui-color-primary: #5c3572;
     --ui-color-primary-hover: #75508a;
@@ -14,7 +19,6 @@ export const globalStyles = css`
     --ui-color-text-disabled: rgba(0, 0, 0, 0.25);
     --ui-color-text-inverse: #fff;
 
-    /* 상태 글자색은 흰 배경과 4.5:1 이상 대비가 나는 값이다 */
     --ui-color-success: #237804;
     --ui-color-warning: #ad6800;
     --ui-color-danger: #cf1322;
@@ -94,14 +98,12 @@ export const globalStyles = css`
     color: inherit;
   }
 
-  /* 구분선 */
   hr {
     margin: var(--ui-space-5) 0;
     border: 0;
     border-top: 1px solid var(--ui-color-border-secondary);
   }
 
-  /* 링크: 기본 파란 밑줄 대신 주 색으로 */
   a {
     color: var(--ui-color-primary);
     text-decoration: none;
@@ -111,13 +113,11 @@ export const globalStyles = css`
     color: var(--ui-color-primary-hover);
   }
 
-  /* 키보드 포커스 표시. 미지원 브라우저는 기본 외곽선이 그대로 보인다(이 규칙만 따로 둔다) */
   :focus-visible {
     outline: 2px solid var(--ui-color-primary);
     outline-offset: 2px;
   }
 
-  /* 화면에서는 숨기고 스크린 리더에는 읽힌다 */
   .ui-sr-only {
     position: absolute;
     width: 1px;

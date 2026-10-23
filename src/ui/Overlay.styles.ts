@@ -31,11 +31,11 @@ export const styles = {
     animation: ${fadeIn} var(--ui-motion);
   `,
 
+  // 열릴 때 포커스를 받는 틀일 뿐이라 외곽선을 그리지 않는다
   panel: css`
     background: var(--ui-color-bg-container);
     box-shadow: var(--ui-shadow);
 
-    /* 열릴 때 포커스를 받는 틀일 뿐이라 외곽선을 그리지 않는다 */
     &:focus {
       outline: none;
     }
@@ -80,7 +80,7 @@ export const styles = {
     }
   `,
 
-  /* Modal: 위에서 100px 내려온 가운데. 내용이 길면 마스크가 스크롤한다 */
+  // Modal: 위에서 100px 내려온 가운데. 내용이 길면 마스크가 스크롤한다
   modalMask: css`
     padding: 100px 0 var(--ui-space-5);
     overflow: auto;
@@ -109,7 +109,7 @@ export const styles = {
     margin-top: var(--ui-space-3);
   `,
 
-  /* Drawer: 오른쪽 전체 높이 */
+  // Drawer: 오른쪽 전체 높이
   drawer: css`
     position: absolute;
     top: 0;

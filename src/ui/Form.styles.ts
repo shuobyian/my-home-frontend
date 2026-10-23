@@ -48,6 +48,7 @@ export const styles = {
     }
   `,
 
+  // 포커스는 테두리 상자가 보여 준다
   input: css`
     flex: 1;
     width: 100%;
@@ -57,7 +58,6 @@ export const styles = {
     background: transparent;
     border: 0;
 
-    /* 포커스는 테두리 상자가 보여 준다 */
     &:focus {
       outline: 0;
     }
@@ -150,7 +150,7 @@ export const styles = {
     border-radius: 0 var(--ui-radius) var(--ui-radius) 0;
   `,
 
-  // Select: 높이·테두리·포커스는 테두리 상자와 같다
+  // Select: 높이·테두리·포커스는 테두리 상자와 같다. 펼친 목록의 항목(option)은 안내 글자색을 물려받지 않는다
   select: css`
     display: block;
     width: 100%;
@@ -191,7 +191,6 @@ export const styles = {
       background-color: var(--ui-color-bg-disabled);
     }
 
-    /* 펼친 목록의 항목은 안내 글자색을 물려받지 않는다 */
     & option {
       color: var(--ui-color-text);
     }
@@ -217,7 +216,9 @@ export const styles = {
     box-shadow: inset 0 0 0 1px var(--ui-color-danger);
   `,
 
-  // selected·segmentDisabled는 이 뒤에 둔다
+  // selected·segmentDisabled는 이 뒤에 둔다.
+  // 숨긴 라디오의 포커스를 바로 뒤 글자 칸(segmentLabel)에 그린다. 마우스로 고를 때는 그리지 않는다
+  // (:focus-visible을 모르는 브라우저는 둘째 규칙을 버려 늘 그린다)
   segment: css`
     position: relative;
     display: flex;
@@ -233,8 +234,6 @@ export const styles = {
       color: var(--ui-color-text);
     }
 
-    /* 숨긴 라디오의 포커스를 바로 뒤 글자 칸(segmentLabel)에 그린다. 마우스로 고를 때는 그리지 않는다
-       (:focus-visible을 모르는 브라우저는 둘째 규칙을 버려 늘 그린다) */
     & > input:focus + span {
       outline: 2px solid var(--ui-color-primary);
       outline-offset: 1px;

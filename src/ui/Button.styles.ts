@@ -1,6 +1,7 @@
 import { css } from "@emotion/react";
 
 export const styles = {
+  // aria-busy·disabled 상태는 종류별 스타일(한 단계 낮은 특이도)보다 먼저 와도 이긴다
   button: css`
     display: inline-flex;
     flex: none;
@@ -22,7 +23,6 @@ export const styles = {
       background-color var(--ui-motion),
       border-color var(--ui-motion);
 
-    /* 아래 두 상태는 종류별 스타일(한 단계 낮은 특이도)보다 먼저 와도 이긴다 */
     &[aria-busy="true"] {
       cursor: progress;
       opacity: 0.65;

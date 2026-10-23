@@ -103,7 +103,7 @@ UI 라이브러리 없이 앱에 필요한 컴포넌트만 직접 만들어 씁�
 
 - 화면 코드는 `import { Button, Table, useToast } from "@/ui"`처럼 배럴에서만 가져옵니다.
 - 색·간격·모서리 등은 `src/ui/global.styles.ts`의 CSS 변수(`var(--ui-color-primary)` 등)로 쓰고, 값을 직접 적지 않습니다.
-- 스타일은 emotion의 css prop으로 씁니다. `<Name>.styles.ts`에 `` css`...` ``로 두고 `css={[styles.a, cond && styles.b]}`처럼 조합합니다. 배열은 클래스 하나로 합쳐져 뒤 항목이 이기지만, 최상위 선언은 앞 항목의 `&:hover`·`@media` 같은 중첩 규칙을 이기지 못합니다.
+- 스타일은 emotion의 css prop으로 씁니다. `<Name>.styles.ts`에 `` css`...` ``로 두고 `css={[styles.a, cond && styles.b]}`처럼 조합합니다. 배열은 클래스 하나로 합쳐져 뒤 항목이 이기지만, 최상위 선언은 앞 항목의 `&:hover`·`@media` 같은 중첩 규칙을 이기지 못합니다. 템플릿 안의 `/* */` 주석은 번들에 그대로 남으므로, 주석은 템플릿 밖에 `//`로 답니다.
 - 앱 최상단의 `UIProvider`가 토스트(`useToast`)와 확인 대화상자(`useDialogs`)를 제공합니다. 이 훅을 쓰는 컴포넌트를 테스트할 때는 `<UIProvider>`로 감쌉니다.
 - 폼은 `useForm`(값·검증) + `Field`(라벨·도움말·오류 연결) + 입력 컴포넌트로 만듭니다.
 - 지원 브라우저(Chrome 87·Safari 14 등)에 없는 `<dialog>`, `inert`, `:is()`/`:where()`/`:has()`는 쓰지 않습니다.
