@@ -35,11 +35,11 @@
 }
 
 .warning {
-  color: #faad14;
+  color: var(--ui-color-warning);
 }
 
 .error {
-  color: #ff4d4f;
+  color: var(--ui-color-danger);
 }
 
 .resultTitle {

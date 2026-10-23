@@ -68,8 +68,8 @@ src/ui/
 - `useForm(initialValues, validate)` → `{ values, errors, set(key, value), setValues(updater), handleSubmit(onValid, onInvalid?) }`.
   - `validate(values)`는 `{ [경로]: 메시지 }`를 돌려준다. 경로는 `"name"`, `"materials.0.count"`처럼 쓴다.
   - 오류는 첫 제출 시도 뒤부터 값이 바뀔 때마다 다시 계산해 보여 준다(antd의 "제출 후 실시간 검증"과 같다).
-  - 외부 값으로 다시 채워야 하면 `key`를 바꿔 다시 마운트한다(effect로 `setFieldsValue` 하던 것을 대체).
-- `Field` — `label`, `help?`, `error?`, `required?`(빨간 `*`). 안쪽 DS 컨트롤에 `id`·`aria-describedby`·`aria-invalid`·`aria-required`를 context로 넘긴다.
+  - 외부 값으로 다시 채워야 하면 렌더 중에 이전 값과 비교해 `setValues`를 부른다(React의 "prop이 바뀔 때 state 조정" 패턴, effect로 `setFieldsValue` 하던 것을 대체). `key`로 다시 마운트하면 제출한 뒤 포커스가 사라지므로 쓰지 않는다.
+- `Field` — `label`, `help?`, `error?`, `required?`(빨간 `*`), `hideLabel?`(라벨 줄을 화면에서만 숨긴다. placeholder만 보이던 칸·표 칸 안 입력용). 안쪽 DS 컨트롤에 `id`·`aria-describedby`·`aria-invalid`·`aria-required`를 context로 넘긴다.
 - `Input` — `value?: string`, `onChange?(value: string)`, `allowClear?`, `type="password"`면 보기/숨기기 버튼, 나머지 `<input>` 속성.
 - `NumberInput` — `value?: number | null`, `onChange?(value: number | null)`, `min?`, `max?`, `step?`(기본 1), `precision?`, `suffix?`(단위 덧붙임, UnitInputNumber 대체), `align?: "start" | "center"`. `type="text"` + `role="spinbutton"`. 입력 중에는 해석한 숫자를 그대로 알리고, 벗어날 때 범위 고정·자릿수 반올림, ↑/↓로 `step`만큼 바꾼다.
 - `Select<V extends string>` — 네이티브 `<select>`. `value?`, `onChange?(value: V)`, `options: { value: V; label: string }[]`, `placeholder?`.
@@ -84,7 +84,7 @@ src/ui/
 ### 표
 
 - `Table<T>` — `columns: { key, title, render(record, index), width?, align?, ellipsis?, fixed?, sorter? }[]`, `data`, `rowKey(record)`, `loading?`, `size?: "small" | "medium"`, `emptyText?`.
-  - `pagination?: false | { page?, pageSize?, total?, onChange?(page, pageSize), showSizeChanger? }` — `page`가 있으면 서버 쪽 페이지, 없으면 표가 직접 나눈다(기본 10개).
+  - `pagination?: false | { page?, pageSize?, total?, onChange?(page, pageSize), showSizeChanger? }` — `page`가 있으면 서버 쪽 페이지, 없으면 표가 직접 나눈다(기본 10개). 한 쪽에 다 들어가면 쪽 이동을 숨긴다. 쪽당 개수를 바꾸면 보던 쪽을 유지하고, 그 쪽이 사라지면 마지막 쪽으로 맞춘다.
   - `selection?: { selected: T[]; onChange(rows: T[]); label(record): string }` — 페이지를 넘겨도 선택을 유지한다.
   - `expandedRowRender?(record)`, `onRowClick?(record)`(키보드 Enter도 지원).
   - 정렬은 표 안에서만(오름 → 내림 → 해제, `aria-sort`). 열 너비 합으로 최소 너비를 잡고 넘치면 가로 스크롤한다.

@@ -47,4 +47,14 @@ describe("Input", () => {
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(input).toHaveAccessibleDescription("필수입니다");
   });
+
+  test("hideLabel이어도 접근 이름과 필수 표시는 남는다", () => {
+    render(
+      <Field label='비밀번호' required hideLabel>
+        <Input type='password' />
+      </Field>
+    );
+    const input = screen.getByLabelText("비밀번호");
+    expect(input).toHaveAttribute("aria-required", "true");
+  });
 });

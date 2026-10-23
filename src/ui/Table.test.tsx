@@ -59,6 +59,25 @@ describe("Table", () => {
     expect(onChange).toHaveBeenCalledWith(3, 10);
   });
 
+  test("쪽당 개수를 바꾸면 보던 쪽을 유지하고, 그 쪽이 사라지면 마지막 쪽으로 맞춘다", () => {
+    const onChange = vi.fn();
+    render(
+      <Table
+        columns={columns}
+        data={items(10)}
+        rowKey={rowKey}
+        pagination={{ page: 3, total: 100, showSizeChanger: true, onChange }}
+      />
+    );
+    const sizeSelect = screen.getByRole("combobox", { name: "페이지당 개수" });
+
+    fireEvent.change(sizeSelect, { target: { value: "20" } });
+    expect(onChange).toHaveBeenLastCalledWith(3, 20);
+
+    fireEvent.change(sizeSelect, { target: { value: "50" } });
+    expect(onChange).toHaveBeenLastCalledWith(2, 50);
+  });
+
   test("전체 개수가 한 쪽 이하이면 페이저를 숨긴다(크기 선택이 있으면 10개 기준)", () => {
     const { rerender } = render(
       <Table columns={columns} data={items(10)} rowKey={rowKey} />

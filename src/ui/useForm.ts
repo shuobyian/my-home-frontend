@@ -4,7 +4,8 @@ import { FormEvent, useState } from "react";
 export type FormErrors = Record<string, string | undefined>;
 
 // 폼 값과 검증 오류. 오류는 첫 제출 시도 뒤부터 렌더마다 다시 계산해 보여 준다.
-// 외부 값으로 다시 채워야 하면 호출부가 key를 바꿔 다시 마운트한다.
+// 외부 값으로 다시 채워야 하면 호출부가 렌더 중에 이전 값과 비교해 setValues를 부른다
+// (key로 다시 마운트하면 제출 뒤 포커스가 사라진다).
 export function useForm<T extends object>(
   initialValues: T | (() => T),
   validate: (values: T) => FormErrors

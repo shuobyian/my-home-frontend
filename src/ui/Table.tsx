@@ -105,7 +105,9 @@ export function Table<T>({
       ? sorted.slice((page - 1) * pageSize, page * pageSize)
       : sorted;
 
-  const changePage = (nextPage: number, nextSize: number) => {
+  const changePage = (requested: number, nextSize: number) => {
+    // 쪽당 개수가 늘어 보던 쪽이 사라지면 마지막 쪽으로 맞춘다
+    const nextPage = Math.min(requested, Math.ceil(total / nextSize) || 1);
     if (nextPage === page && nextSize === pageSize) return;
     setClientPage(nextPage);
     setClientPageSize(nextSize);
@@ -449,7 +451,7 @@ function Pager({
           className={styles.sizeSelect}
           aria-label='페이지당 개수'
           value={pageSize}
-          onChange={(event) => onChange(1, Number(event.target.value))}
+          onChange={(event) => onChange(page, Number(event.target.value))}
         >
           {PAGE_SIZES.map((option) => (
             <option key={option} value={option}>

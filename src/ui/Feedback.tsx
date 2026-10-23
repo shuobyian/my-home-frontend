@@ -1,4 +1,4 @@
-import { ReactNode } from "react";
+import { CSSProperties, ReactNode } from "react";
 import { cx } from "./cx";
 import styles from "./Feedback.module.css";
 import { EmptyIcon, ErrorIcon, WarningIcon } from "./icons";
@@ -60,10 +60,11 @@ interface AlertProps {
   title: ReactNode;
   description?: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }
 
 // 오류 안내 상자. 나타나면 스크린 리더가 바로 읽는다.
-export function Alert({ title, description, className }: AlertProps) {
+export function Alert({ title, description, className, style }: AlertProps) {
   return (
     <div
       role='alert'
@@ -72,6 +73,7 @@ export function Alert({ title, description, className }: AlertProps) {
         description != null && styles.alertWithDescription,
         className
       )}
+      style={style}
     >
       <span className={styles.alertIcon}>
         <ErrorIcon />

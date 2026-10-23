@@ -1,4 +1,11 @@
-import { AriaAttributes, createContext, ReactNode, use, useId } from "react";
+import {
+  AriaAttributes,
+  createContext,
+  CSSProperties,
+  ReactNode,
+  use,
+  useId,
+} from "react";
 import { cx } from "./cx";
 import styles from "./Form.module.css";
 
@@ -18,8 +25,11 @@ interface FieldProps {
   help?: ReactNode;
   error?: string;
   required?: boolean;
+  // 라벨 줄(별표 포함)을 화면에서만 숨긴다. 접근 이름과 aria-required는 그대로 붙는다.
+  hideLabel?: boolean;
   children: ReactNode;
   className?: string;
+  style?: CSSProperties;
 }
 
 // 라벨(위)·컨트롤·오류·도움말 묶음. 안쪽 DS 컨트롤에 id와 aria 속성을 context로 넘긴다.
@@ -28,8 +38,10 @@ export function Field({
   help,
   error,
   required,
+  hideLabel,
   children,
   className,
+  style,
 }: FieldProps) {
   const id = useId();
   const labelId = `${id}-label`;
@@ -40,8 +52,8 @@ export function Field({
     undefined;
 
   return (
-    <div className={cx(styles.field, className)}>
-      <div className={styles.label}>
+    <div className={cx(styles.field, className)} style={style}>
+      <div className={cx(styles.label, hideLabel && "ui-sr-only")}>
         {/* 라벨 글자(접근 이름)에 섞이지 않도록 label 밖에 둔다 */}
         {required && (
           <span className={styles.required} aria-hidden='true'>
