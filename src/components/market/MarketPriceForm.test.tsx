@@ -13,6 +13,7 @@ describe("MarketPriceForm", () => {
     rerender(<MarketPriceForm {...props} serverMarkets={[wood]} />);
     const input = screen.getByLabelText("원목 시세");
     expect(input).toHaveValue("500");
+    expect(input).not.toHaveAttribute("aria-required");
 
     fireEvent.change(input, { target: { value: "700" } });
     rerender(
@@ -38,11 +39,13 @@ describe("MarketPriceForm", () => {
     );
 
     const input = screen.getByLabelText("원목 시세");
+    expect(input).toHaveAttribute("aria-required", "true");
     fireEvent.change(input, { target: { value: "" } });
     fireEvent.click(screen.getByRole("button", { name: "수정" }));
 
     expect(screen.getByRole("alert")).toHaveTextContent("시세를 입력해주세요");
     expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(input).toHaveAccessibleDescription("시세를 입력해주세요");
     expect(onSubmit).not.toHaveBeenCalled();
   });
 });

@@ -1,6 +1,6 @@
-import { useId, useState } from "react";
+import { useState } from "react";
 import { Market } from "@/types/market";
-import { Button, Input, NumberInput, Stack, Table, useForm } from "@/ui";
+import { Button, Field, Input, NumberInput, Stack, Table, useForm } from "@/ui";
 
 // 비운 시세 칸은 null로 둔다
 type MarketRow = Omit<Market, "price"> & { price: number | null };
@@ -27,7 +27,6 @@ export function MarketPriceForm({
   submitting,
   onSubmit,
 }: MarketPriceFormProps) {
-  const errorId = useId();
   const source = initialMarkets ?? serverMarkets;
   const { values, errors, setValues, handleSubmit } = useForm<{
     markets: MarketRow[];
@@ -67,6 +66,8 @@ export function MarketPriceForm({
           markets.map(({ id, name, price }) => ({
             id,
             name,
+            // ponytail: FreePage 경로(requirePrice 아님)에서 넘어가는 null을 이 단언이 가린다.
+            // Market.price를 number | null로 넓히고 서버 계약(계산 요청이 null 시세를 받는지)을 확인한 뒤 없앤다
             price: price as number,
           }))
         )
@@ -100,33 +101,24 @@ export function MarketPriceForm({
           {
             title: "시세",
             key: "price",
-            render: (market, index) => {
-              const error = errors[`markets.${index}.price`];
-              return (
-                <>
-                  <NumberInput
-                    aria-label={`${market.name} 시세`}
-                    aria-invalid={error ? true : undefined}
-                    aria-describedby={error ? `${errorId}-${index}` : undefined}
-                    suffix='골드'
-                    style={{ width: 180 }}
-                    min={0}
-                    precision={requirePrice ? 0 : undefined}
-                    value={market.price}
-                    onChange={(price) => setPrice(index, price)}
-                  />
-                  {error && (
-                    <div
-                      id={`${errorId}-${index}`}
-                      role='alert'
-                      style={{ color: "var(--ui-color-danger)" }}
-                    >
-                      {error}
-                    </div>
-                  )}
-                </>
-              );
-            },
+            render: (market, index) => (
+              <Field
+                label={`${market.name} 시세`}
+                hideLabel
+                required={requirePrice}
+                error={errors[`markets.${index}.price`]}
+                style={{ marginBottom: 0 }}
+              >
+                <NumberInput
+                  suffix='골드'
+                  style={{ width: 180 }}
+                  min={0}
+                  precision={requirePrice ? 0 : undefined}
+                  value={market.price}
+                  onChange={(price) => setPrice(index, price)}
+                />
+              </Field>
+            ),
           },
         ]}
       />
