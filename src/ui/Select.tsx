@@ -1,7 +1,6 @@
 import { Ref, SelectHTMLAttributes } from "react";
-import { cx } from "./cx";
 import { useFieldControl } from "./Field";
-import styles from "./Form.module.css";
+import { styles } from "./Form.styles";
 
 export type SelectProps<V extends string> = Omit<
   SelectHTMLAttributes<HTMLSelectElement>,
@@ -34,11 +33,11 @@ export function Select<V extends string>({
       {...field.props}
       ref={ref}
       value={value ?? ""}
-      className={cx(
+      css={[
         styles.select,
         empty && placeholder !== undefined && styles.placeholder,
-        className
-      )}
+      ]}
+      className={className}
       onChange={(event) => onChange?.(event.target.value as V)}
     >
       {placeholder !== undefined && (

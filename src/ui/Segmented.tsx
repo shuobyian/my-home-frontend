@@ -1,7 +1,6 @@
 import { ReactNode, useId } from "react";
-import { cx } from "./cx";
 import { useFieldControl } from "./Field";
-import styles from "./Form.module.css";
+import { styles } from "./Form.styles";
 
 interface SegmentedProps<V> {
   // 어떤 옵션과도 같지 않으면 아무것도 선택하지 않는다
@@ -34,18 +33,23 @@ export function Segmented<V>({
       aria-describedby={props["aria-describedby"]}
       aria-invalid={props["aria-invalid"]}
       aria-required={props["aria-required"]}
-      className={cx(styles.segmented, invalid && styles.invalid, className)}
+      css={[
+        styles.segmented,
+        invalid && styles.invalid,
+        invalid && styles.segmentedInvalid,
+      ]}
+      className={className}
     >
       {options.map((option, index) => {
         const checked = option.value === value;
         return (
           <label
             key={String(option.value)}
-            className={cx(
+            css={[
               styles.segment,
               checked && styles.selected,
-              disabled && styles.segmentDisabled
-            )}
+              disabled && styles.segmentDisabled,
+            ]}
           >
             <input
               type='radio'
@@ -56,7 +60,7 @@ export function Segmented<V>({
               disabled={disabled}
               onChange={() => onChange(option.value)}
             />
-            <span className={styles.segmentLabel}>{option.label}</span>
+            <span css={styles.segmentLabel}>{option.label}</span>
           </label>
         );
       })}

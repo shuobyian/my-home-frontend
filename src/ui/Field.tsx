@@ -6,8 +6,7 @@ import {
   use,
   useId,
 } from "react";
-import { cx } from "./cx";
-import styles from "./Form.module.css";
+import { styles } from "./Form.styles";
 
 interface FieldContextValue {
   id: string;
@@ -52,11 +51,15 @@ export function Field({
     undefined;
 
   return (
-    <div className={cx(styles.field, className)} style={style}>
-      <div className={cx(styles.label, hideLabel && "ui-sr-only")}>
+    <div css={styles.field} className={className} style={style}>
+      {/* 숨길 때는 전역 ui-sr-only만 붙인다(라벨 여백이 숨김 규칙의 padding: 0을 이기지 않게) */}
+      <div
+        css={hideLabel ? undefined : styles.label}
+        className={hideLabel ? "ui-sr-only" : undefined}
+      >
         {/* 라벨 글자(접근 이름)에 섞이지 않도록 label 밖에 둔다 */}
         {required && (
-          <span className={styles.required} aria-hidden='true'>
+          <span css={styles.required} aria-hidden='true'>
             *
           </span>
         )}
@@ -76,12 +79,12 @@ export function Field({
         {children}
       </FieldContext>
       {error && (
-        <div id={errorId} role='alert' className={styles.error}>
+        <div id={errorId} role='alert' css={styles.error}>
           {error}
         </div>
       )}
       {help && (
-        <div id={helpId} className={styles.help}>
+        <div id={helpId} css={styles.help}>
           {help}
         </div>
       )}

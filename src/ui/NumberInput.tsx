@@ -6,9 +6,8 @@ import {
   Ref,
   useState,
 } from "react";
-import { cx } from "./cx";
 import { useFieldControl } from "./Field";
-import styles from "./Form.module.css";
+import { styles } from "./Form.styles";
 
 export type NumberInputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -132,20 +131,15 @@ export function NumberInput({
   };
 
   return (
-    <span
-      className={cx(
-        styles.number,
-        suffix != null && styles.hasSuffix,
-        className
-      )}
-      style={style}
-    >
+    <span css={styles.number} className={className} style={style}>
       <span
-        className={cx(
+        css={[
           styles.control,
           field.invalid && styles.invalid,
-          rest.disabled && styles.disabled
-        )}
+          rest.disabled && styles.disabled,
+          styles.numberControl,
+          suffix != null && styles.hasSuffixControl,
+        ]}
       >
         <input
           autoComplete='off'
@@ -159,13 +153,13 @@ export function NumberInput({
           aria-valuemax={max}
           aria-valuenow={current ?? undefined}
           value={text}
-          className={cx(styles.input, align === "center" && styles.center)}
+          css={[styles.input, align === "center" && styles.center]}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
         />
       </span>
-      {suffix != null && <span className={styles.addon}>{suffix}</span>}
+      {suffix != null && <span css={styles.addon}>{suffix}</span>}
     </span>
   );
 }

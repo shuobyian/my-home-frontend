@@ -5,9 +5,8 @@ import {
   useRef,
   useState,
 } from "react";
-import { cx } from "./cx";
 import { useFieldControl } from "./Field";
-import styles from "./Form.module.css";
+import { styles } from "./Form.styles";
 import { CloseIcon, EyeIcon, EyeOffIcon } from "./icons";
 
 export type InputProps = Omit<
@@ -42,12 +41,12 @@ export function Input({
 
   return (
     <span
-      className={cx(
+      css={[
         styles.control,
         field.invalid && styles.invalid,
         rest.disabled && styles.disabled,
-        className
-      )}
+      ]}
+      className={className}
       style={style}
     >
       <input
@@ -56,13 +55,13 @@ export function Input({
         ref={inputRef}
         type={isPassword && revealed ? "text" : type}
         value={value}
-        className={styles.input}
+        css={styles.input}
         onChange={(event) => onChange?.(event.target.value)}
       />
       {showClear && (
         <button
           type='button'
-          className={styles.affix}
+          css={styles.affix}
           aria-label='지우기'
           onClick={() => {
             onChange?.("");
@@ -75,7 +74,7 @@ export function Input({
       {isPassword && (
         <button
           type='button'
-          className={styles.affix}
+          css={styles.affix}
           aria-label={revealed ? "비밀번호 숨기기" : "비밀번호 보기"}
           disabled={rest.disabled}
           onClick={() => setRevealed((prev) => !prev)}
