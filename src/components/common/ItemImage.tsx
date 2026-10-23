@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { getItemImageUrl } from "@/lib/image";
 import { PictureIcon } from "@/ui";
-import styles from "./ItemImage.module.css";
+import { styles } from "./ItemImage.styles";
 
 interface ItemImageProps {
   name: string;
@@ -24,7 +24,7 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
         src={failed ? `${import.meta.env.BASE_URL}myhome.png` : src}
         alt={alt}
         width={300}
-        className={styles.detail}
+        css={styles.detail}
         onError={handleError}
       />
     );
@@ -32,18 +32,14 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
 
   if (failed) {
     return (
-      <span
-        role='img'
-        aria-label={alt}
-        className={`${styles.avatar} ${styles.fallback}`}
-      >
+      <span role='img' aria-label={alt} css={[styles.avatar, styles.fallback]}>
         <PictureIcon />
       </span>
     );
   }
 
   return (
-    <span className={styles.avatar}>
+    <span css={styles.avatar}>
       <img src={src} alt={alt} onError={handleError} />
     </span>
   );

@@ -6,7 +6,7 @@ import { formatGold, formatNumber } from "@/lib/format";
 import { useNavigate } from "react-router";
 import { useCart } from "@/state/cart";
 import { Button, Empty, Stack, Text, Title } from "@/ui";
-import styles from "./CartSummary.module.css";
+import { styles } from "./CartSummary.styles";
 
 // 장바구니에 담긴 물품과 기초 재료 합산 결과
 export function CartSummary() {
@@ -29,11 +29,11 @@ export function CartSummary() {
           <Text tone='secondary'>
             가격은 물품을 담은 시점의 시세로 계산됩니다.
           </Text>
-          <details className={styles.entries}>
-            <summary className={styles.summary}>
+          <details css={styles.entries}>
+            <summary css={styles.summary}>
               담긴 물품 ({formatNumber(totalCount)}개)
             </summary>
-            <div className={styles.list}>
+            <div css={styles.list}>
               <CartEntryList
                 entries={entries}
                 renderDescription={({ source, count }) => (
