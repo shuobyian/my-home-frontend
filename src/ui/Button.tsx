@@ -1,6 +1,5 @@
 import { ButtonHTMLAttributes, MouseEvent, ReactNode, Ref } from "react";
-import styles from "./Button.module.css";
-import { cx } from "./cx";
+import { styles } from "./Button.styles";
 import { Spinner } from "./Spin";
 
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
@@ -36,13 +35,14 @@ export function Button({
     <button
       {...rest}
       type={type}
-      className={cx(
+      css={[
         styles.button,
         styles[variant],
         danger && styles.danger,
+        danger && variant === "primary" && styles.primaryDanger,
         children == null && styles.iconOnly,
-        className
-      )}
+      ]}
+      className={className}
       aria-busy={loading || undefined}
       onClick={handleClick}
     >

@@ -1,3 +1,4 @@
+import { Global } from "@emotion/react";
 import {
   createContext,
   Dispatch,
@@ -9,10 +10,10 @@ import {
   useState,
 } from "react";
 import { Button } from "./Button";
-import { cx } from "./cx";
 import { ErrorIcon, InfoIcon, SuccessIcon, WarningIcon } from "./icons";
 import { Modal } from "./Modal";
-import styles from "./UIProvider.module.css";
+import { globalStyles } from "./global.styles";
+import { styles } from "./UIProvider.styles";
 
 interface ToastOptions {
   // 같은 key의 알림이 떠 있으면 새로 쌓지 않고 내용을 바꾼다
@@ -111,7 +112,7 @@ function createUI(
   return { api, timers };
 }
 
-// 앱 최상단에 둔다. 알림(토스트)과 확인·안내 대화상자를 띄운다.
+// 앱 최상단에 둔다. 토큰·전역 스타일을 넣고, 알림(토스트)과 확인·안내 대화상자를 띄운다.
 export function UIProvider({ children }: { children: ReactNode }) {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const [dialogs, setDialogs] = useState<Dialog[]>([]);
@@ -121,17 +122,18 @@ export function UIProvider({ children }: { children: ReactNode }) {
 
   return (
     <UIContext value={api}>
+      <Global styles={globalStyles} />
       {children}
       {/* status 역할의 기본값(aria-atomic=true)을 꺼서 새 알림만 읽히게 한다 */}
       <div
-        className={styles.toasts}
+        css={styles.toasts}
         role='status'
         aria-live='polite'
         aria-atomic='false'
       >
         {toasts.map(({ id, type, content }) => (
-          <div key={id} className={styles.toast}>
-            <span className={cx(styles.icon, styles[type])}>
+          <div key={id} css={styles.toast}>
+            <span css={[styles.icon, styles[type]]}>
               {type === "success" ? <SuccessIcon /> : <ErrorIcon />}
             </span>
             <span>{content}</span>
@@ -180,7 +182,7 @@ function ConfirmDialog({
       onClose={onClose}
       title={
         <>
-          <span className={cx(styles.icon, styles.warning)}>
+          <span css={[styles.icon, styles.warning]}>
             <WarningIcon />
           </span>
           {title}
@@ -225,7 +227,7 @@ function AlertDialog({
       onClose={onClose}
       title={
         <>
-          <span className={cx(styles.icon, styles[status])}>
+          <span css={[styles.icon, styles[status]]}>
             {status === "error" ? <ErrorIcon /> : <InfoIcon />}
           </span>
           {title}

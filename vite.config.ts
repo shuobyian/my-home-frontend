@@ -3,7 +3,8 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  plugins: [react()],
+  // css prop을 쓰려고 JSX를 emotion의 jsx로 바꾼다(tsconfig의 jsxImportSource와 같은 값)
+  plugins: [react({ jsxImportSource: "@emotion/react" })],
   // tsconfig의 paths(@/* → src/*)를 그대로 쓴다
   resolve: { tsconfigPaths: true },
   server: {
@@ -34,7 +35,6 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["src/setupTests.ts"],
-    css: false,
     include: ["src/**/*.{test,spec}.{ts,tsx}"],
     // 테스트마다 spy를 원래대로 되돌리고(restoreMocks) 모의 함수의 구현·대기열을 지운다(mockReset).
     // CRA의 resetMocks와 같은 효과로, 앞 테스트의 설정이 다음 테스트로 새지 않게 한다.

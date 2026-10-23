@@ -13,6 +13,8 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
+    // css prop(@emotion/react)을 쓰려고 JSX를 emotion의 jsx로 바꾼다
+    "jsxImportSource": "@emotion/react",
     "types": ["vite/client", "vitest/globals"],
     "paths": {
       "@/*": ["./src/*"]
