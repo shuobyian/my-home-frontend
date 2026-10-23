@@ -56,7 +56,7 @@ export function Segmented<V>({
               disabled={disabled}
               onChange={() => onChange(option.value)}
             />
-            {option.label}
+            <span className={styles.segmentLabel}>{option.label}</span>
           </label>
         );
       })}

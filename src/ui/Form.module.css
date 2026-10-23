@@ -208,9 +208,6 @@
 .segment {
   position: relative;
   display: flex;
-  align-items: center;
-  min-height: 28px;
-  padding: 0 11px;
   color: var(--ui-color-text-secondary);
   white-space: nowrap;
   cursor: pointer;
@@ -220,13 +217,27 @@
     background-color var(--ui-motion);
 }
 
+.segmentLabel {
+  display: flex;
+  align-items: center;
+  min-height: 28px;
+  padding: 0 11px;
+  border-radius: inherit;
+}
+
 .segment:hover {
   color: var(--ui-color-text);
 }
 
-.segment:focus-within {
+/* 숨긴 라디오의 포커스를 글자 칸에 그린다. 마우스로 고를 때는 그리지 않는다
+   (:focus-visible을 모르는 브라우저는 둘째 규칙을 버려 늘 그린다) */
+.segment input:focus + .segmentLabel {
   outline: 2px solid var(--ui-color-primary);
   outline-offset: 1px;
+}
+
+.segment input:focus:not(:focus-visible) + .segmentLabel {
+  outline: none;
 }
 
 .selected {

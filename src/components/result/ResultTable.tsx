@@ -53,12 +53,15 @@ export function ResultTable({
       data={contents}
       rowKey={(content) => content.id}
       pagination={
-        pagination && {
-          page: pagination.page + 1,
-          pageSize: pagination.size,
-          total: pagination.total,
-          onChange: pagination.onChange,
-        }
+        pagination
+          ? {
+              page: pagination.page + 1,
+              pageSize: pagination.size,
+              total: pagination.total,
+              onChange: pagination.onChange,
+            }
+          : // 쪽을 표에서 나눌 때는 50개를 넘으면 쪽당 개수를 고를 수 있게 한다
+            { showSizeChanger: contents.length > 50 }
       }
       expandedRowRender={(record) => <ResultDetail result={record} />}
       onRowClick={onRowClick}
