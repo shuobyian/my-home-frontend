@@ -1,6 +1,6 @@
 import { ReactNode, useId } from "react";
 import { CloseButton, Overlay } from "./Overlay";
-import styles from "./Overlay.module.css";
+import { styles } from "./Overlay.styles";
 
 interface ModalProps {
   open: boolean;
@@ -32,17 +32,17 @@ export function Modal({
       labelledBy={titleId}
       dismissible={dismissible}
       width={width}
-      maskClassName={styles.modalMask}
-      panelClassName={styles.modal}
+      maskCss={styles.modalMask}
+      panelCss={styles.modal}
     >
-      <div className={styles.modalHeader}>
-        <h2 id={titleId} className={styles.title}>
+      <div css={styles.modalHeader}>
+        <h2 id={titleId} css={styles.title}>
           {title}
         </h2>
         <CloseButton onClick={onClose} disabled={!dismissible} />
       </div>
       {children}
-      {footer != null && <div className={styles.modalFooter}>{footer}</div>}
+      {footer != null && <div css={styles.modalFooter}>{footer}</div>}
     </Overlay>
   );
 }

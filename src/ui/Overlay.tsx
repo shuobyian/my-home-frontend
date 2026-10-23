@@ -1,8 +1,8 @@
+import type { SerializedStyles } from "@emotion/react";
 import { ReactNode, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
-import { cx } from "./cx";
 import { CloseIcon } from "./icons";
-import styles from "./Overlay.module.css";
+import { styles } from "./Overlay.styles";
 
 const FOCUSABLE =
   'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
@@ -37,8 +37,8 @@ interface OverlayProps {
   // false면 Esc·바깥 클릭으로 닫히지 않는다
   dismissible?: boolean;
   width: number;
-  maskClassName?: string;
-  panelClassName: string;
+  maskCss?: SerializedStyles;
+  panelCss: SerializedStyles;
   children: ReactNode;
 }
 
@@ -52,8 +52,8 @@ function Layer({
   labelledBy,
   dismissible = true,
   width,
-  maskClassName,
-  panelClassName,
+  maskCss,
+  panelCss,
   children,
 }: Omit<OverlayProps, "open">) {
   const panelRef = useRef<HTMLDivElement>(null);
@@ -134,7 +134,7 @@ function Layer({
     // 바깥 클릭은 마우스 편의 기능이다. 키보드는 Esc와 닫기 버튼으로 닫는다.
     // eslint-disable-next-line jsx-a11y-x/click-events-have-key-events, jsx-a11y-x/no-static-element-interactions
     <div
-      className={cx(styles.mask, maskClassName)}
+      css={[styles.mask, maskCss]}
       onMouseDown={(event) => {
         // 대화상자 안에서 누르고 밖에서 놓은 경우는 바깥 클릭으로 보지 않는다
         pressedMaskRef.current = event.target === event.currentTarget;
@@ -158,7 +158,7 @@ function Layer({
         aria-modal='true'
         aria-labelledby={labelledBy}
         tabIndex={-1}
-        className={cx(styles.panel, panelClassName)}
+        css={[styles.panel, panelCss]}
         style={{ width }}
       >
         {children}
@@ -177,7 +177,7 @@ export function CloseButton({
   return (
     <button
       type='button'
-      className={styles.close}
+      css={styles.close}
       aria-label='닫기'
       disabled={disabled}
       onClick={onClick}

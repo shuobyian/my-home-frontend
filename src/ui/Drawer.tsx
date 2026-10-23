@@ -1,6 +1,6 @@
 import { ReactNode, useId } from "react";
 import { CloseButton, Overlay } from "./Overlay";
-import styles from "./Overlay.module.css";
+import { styles } from "./Overlay.styles";
 
 interface DrawerProps {
   open: boolean;
@@ -29,16 +29,16 @@ export function Drawer({
       onClose={onClose}
       labelledBy={titleId}
       width={width}
-      panelClassName={styles.drawer}
+      panelCss={styles.drawer}
     >
-      <div className={styles.drawerHeader}>
+      <div css={styles.drawerHeader}>
         <CloseButton onClick={onClose} />
-        <h2 id={titleId} className={styles.title}>
+        <h2 id={titleId} css={styles.title}>
           {title}
         </h2>
         {extra}
       </div>
-      <div className={styles.drawerBody}>{children}</div>
+      <div css={styles.drawerBody}>{children}</div>
     </Overlay>
   );
 }
