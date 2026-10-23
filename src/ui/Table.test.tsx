@@ -243,16 +243,28 @@ describe("Table", () => {
     expect(onRowClick).toHaveBeenCalledTimes(2);
   });
 
-  test("행이 없으면 빈 상태를 보여 준다", () => {
+  test("행이 없으면 빈 상태를 보여 주고, 불러오는 동안에는 숨긴다", () => {
     const { rerender } = render(
       <Table columns={columns} data={[]} rowKey={rowKey} />
     );
-    expect(screen.getByText("데이터 없음")).toBeInTheDocument();
+    expect(screen.getByText("데이터 없음")).toBeVisible();
 
     rerender(
       <Table columns={columns} data={[]} rowKey={rowKey} emptyText='없음' />
     );
-    expect(screen.getByText("없음")).toBeInTheDocument();
+    expect(screen.getByText("없음")).toBeVisible();
+
+    rerender(
+      <Table
+        columns={columns}
+        data={[]}
+        rowKey={rowKey}
+        emptyText='없음'
+        loading
+      />
+    );
+    expect(screen.getByText("없음")).not.toBeVisible();
+    expect(screen.getByRole("status")).toHaveTextContent("불러오는 중");
   });
 
   test("ellipsis 열은 글자·숫자 내용일 때만 title로 전체를 보여 준다", () => {

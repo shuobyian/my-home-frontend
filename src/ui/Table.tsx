@@ -287,7 +287,11 @@ export function Table<T>({
           <tbody>
             {rows.length === 0 ? (
               <tr>
-                <td colSpan={colSpan}>
+                {/* 불러오는 동안에는 '데이터 없음'을 숨기고 회전 표시가 놓일 자리만 남긴다 */}
+                <td
+                  colSpan={colSpan}
+                  style={loading ? { visibility: "hidden" } : undefined}
+                >
                   <Empty description={emptyText} />
                 </td>
               </tr>
