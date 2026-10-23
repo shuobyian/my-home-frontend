@@ -78,6 +78,31 @@ describe("Table", () => {
     expect(onChange).toHaveBeenLastCalledWith(2, 50);
   });
 
+  test("쪽당 개수 선택이 사라지면 고른 개수 대신 기본 개수로 나눈다", () => {
+    // 결과 표처럼 50개를 넘을 때만 크기 선택을 보이는 쓰임
+    const table = (count: number) => (
+      <Table
+        columns={columns}
+        data={items(count)}
+        rowKey={rowKey}
+        pagination={{ showSizeChanger: count > 50 }}
+      />
+    );
+    const { rerender } = render(table(60));
+    fireEvent.change(screen.getByRole("combobox", { name: "페이지당 개수" }), {
+      target: { value: "20" },
+    });
+
+    rerender(table(45));
+    expect(screen.getAllByRole("row")).toHaveLength(11);
+    expect(page(5)).toBeInTheDocument();
+
+    rerender(table(60));
+    expect(screen.getByRole("combobox", { name: "페이지당 개수" })).toHaveValue(
+      "20"
+    );
+  });
+
   test("전체 개수가 한 쪽 이하이면 페이저를 숨긴다(크기 선택이 있으면 10개 기준)", () => {
     const { rerender } = render(
       <Table columns={columns} data={items(10)} rowKey={rowKey} />

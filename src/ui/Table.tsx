@@ -88,7 +88,11 @@ export function Table<T>({
   const [clientPageSize, setClientPageSize] = useState(options.pageSize ?? 10);
 
   const server = options.page !== undefined;
-  const pageSize = server ? (options.pageSize ?? 10) : clientPageSize;
+  // 크기 선택이 사라지면(data가 줄어서 등) 고른 개수 대신 기본 개수로 나눈다. 고칠 수단이 없는 개수를 남기지 않는다
+  const pageSize =
+    server || !options.showSizeChanger
+      ? (options.pageSize ?? 10)
+      : clientPageSize;
   const total = server ? (options.total ?? data.length) : data.length;
   const pageCount = Math.max(1, Math.ceil(total / pageSize));
   // data가 줄어 보던 쪽이 사라지면 마지막 쪽으로 고정한다
