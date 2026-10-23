@@ -1,6 +1,5 @@
 import { HTMLAttributes } from "react";
-import { cx } from "./cx";
-import styles from "./Typography.module.css";
+import { styles } from "./Typography.styles";
 
 type Tone = "secondary" | "success" | "warning" | "danger" | "info";
 
@@ -13,7 +12,8 @@ export function Title({ level = 1, className, ...rest }: TitleProps) {
   return (
     <Heading
       {...rest}
-      className={cx(styles.title, styles[Heading], className)}
+      css={[styles.title, styles[Heading]]}
+      className={className}
     />
   );
 }
@@ -27,7 +27,8 @@ export function Text({ strong, tone, className, ...rest }: TextProps) {
   return (
     <span
       {...rest}
-      className={cx(strong && styles.strong, tone && styles[tone], className)}
+      css={[strong && styles.strong, tone && styles[tone]]}
+      className={className}
     />
   );
 }
@@ -40,7 +41,8 @@ export function Paragraph({ tone, className, ...rest }: ParagraphProps) {
   return (
     <p
       {...rest}
-      className={cx(styles.paragraph, tone && styles[tone], className)}
+      css={[styles.paragraph, tone && styles[tone]]}
+      className={className}
     />
   );
 }

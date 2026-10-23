@@ -1,6 +1,5 @@
 import { CSSProperties, ReactNode } from "react";
-import { cx } from "./cx";
-import styles from "./Feedback.module.css";
+import { styles } from "./Feedback.styles";
 import { EmptyIcon, ErrorIcon, WarningIcon } from "./icons";
 
 interface EmptyProps {
@@ -11,8 +10,8 @@ interface EmptyProps {
 
 export function Empty({ description = "데이터 없음", children }: EmptyProps) {
   return (
-    <div className={styles.empty}>
-      <span className={styles.emptyImage}>
+    <div css={styles.empty}>
+      <span css={styles.emptyImage}>
         <EmptyIcon />
       </span>
       <div>{description}</div>
@@ -31,12 +30,12 @@ interface ResultProps {
 // 화면 전체를 대신하는 안내(없는 주소, 화면 오류 등)
 export function Result({ status, title, description, actions }: ResultProps) {
   return (
-    <div className={styles.result}>
+    <div css={styles.result}>
       <div
-        className={cx(
+        css={[
           styles.resultIcon,
-          status === "404" ? styles.notFound : styles[status]
-        )}
+          status === "404" ? styles.notFound : styles[status],
+        ]}
         aria-hidden='true'
       >
         {status === "404" ? (
@@ -47,11 +46,9 @@ export function Result({ status, title, description, actions }: ResultProps) {
           <ErrorIcon />
         )}
       </div>
-      <h2 className={styles.resultTitle}>{title}</h2>
-      {description && (
-        <div className={styles.resultDescription}>{description}</div>
-      )}
-      {actions && <div className={styles.resultActions}>{actions}</div>}
+      <h2 css={styles.resultTitle}>{title}</h2>
+      {description && <div css={styles.resultDescription}>{description}</div>}
+      {actions && <div css={styles.resultActions}>{actions}</div>}
     </div>
   );
 }
@@ -68,18 +65,17 @@ export function Alert({ title, description, className, style }: AlertProps) {
   return (
     <div
       role='alert'
-      className={cx(
-        styles.alert,
-        description != null && styles.alertWithDescription,
-        className
-      )}
+      css={[styles.alert, description != null && styles.alertWithDescription]}
+      className={className}
       style={style}
     >
-      <span className={styles.alertIcon}>
+      <span css={styles.alertIcon}>
         <ErrorIcon />
       </span>
       <div>
-        <div className={styles.alertTitle}>{title}</div>
+        <div css={description != null && styles.alertTitleWithDescription}>
+          {title}
+        </div>
         {description}
       </div>
     </div>
