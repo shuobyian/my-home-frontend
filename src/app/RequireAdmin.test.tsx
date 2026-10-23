@@ -103,8 +103,9 @@ describe("RequireAdmin", () => {
         screen.queryByText("비밀번호가 올바르지 않습니다.")
       ).not.toBeInTheDocument()
     );
-    expect(screen.getByRole("button", { name: /확\s?인/ })).toHaveClass(
-      "ant-btn-loading"
+    expect(screen.getByRole("button", { name: /확\s?인/ })).toHaveAttribute(
+      "aria-busy",
+      "true"
     );
   });
 

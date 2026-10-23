@@ -1,4 +1,3 @@
-import { Button, Segmented, Space, Spin } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { preloadManagePages } from "@/app/managePages";
 import { RouteErrorBoundary } from "@/app/RouteErrorBoundary";
@@ -8,6 +7,7 @@ import { useLoginMutation } from "@/queries/auth";
 import { Suspense, useEffect, useState } from "react";
 import { matchPath, Outlet, useLocation, useNavigate } from "react-router";
 import { useAuth } from "@/state/auth";
+import { Button, Segmented, Spin, Stack } from "@/ui";
 
 const MANAGE_MENU = [
   { label: "Raw 엑셀 데이터", value: ROUTES.MANAGE },
@@ -52,23 +52,22 @@ export function RequireAdmin() {
   )?.value;
 
   return (
-    <Space orientation='vertical' style={{ width: "100%" }} size='large'>
-      <Space wrap style={{ width: "100%", justifyContent: "space-between" }}>
+    <Stack vertical gap={24}>
+      <Stack wrap justify='space-between'>
         <Segmented
+          aria-label='관리 메뉴'
           options={MANAGE_MENU}
-          value={selected ?? pathname}
-          onChange={(value) => navigate(String(value))}
+          value={selected}
+          onChange={(value) => navigate(value)}
         />
         <Button onClick={logout}>관리 종료</Button>
-      </Space>
+      </Stack>
       {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴·'관리 종료'는 그대로 둔다 */}
       <RouteErrorBoundary>
-        <Suspense
-          fallback={<Spin style={{ display: "flex", margin: "40px auto" }} />}
-        >
+        <Suspense fallback={<Spin />}>
           <Outlet />
         </Suspense>
       </RouteErrorBoundary>
-    </Space>
+    </Stack>
   );
 }

@@ -1,4 +1,3 @@
-import { Button, Result, Space } from "antd";
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
 import { useNavigateTo } from "@/app/useNavigateTo";
@@ -9,6 +8,7 @@ import {
   useQueryErrorResetBoundary,
 } from "@tanstack/react-query";
 import { useLocation } from "react-router";
+import { Button, Result } from "@/ui";
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -59,9 +59,9 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
         <Result
           status='warning'
           title='화면을 불러오지 못했습니다.'
-          subTitle='새 버전이 배포되었거나 연결이 끊겼습니다. 새로고침해주세요.'
-          extra={
-            <Button type='primary' onClick={() => window.location.reload()}>
+          description='새 버전이 배포되었거나 연결이 끊겼습니다. 새로고침해주세요.'
+          actions={
+            <Button variant='primary' onClick={() => window.location.reload()}>
               새로고침
             </Button>
           }
@@ -73,14 +73,14 @@ class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundaryState> {
       <Result
         status='error'
         title='화면을 불러오지 못했습니다.'
-        subTitle={getErrorMessage(this.state.error)}
-        extra={
-          <Space>
-            <Button type='primary' onClick={this.reset}>
+        description={getErrorMessage(this.state.error)}
+        actions={
+          <>
+            <Button variant='primary' onClick={this.reset}>
               다시 시도
             </Button>
             <Button onClick={this.props.onGoHome}>홈으로</Button>
-          </Space>
+          </>
         }
       />
     );
