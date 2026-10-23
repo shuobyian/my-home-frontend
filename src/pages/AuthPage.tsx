@@ -5,6 +5,7 @@ import { useLoginMutation, useSignupMutation } from "@/queries/auth";
 import { useCurrentUser } from "@/state/auth";
 import { Link, Navigate, useLocation } from "react-router";
 import { Paragraph, Title } from "@/ui";
+import { styles } from "./AuthPage.styles";
 
 const TEXT = {
   login: {
@@ -55,21 +56,25 @@ function AuthScreen({ mode }: { mode: AuthMode }) {
   }
 
   return (
-    <Panel style={{ maxWidth: 420, margin: "40px auto" }}>
-      <Title level={4}>{text.title}</Title>
-      <AuthForm
-        mode={mode}
-        loading={isPending}
-        error={error}
-        onSubmit={(credentials) => mutate(credentials)}
-      />
-      <Paragraph style={{ margin: "var(--ui-space-4) 0 0" }}>
-        {text.switchPrompt}{" "}
-        {/* 돌아갈 화면(state)을 다른 쪽 화면으로 넘어가도 유지한다 */}
-        <Link to={text.switchTo} state={state} replace>
-          {text.switchLabel}
-        </Link>
-      </Paragraph>
-    </Panel>
+    <div css={styles.screen}>
+      <Panel
+        style={{ width: "100%", maxWidth: 400, padding: "var(--ui-space-6)" }}
+      >
+        <Title level={3}>{text.title}</Title>
+        <AuthForm
+          mode={mode}
+          loading={isPending}
+          error={error}
+          onSubmit={(credentials) => mutate(credentials)}
+        />
+        <Paragraph style={{ margin: "var(--ui-space-4) 0 0" }}>
+          {text.switchPrompt}{" "}
+          {/* 돌아갈 화면(state)을 다른 쪽 화면으로 넘어가도 유지한다 */}
+          <Link to={text.switchTo} state={state} replace>
+            {text.switchLabel}
+          </Link>
+        </Paragraph>
+      </Panel>
+    </div>
   );
 }
