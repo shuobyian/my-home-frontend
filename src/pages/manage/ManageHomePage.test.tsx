@@ -331,6 +331,54 @@ describe("ManageHomePage", () => {
     expect(knownNames()).toEqual(["나무 의자", "식탁"]);
   });
 
+  it("서버 목록으로 Raw 목록을 바꾸면 표의 선택을 비운다(같은 id의 다른 물품을 지우지 않는다)", async () => {
+    // 초안의 책상과 서버의 나무 의자가 같은 id 1을 쓴다
+    writeJSON(STORAGE_KEY.PRODUCT, [{ ...desk, id: 1 }]);
+    renderPage();
+    await planned(1);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "책상 선택" }));
+    expect(screen.getByText("선택된 물품 1개")).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "서버 목록 불러오기" }));
+    fireEvent.click(
+      within(
+        await screen.findByRole("dialog", {
+          name: "서버 목록을 불러오시겠습니까?",
+        })
+      ).getByRole("button", { name: "불러오기" })
+    );
+    await waitFor(() => expect(draft()).toEqual([chair]));
+
+    expect(screen.getByText("선택된 물품 0개")).toBeInTheDocument();
+    expect(
+      screen.getByRole("checkbox", { name: "나무 의자 선택" })
+    ).not.toBeChecked();
+    expect(screen.getByRole("button", { name: "삭제" })).toBeDisabled();
+  });
+
+  it("Raw 목록에서 빼면 뺀 물품의 선택도 비운다", async () => {
+    writeJSON(STORAGE_KEY.PRODUCT, [chair, desk]);
+    writeJSON(STORAGE_KEY.PRODUCT_KNOWN_NAMES, ["나무 의자", "책상"]);
+    renderPage();
+    await planned(0);
+
+    fireEvent.click(screen.getByRole("checkbox", { name: "책상 선택" }));
+    expect(screen.getByText("선택된 물품 1개")).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "Raw 목록에서 빼기" }));
+    fireEvent.click(
+      within(
+        await screen.findByRole("dialog", {
+          name: "1개 물품을 Raw 목록에서 빼시겠습니까?",
+        })
+      ).getByRole("button", { name: "빼기" })
+    );
+    await waitFor(() => expect(draft()).toEqual([chair]));
+
+    expect(screen.getByText("선택된 물품 0개")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "삭제" })).toBeDisabled();
+  });
+
   it("처음 실행이면 마운트 때 초안 이름과 서버 이름을 올린 적 있는 이름으로 정한다", async () => {
     // 이전 버전은 my-home-product에 마지막으로 서버에 올린 목록을 저장했다
     removeItem(STORAGE_KEY.PRODUCT_KNOWN_NAMES);

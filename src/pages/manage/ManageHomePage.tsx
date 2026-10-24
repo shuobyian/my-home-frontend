@@ -101,6 +101,15 @@ export function ManageHomePage() {
   useEffect(() => {
     writeJSON(STORAGE_KEY.PRODUCT, products);
   }, [products]);
+  // 초안을 통째로 바꾸거나 여러 행을 뺄 때 올린다. 표를 새로 그려 선택을 비운다
+  // (선택은 행 id로 표시하므로, 남겨 두면 같은 id의 다른 물품이 선택된 채로 보이고 삭제된다)
+  const [draftVersion, setDraftVersion] = useState(0);
+  const replaceDraft = (
+    update: Product[] | ((prev: Product[]) => Product[])
+  ) => {
+    setProducts(update);
+    setDraftVersion((version) => version + 1);
+  };
 
   // 서버에 올렸거나 서버 목록에서 본 물품 이름. 서버에 없는 이름이 새 물품인지, 서버에서 지워진 물품인지 가른다.
   // 처음 실행이면 마운트 시점 초안 이름으로 시작한다(이전에는 my-home-product가 마지막으로 올린 목록이었다)
@@ -204,7 +213,7 @@ export function ManageHomePage() {
   const [preparing, setPreparing] = useState(false);
 
   const importProducts = (imported: Product[]) => {
-    setProducts(normalizeProductIds(imported));
+    replaceDraft(normalizeProductIds(imported));
   };
 
   const addMarkets = async (newMarkets: NewMarket[]) => {
@@ -323,7 +332,7 @@ export function ManageHomePage() {
       okText: "불러오기",
       cancelText: "취소",
       onOk: () => {
-        setProducts(toDraftProducts(serverProducts));
+        replaceDraft(toDraftProducts(serverProducts));
         setKnownNames((prev) => withNames(prev, serverProducts.map(nameOf)));
         toast.success(
           `서버 물품 ${formatNumber(serverProducts.length)}개를 불러왔습니다.`
@@ -342,7 +351,7 @@ export function ManageHomePage() {
       cancelText: "취소",
       onOk: () => {
         const names = new Set(revived.map(nameOf));
-        setProducts((prev) =>
+        replaceDraft((prev) =>
           prev.filter((product) => !names.has(nameOf(product)))
         );
       },
@@ -370,6 +379,7 @@ export function ManageHomePage() {
         />
       </Stack>
       <ProductTableView
+        key={draftVersion}
         products={products}
         total={products.length}
         catalogNames={catalogNames}
