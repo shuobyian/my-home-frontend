@@ -286,6 +286,30 @@ describe("ProductManagePage 결과 연결", () => {
     ).toBeInTheDocument();
   });
 
+  it("새 시세 추가가 실패하면 점검 정보만 다시 받고 물품 목록은 다시 받지 않는다", async () => {
+    // 연결이 끊긴 채 물품 목록까지 다시 받으면 그 실패가 오류 화면으로 올라가 입력하던 모달이 사라진다
+    mockedFetchProducts.mockResolvedValue({ content: [], totalElements: 0 });
+    api.updateMarkets.mockRejectedValueOnce(
+      new MyHomeError({ message: "서버에 연결할 수 없습니다." })
+    );
+    renderTable();
+    await screen.findByText(ALL_REFLECTED);
+    const productRequests = mockedFetchProducts.mock.calls.length;
+
+    const dialog = await fillNewProductWithNewMaterial();
+    fireEvent.click(within(dialog).getByRole("button", { name: "추가" }));
+
+    expect(
+      await screen.findByRole("dialog", { name: "저장하지 못했습니다" })
+    ).toBeInTheDocument();
+    await waitFor(() => expect(api.fetchCatalogCheck).toHaveBeenCalledTimes(2));
+    expect(mockedFetchProducts).toHaveBeenCalledTimes(productRequests);
+    expect(api.createProduct).not.toHaveBeenCalled();
+    expect(
+      screen.getByRole("dialog", { name: "물품 추가" })
+    ).toBeInTheDocument();
+  });
+
   it("삭제가 실패하면 서버 메시지를 알림창으로 보여 주고 확인창을 유지한다", async () => {
     mockedFetchProducts.mockResolvedValue({
       content: productsOf(1, 1),

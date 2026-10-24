@@ -1,6 +1,6 @@
 import { getErrorMessage } from "@/apis/errors";
 import { formatNumber } from "@/lib/format";
-import { useInvalidateCatalog } from "@/queries/invalidate";
+import { useInvalidateCatalogCheck } from "@/queries/catalog";
 import { useUpdateMarketsMutation } from "@/queries/market";
 import {
   useCreateProductMutation,
@@ -21,7 +21,7 @@ export function useSaveProduct(marketNames?: ReadonlySet<string>) {
   const updateMarkets = useUpdateMarketsMutation();
   const createProduct = useCreateProductMutation();
   const updateProduct = useUpdateProductMutation();
-  const invalidateCatalog = useInvalidateCatalog();
+  const invalidateCatalogCheck = useInvalidateCatalogCheck();
   // 이 화면에서 시세에 추가했지만 아직 서버 시세 이름에서 보지 못한 이름.
   // 물품 저장만 실패해 다시 제출할 때 같은 시세를 또 만들지 않는다
   // (점검 정보를 다시 받기 전까지는 모달이 아직 새 재료로 본다).
@@ -39,8 +39,9 @@ export function useSaveProduct(marketNames?: ReadonlySet<string>) {
       await updateMarkets.mutateAsync(markets);
     } catch (error) {
       markets.forEach(({ name }) => created.delete(name));
-      // 점검 정보가 낡아 다른 곳에서 이미 만든 시세를 새 재료로 봤을 수 있으므로 다시 받는다
-      invalidateCatalog();
+      // 점검 정보가 낡아 다른 곳에서 이미 만든 시세를 새 재료로 봤을 수 있으므로 다시 받는다.
+      // 물품 목록 등은 다시 받지 않는다(연결이 끊겼으면 그 실패가 오류 화면으로 올라가 모달 입력이 사라진다).
+      invalidateCatalogCheck();
       throw error;
     }
   };
