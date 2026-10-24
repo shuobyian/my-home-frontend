@@ -1,5 +1,9 @@
 import { useEffect, useEffectEvent, useState } from "react";
-import { findNewMarkets } from "@/domain/market";
+import {
+  findNewMarkets,
+  mergeMarkets,
+  renameByServerId,
+} from "@/domain/market";
 import { Market } from "@/types/market";
 import { Button, Field, Input, NumberInput, Stack, Table, useForm } from "@/ui";
 
@@ -46,17 +50,21 @@ export function MarketPriceForm({
     setValues({ markets: source });
   }
 
-  // 저장해 둔 값으로 시작한 표는 서버 시세가 도착했을 때 한 번만 새 재료를 덧붙인다.
-  // 서버 값으로 시작했거나 이미 덧붙였다면 하지 않는다(이후 재조회도 입력 중인 값을 건드리지 않는다)
+  // 저장해 둔 값으로 시작한 표는 서버 시세가 도착했을 때 한 번만 서버에 맞춘다.
+  // 이름이 바뀐 재료(같은 id)는 입력값을 지킨 채 새 이름으로 바꾸고, 새 재료는 끝에 덧붙인다.
+  // 서버 값으로 시작했거나 이미 맞췄다면 하지 않는다(이후 재조회도 입력 중인 값을 건드리지 않는다)
   const [merged, setMerged] = useState(!initialMarkets);
   const [added, setAdded] = useState<Market[]>([]);
   if (!merged && serverMarkets) {
     setMerged(true);
-    const newMarkets = findNewMarkets(values.markets, serverMarkets);
-    if (newMarkets.length > 0) {
-      setValues(({ markets }) => ({ markets: [...markets, ...newMarkets] }));
-      setAdded(newMarkets);
+    const renamed = renameByServerId(values.markets, serverMarkets);
+    const newMarkets = findNewMarkets(renamed, serverMarkets);
+    if (renamed !== values.markets || newMarkets.length > 0) {
+      setValues(({ markets }) => ({
+        markets: mergeMarkets(markets, serverMarkets),
+      }));
     }
+    if (newMarkets.length > 0) setAdded(newMarkets);
   }
 
   const notifyAdded = useEffectEvent((markets: Market[]) =>

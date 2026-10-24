@@ -166,6 +166,38 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
     expect(onMarketsAdded).not.toHaveBeenCalled();
   });
 
+  it("관리자가 이름을 바꾼 시세(같은 id)는 새 재료로 덧붙이지 않고, 입력값을 지킨 채 새 이름으로 바꾼다", () => {
+    const onSubmit = vi.fn();
+    const onMarketsAdded = vi.fn();
+    const errors = vi.spyOn(console, "error").mockImplementation(() => {});
+    const formProps = { ...props, onSubmit, onMarketsAdded };
+    const savedWood = { id: 1, name: "나무", price: 99 };
+    const { rerender } = render(
+      <MarketPriceForm {...formProps} initialMarkets={[savedWood]} />
+    );
+
+    rerender(
+      <MarketPriceForm
+        {...formProps}
+        initialMarkets={[savedWood]}
+        serverMarkets={[{ ...wood, price: 10 }]}
+      />
+    );
+
+    expect(
+      screen
+        .getAllByLabelText("물품명")
+        .map((input) => input.getAttribute("value"))
+    ).toEqual(["원목"]);
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("99");
+    expect(onMarketsAdded).not.toHaveBeenCalled();
+    // 같은 id의 행이 둘이 되지 않는다(React key 중복 경고가 없다)
+    expect(errors).not.toHaveBeenCalled();
+
+    fireEvent.click(screen.getByRole("button", { name: "결과 만들기" }));
+    expect(onSubmit).toHaveBeenCalledWith([{ id: 1, name: "원목", price: 99 }]);
+  });
+
   it("'시세 불러오기'는 지금처럼 서버 시세 전체로 바꾼다", () => {
     render(
       <MarketPriceForm

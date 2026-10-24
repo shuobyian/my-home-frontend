@@ -30,13 +30,56 @@ export function findNewMarkets(
   });
 }
 
-// 저장해 둔 시세에 서버에만 있는 재료를 끝에 덧붙인다(이름 기준).
+// 저장해 둔 시세의 이름을 서버에 맞춘다. 관리자가 시세 이름을 바꿔도 id는 그대로이므로,
+// 같은 id의 서버 시세가 있으면 그 이름으로 바꾸고 나머지(입력한 시세)는 지킨다.
+// 바꾸면 다른 행과 이름이 겹치는 행(서버에서 지워진 재료와 같은 이름 등)은 그대로 둔다.
+// 바꾼 것이 없으면 같은 배열을 돌려준다.
+export function renameByServerId<T extends Pick<Market, "id" | "name">>(
+  saved: readonly T[],
+  server: readonly Market[]
+): readonly T[] {
+  const serverNames = new Map(server.map(({ id, name }) => [id, name]));
+  // 행마다 바꿀 이름(바꾸지 않으면 undefined). 이전에 저장된 문자열 id도 숫자로 맞춰 본다
+  const renames = saved.map(({ id, name }) => {
+    const serverName = serverNames.get(Number(id));
+    return serverName !== undefined && serverName !== name
+      ? serverName
+      : undefined;
+  });
+  const nameAt = (index: number) => renames[index] ?? saved[index].name;
+
+  // 겹치는 이름으로 바꾸려던 행을 되돌린다. 되돌린 이름이 또 겹칠 수 있으므로 겹침이 없을 때까지 반복한다
+  let reverted = true;
+  while (reverted) {
+    reverted = false;
+    const counts = new Map<string, number>();
+    saved.forEach((_, index) =>
+      counts.set(nameAt(index), (counts.get(nameAt(index)) ?? 0) + 1)
+    );
+    renames.forEach((rename, index) => {
+      if (rename !== undefined && (counts.get(rename) ?? 0) > 1) {
+        renames[index] = undefined;
+        reverted = true;
+      }
+    });
+  }
+
+  return renames.some((rename) => rename !== undefined)
+    ? saved.map((row, index) =>
+        renames[index] === undefined ? row : { ...row, name: renames[index] }
+      )
+    : saved;
+}
+
+// 저장해 둔 시세를 서버에 맞춘다. 이름이 바뀐 재료(같은 id)는 새 이름으로 바꾸고(renameByServerId),
+// 서버에만 있는 재료는 끝에 덧붙인다(이름 기준).
 // 이미 있는 재료는 입력값을 그대로 두고, 서버에서 없어진 재료도 지우지 않는다.
-export function mergeMarkets<T extends Pick<Market, "name">>(
+export function mergeMarkets<T extends Pick<Market, "id" | "name">>(
   saved: readonly T[],
   server: readonly Market[]
 ): (T | Market)[] {
-  return [...saved, ...findNewMarkets(saved, server)];
+  const renamed = renameByServerId(saved, server);
+  return [...renamed, ...findNewMarkets(renamed, server)];
 }
 
 // 서버(시세 serializer)와 같은 이름 길이 한계

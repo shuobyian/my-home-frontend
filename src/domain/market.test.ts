@@ -3,6 +3,7 @@ import {
   findNewMarkets,
   mergeMarkets,
   parseMarketList,
+  renameByServerId,
   validateMarketName,
 } from "@/domain/market";
 
@@ -91,6 +92,71 @@ describe("mergeMarkets", () => {
     const before = structuredClone(saved);
     mergeMarkets(saved, [{ id: 84, name: "이스터 에그", price: 0 }]);
     expect(saved).toEqual(before);
+  });
+
+  it("서버에서 이름이 바뀐 재료(같은 id)는 입력값을 지킨 채 새 이름으로 바꾸고 덧붙이지 않는다", () => {
+    const server = [
+      { id: 1, name: "나무", price: 500 },
+      { id: 2, name: "천", price: 300 },
+    ];
+    expect(mergeMarkets(saved, server)).toEqual([
+      { id: 1, name: "나무", price: 700 },
+      { id: 2, name: "천", price: null },
+    ]);
+  });
+});
+
+describe("renameByServerId", () => {
+  it("같은 id의 서버 이름으로 바꾸고 나머지 필드는 지킨다(이전에 저장된 문자열 id 포함)", () => {
+    const saved = [
+      { id: 1, name: "나무", price: 99 },
+      { id: "2" as unknown as number, name: "돌", price: 5 },
+      { id: 3, name: "천", price: 7 },
+    ];
+    const server = [
+      { id: 2, name: "바위", price: 50 },
+      { id: 1, name: "원목", price: 10 },
+    ];
+    expect(renameByServerId(saved, server)).toEqual([
+      { id: 1, name: "원목", price: 99 },
+      { id: "2", name: "바위", price: 5 },
+      // 서버에서 없어진 재료는 그대로 둔다
+      { id: 3, name: "천", price: 7 },
+    ]);
+  });
+
+  it("서로 이름을 맞바꾼 시세도 id를 따라 바꾼다", () => {
+    const saved = [
+      { id: 1, name: "금", price: 1 },
+      { id: 2, name: "은", price: 2 },
+    ];
+    const server = [
+      { id: 1, name: "은", price: 10 },
+      { id: 2, name: "금", price: 20 },
+    ];
+    expect(renameByServerId(saved, server)).toEqual([
+      { id: 1, name: "은", price: 1 },
+      { id: 2, name: "금", price: 2 },
+    ]);
+  });
+
+  it("바꾸면 다른 행과 이름이 겹치는 행은 그대로 둔다", () => {
+    // 원목(id 5)은 서버에서 지워졌고, 나무(id 1)가 원목으로 바뀌었다
+    const saved = [
+      { id: 1, name: "나무", price: 99 },
+      { id: 5, name: "원목", price: 50 },
+    ];
+    const server = [{ id: 1, name: "원목", price: 10 }];
+    expect(renameByServerId(saved, server)).toBe(saved);
+    // 덧붙이는 재료도 없어 같은 id의 행이 둘이 되지 않는다
+    expect(mergeMarkets(saved, server)).toEqual(saved);
+  });
+
+  it("바꿀 것이 없으면 같은 배열을 돌려준다", () => {
+    const saved = [{ id: 1, name: "원목", price: 99 }];
+    expect(renameByServerId(saved, [{ id: 1, name: "원목", price: 1 }])).toBe(
+      saved
+    );
   });
 });
 
