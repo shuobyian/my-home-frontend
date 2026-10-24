@@ -106,12 +106,17 @@ describe("CalculationPage", () => {
       "-",
       "0골드",
     ]);
+    // 총 가격 옆에 부족한 원목 35개만큼의 가격
+    expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
+    expect(screen.getByText("부족 총 17,500골드")).toBeInTheDocument();
   });
 
   it("로그인하지 않았으면 기초 재료 합산만 보여 준다", () => {
     renderPage();
 
     expect(cellsOf("원목")).toEqual(["원목", "80개", "-", "40,000골드"]);
+    expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
+    expect(screen.queryByText(/부족 총/)).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
   });
 });

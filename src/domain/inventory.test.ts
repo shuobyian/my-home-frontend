@@ -1,4 +1,9 @@
-import { shortage, shortagePrice, toOwnedCounts } from "@/domain/inventory";
+import {
+  shortage,
+  shortagePrice,
+  sumShortagePrice,
+  toOwnedCounts,
+} from "@/domain/inventory";
 
 describe("inventory", () => {
   it("보유 재료를 재료 이름별 개수로 바꾼다", () => {
@@ -32,4 +37,18 @@ describe("inventory", () => {
       expect(shortagePrice(count, price, owned)).toBe(expected);
     }
   );
+
+  it("재료마다 부족한 만큼의 가격을 더한다(보유하지 않은 재료는 전부 부족)", () => {
+    const materials = [
+      { name: "원목", count: 80, price: 40000 },
+      { name: "못", count: 5, price: 50 },
+      { name: "천", count: 10, price: 300 },
+    ];
+    const owned = new Map([
+      ["원목", 45],
+      ["못", 99],
+    ]);
+
+    expect(sumShortagePrice(materials, owned)).toBe(17500 + 0 + 300);
+  });
 });

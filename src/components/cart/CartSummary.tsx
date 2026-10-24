@@ -2,7 +2,7 @@ import { ROUTES } from "@/app/routes";
 import { CartEntryList } from "@/components/cart/CartEntryList";
 import { MaterialTable } from "@/components/result/MaterialTable";
 import { CART_SOURCE_LABEL, sumPrice } from "@/domain/cart";
-import { OwnedCounts } from "@/domain/inventory";
+import { OwnedCounts, sumShortagePrice } from "@/domain/inventory";
 import { formatGold, formatNumber } from "@/lib/format";
 import { useNavigate } from "react-router";
 import { useCart } from "@/state/cart";
@@ -10,7 +10,7 @@ import { Button, Empty, Stack, Text, Title } from "@/ui";
 import { styles } from "./CartSummary.styles";
 
 interface CartSummaryProps {
-  // 로그인한 회원의 보유 재료. 있으면 합산한 기초 재료 표에 부족 개수를 함께 보여 준다
+  // 로그인한 회원의 보유 재료. 있으면 합산한 기초 재료 표에 부족 개수를, 총 가격 옆에 부족 총 가격을 함께 보여 준다
   owned?: OwnedCounts;
 }
 
@@ -53,7 +53,14 @@ export function CartSummary({ owned }: CartSummaryProps) {
           <Stack vertical>
             <Stack justify='space-between'>
               <Text strong>기초 재료</Text>
-              <Text strong>총 {formatGold(totalPrice)}</Text>
+              <Stack gap={16} wrap justify='flex-end'>
+                <Text strong>총 {formatGold(totalPrice)}</Text>
+                {owned && (
+                  <Text strong tone='danger'>
+                    부족 총 {formatGold(sumShortagePrice(materials, owned))}
+                  </Text>
+                )}
+              </Stack>
             </Stack>
             <MaterialTable materials={materials} owned={owned} />
           </Stack>
