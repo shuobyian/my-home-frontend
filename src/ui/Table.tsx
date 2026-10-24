@@ -13,6 +13,7 @@ import {
   MinusIcon,
   PlusIcon,
 } from "./icons";
+import { Select } from "./Select";
 import { Spin } from "./Spin";
 import { styles } from "./Table.styles";
 
@@ -63,6 +64,10 @@ type SortOrder = "ascending" | "descending";
 
 const EXTRA_WIDTH = 48;
 const PAGE_SIZES = [10, 20, 50, 100];
+const SIZE_OPTIONS = PAGE_SIZES.map((size) => ({
+  value: String(size),
+  label: `${size}개씩`,
+}));
 // 여기서 시작한 클릭은 행 클릭으로 치지 않는다(체크박스·펼침 버튼·셀 안 입력)
 const INTERACTIVE = "button, input, select, textarea, a, label";
 
@@ -450,18 +455,13 @@ function Pager({
         <ChevronRightIcon />
       </button>
       {showSizeChanger && (
-        <select
+        <Select
           css={styles.sizeSelect}
           aria-label='페이지당 개수'
-          value={pageSize}
-          onChange={(event) => onChange(page, Number(event.target.value))}
-        >
-          {PAGE_SIZES.map((option) => (
-            <option key={option} value={option}>
-              {option}개씩
-            </option>
-          ))}
-        </select>
+          value={String(pageSize)}
+          onChange={(value) => onChange(page, Number(value))}
+          options={SIZE_OPTIONS}
+        />
       )}
     </nav>
   );
