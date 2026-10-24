@@ -214,12 +214,8 @@ export const styles = {
     text-align: center;
   `,
 
+  // 모양은 Select 그대로, 폭만 글자에 맞춘다
   sizeSelect: css`
-    height: var(--ui-control-height);
-    padding: 0 var(--ui-space-2);
-    cursor: pointer;
-    background: var(--ui-color-bg-container);
-    border: 1px solid var(--ui-color-border);
-    border-radius: var(--ui-radius);
+    width: auto;
   `,
 };
