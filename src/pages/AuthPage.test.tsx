@@ -133,6 +133,8 @@ describe("AuthPage", () => {
       await screen.findByRole("button", { name: "로그인" })
     ).toBeInTheDocument();
     expect(screen.getByLabelText("아이디")).toHaveValue("");
+    // 닉네임은 회원가입에서만 받는다
+    expect(screen.queryByLabelText("닉네임")).not.toBeInTheDocument();
     expect(
       screen.queryByText("아이디 또는 비밀번호가 올바르지 않습니다.")
     ).not.toBeInTheDocument();
@@ -143,7 +145,7 @@ describe("AuthPage", () => {
       .mockRejectedValueOnce(
         new MyHomeError({
           message:
-            "username: 이미 사용 중인 아이디입니다., password: 비밀번호가 너무 짧습니다.",
+            "username: 이미 사용 중인 아이디입니다., password: 비밀번호가 너무 짧습니다., nickname: 이 필드는 blank일 수 없습니다.",
         })
       )
       .mockResolvedValueOnce(createSession({}, { isAdmin: false }));
@@ -153,18 +155,21 @@ describe("AuthPage", () => {
     fill("아이디", "member");
     fill("비밀번호", "password-1");
     fill("비밀번호 확인", "password-2");
+    fill("닉네임", "  ");
     fireEvent.click(screen.getByRole("button", { name: "가입하기" }));
 
     expect(
       await screen.findByText("비밀번호가 일치하지 않습니다.")
     ).toBeInTheDocument();
+    expect(screen.getByText("닉네임을 입력해주세요.")).toBeInTheDocument();
     expect(mockedSignup).not.toHaveBeenCalled();
 
     fill("비밀번호 확인", "password-1");
+    fill("닉네임", "늘흰");
     fireEvent.click(screen.getByRole("button", { name: "가입하기" }));
     expect(
       await screen.findByText(
-        "이미 사용 중인 아이디입니다., 비밀번호가 너무 짧습니다."
+        "이미 사용 중인 아이디입니다., 비밀번호가 너무 짧습니다., 이 필드는 blank일 수 없습니다."
       )
     ).toBeInTheDocument();
 
@@ -173,6 +178,7 @@ describe("AuthPage", () => {
     expect(mockedSignup).toHaveBeenLastCalledWith({
       username: "member",
       password: "password-1",
+      nickname: "늘흰",
     });
   });
 

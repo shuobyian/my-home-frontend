@@ -2,6 +2,8 @@
 export interface User {
   id: number;
   username: string;
+  // 게임 안의 닉네임. 관리자는 '관리자'다.
+  nickname: string;
   isAdmin: boolean;
 }
 
@@ -16,4 +18,9 @@ export interface AuthSession {
 export interface Credentials {
   username: string;
   password: string;
+}
+
+// 회원가입 입력. 로그인 정보에 게임 닉네임을 더 받는다.
+export interface SignupInput extends Credentials {
+  nickname: string;
 }

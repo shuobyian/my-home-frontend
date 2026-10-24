@@ -9,10 +9,12 @@ function isAuthSession(value: unknown): value is AuthSession {
   const { token, expiresAt, user } = value as Record<string, unknown>;
   if (typeof token !== "string" || typeof expiresAt !== "string") return false;
   if (typeof user !== "object" || user === null) return false;
-  const { id, username, isAdmin } = user as Record<string, unknown>;
+  // 닉네임이 생기기 전에 저장한 세션은 다시 로그인해 닉네임을 받는다
+  const { id, username, nickname, isAdmin } = user as Record<string, unknown>;
   return (
     typeof id === "number" &&
     typeof username === "string" &&
+    typeof nickname === "string" &&
     typeof isAdmin === "boolean"
   );
 }

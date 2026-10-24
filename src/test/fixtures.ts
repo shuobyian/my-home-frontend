@@ -43,7 +43,13 @@ export function createSession(
   return {
     token: "token-1",
     expiresAt: new Date(Date.now() + 60 * 60 * 1000).toISOString(),
-    user: { id: 1, username: "admin", isAdmin: true, ...user },
+    user: {
+      id: 1,
+      username: "admin",
+      nickname: "관리자",
+      isAdmin: true,
+      ...user,
+    },
     ...overrides,
   };
 }
