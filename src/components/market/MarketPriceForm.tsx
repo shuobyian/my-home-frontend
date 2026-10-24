@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useEffectEvent, useState } from "react";
+import { findNewMarkets } from "@/domain/market";
 import { Market } from "@/types/market";
 import { Button, Field, Input, NumberInput, Stack, Table, useForm } from "@/ui";
 
@@ -9,8 +10,11 @@ interface MarketPriceFormProps {
   // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다.
   // 캐시에 남은 오래된 값으로 채우지 않도록 마운트 후 새로 받은 값만 넘긴다(isFetchedAfterMount)
   serverMarkets?: Market[];
-  // 처음 채울 값(예: 브라우저에 저장해 둔 시세). 있으면 서버 시세보다 우선한다
+  // 처음 채울 값(예: 브라우저에 저장해 둔 시세). 있으면 서버 시세보다 우선한다.
+  // 서버 시세가 도착하면 이 값에 없는 이름의 재료만 표 끝에 덧붙인다(입력값은 그대로 둔다)
   initialMarkets?: Market[];
+  // 서버에만 있어 표에 덧붙인 재료를 알린다
+  onMarketsAdded?: (added: Market[]) => void;
   // 서버에 저장하는 화면은 정수 시세를 필수로 받는다(PUT /market 규칙)
   requirePrice?: boolean;
   submitText: string;
@@ -22,6 +26,7 @@ interface MarketPriceFormProps {
 export function MarketPriceForm({
   serverMarkets,
   initialMarkets,
+  onMarketsAdded,
   requirePrice = false,
   submitText,
   submitting,
@@ -50,6 +55,26 @@ export function MarketPriceForm({
     setFilled(true);
     setValues({ markets: source });
   }
+
+  // 저장해 둔 값으로 시작한 표는 서버 시세가 도착했을 때 한 번만 새 재료를 덧붙인다.
+  // 서버 값으로 시작했거나 이미 덧붙였다면 하지 않는다(이후 재조회도 입력 중인 값을 건드리지 않는다)
+  const [merged, setMerged] = useState(!initialMarkets);
+  const [added, setAdded] = useState<Market[]>([]);
+  if (!merged && serverMarkets) {
+    setMerged(true);
+    const newMarkets = findNewMarkets(values.markets, serverMarkets);
+    if (newMarkets.length > 0) {
+      setValues(({ markets }) => ({ markets: [...markets, ...newMarkets] }));
+      setAdded(newMarkets);
+    }
+  }
+
+  const notifyAdded = useEffectEvent((markets: Market[]) =>
+    onMarketsAdded?.(markets)
+  );
+  useEffect(() => {
+    if (added.length > 0) notifyAdded(added);
+  }, [added]);
 
   const setPrice = (index: number, price: number | null) =>
     setValues(({ markets }) => ({

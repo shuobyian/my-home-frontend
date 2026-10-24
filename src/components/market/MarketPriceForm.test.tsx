@@ -49,3 +49,157 @@ describe("MarketPriceForm", () => {
     expect(onSubmit).not.toHaveBeenCalled();
   });
 });
+
+describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
+  const cloth: Market = { id: 2, name: "천", price: 300 };
+  const egg: Market = { id: 84, name: "이스터 에그", price: 0 };
+  const saved: Market[] = [{ ...wood, price: 700 }];
+  // 비워 둔 채 저장된 시세(price: null). Market 타입은 아직 null을 담지 못해 단언한다
+  const blankCloth = { ...cloth, price: null } as unknown as Market;
+  const props = { submitText: "결과 만들기" };
+
+  it("서버 시세가 도착하면 저장본에 없는 재료만 끝에 덧붙이고 알린다", () => {
+    const onSubmit = vi.fn();
+    const onMarketsAdded = vi.fn();
+    const formProps = { ...props, onSubmit, onMarketsAdded };
+    const { rerender } = render(
+      <MarketPriceForm {...formProps} initialMarkets={saved} />
+    );
+    expect(screen.queryByLabelText("이스터 에그 시세")).not.toBeInTheDocument();
+
+    rerender(
+      <MarketPriceForm
+        {...formProps}
+        initialMarkets={saved}
+        serverMarkets={[wood, cloth, egg]}
+      />
+    );
+
+    // 이미 있는 재료는 저장해 둔 값(700)을 지키고, 새 재료는 서버 가격을 받는다
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
+    expect(screen.getByLabelText("천 시세")).toHaveValue("300");
+    expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
+    expect(
+      screen
+        .getAllByLabelText("물품명")
+        .map((input) => input.getAttribute("value"))
+    ).toEqual(["원목", "천", "이스터 에그"]);
+    expect(onMarketsAdded).toHaveBeenCalledTimes(1);
+    expect(onMarketsAdded).toHaveBeenCalledWith([cloth, egg]);
+
+    fireEvent.click(screen.getByRole("button", { name: "결과 만들기" }));
+    expect(onSubmit).toHaveBeenCalledWith([
+      { id: 1, name: "원목", price: 700 },
+      cloth,
+      egg,
+    ]);
+  });
+
+  it("입력 중인 값과 비워 둔 칸을 서버 시세가 덮어쓰지 않는다", () => {
+    const { rerender } = render(
+      <MarketPriceForm
+        {...props}
+        initialMarkets={[wood, blankCloth]}
+        onSubmit={vi.fn()}
+      />
+    );
+    fireEvent.change(screen.getByLabelText("원목 시세"), {
+      target: { value: "900" },
+    });
+
+    rerender(
+      <MarketPriceForm
+        {...props}
+        initialMarkets={[wood, blankCloth]}
+        serverMarkets={[wood, cloth, egg]}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("900");
+    expect(screen.getByLabelText("천 시세")).toHaveValue("");
+    expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
+  });
+
+  it("한 번만 덧붙이고, 이후 재조회는 표를 바꾸지 않는다", () => {
+    const onMarketsAdded = vi.fn();
+    const formProps = {
+      ...props,
+      initialMarkets: saved,
+      onSubmit: vi.fn(),
+      onMarketsAdded,
+    };
+    const { rerender } = render(
+      <MarketPriceForm {...formProps} serverMarkets={[wood, egg]} />
+    );
+    fireEvent.change(screen.getByLabelText("이스터 에그 시세"), {
+      target: { value: "5" },
+    });
+
+    rerender(
+      <MarketPriceForm
+        {...formProps}
+        serverMarkets={[wood, { ...egg, price: 9 }, cloth]}
+      />
+    );
+
+    expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("5");
+    expect(screen.queryByLabelText("천 시세")).not.toBeInTheDocument();
+    expect(onMarketsAdded).toHaveBeenCalledTimes(1);
+  });
+
+  it("덧붙일 재료가 없으면 알리지 않는다", () => {
+    const onMarketsAdded = vi.fn();
+    render(
+      <MarketPriceForm
+        {...props}
+        initialMarkets={saved}
+        serverMarkets={[wood]}
+        onSubmit={vi.fn()}
+        onMarketsAdded={onMarketsAdded}
+      />
+    );
+
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
+    expect(onMarketsAdded).not.toHaveBeenCalled();
+  });
+
+  it("저장본이 없으면 서버 시세로 채우고 덧붙였다고 알리지 않는다", () => {
+    const onMarketsAdded = vi.fn();
+    const { rerender } = render(
+      <MarketPriceForm
+        {...props}
+        onSubmit={vi.fn()}
+        onMarketsAdded={onMarketsAdded}
+      />
+    );
+
+    rerender(
+      <MarketPriceForm
+        {...props}
+        serverMarkets={[wood, egg]}
+        onSubmit={vi.fn()}
+        onMarketsAdded={onMarketsAdded}
+      />
+    );
+
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("500");
+    expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
+    expect(onMarketsAdded).not.toHaveBeenCalled();
+  });
+
+  it("'시세 불러오기'는 지금처럼 서버 시세 전체로 바꾼다", () => {
+    render(
+      <MarketPriceForm
+        {...props}
+        initialMarkets={saved}
+        serverMarkets={[wood, egg]}
+        onSubmit={vi.fn()}
+      />
+    );
+
+    fireEvent.click(screen.getByRole("button", { name: "시세 불러오기" }));
+
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("500");
+  });
+});
