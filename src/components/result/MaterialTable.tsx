@@ -1,15 +1,17 @@
 import { MaterialCost } from "@/types/result";
 import { OwnedCounts, shortage, shortagePrice } from "@/domain/inventory";
-import { toMung } from "@/domain/result";
+import { hasMungRemainder, toMung } from "@/domain/result";
 import { formatNumber } from "@/lib/format";
 import { Table, TableColumn } from "@/ui";
 import { styles } from "./MaterialTable.styles";
 
 const countText = (count: number) => `${formatNumber(count)}개`;
 
-// 1뭉이 안 되면 '-'
-const mungText = (count: number) =>
-  toMung(count) > 0 ? `${formatNumber(toMung(count))}뭉` : "-";
+// 1뭉이 안 되면 '-'. 뭉으로 묶고 낱개가 남으면 오른쪽에 '↑'
+const mungText = (count: number) => {
+  if (toMung(count) === 0) return "-";
+  return `${formatNumber(toMung(count))}뭉${hasMungRemainder(count) ? "↑" : ""}`;
+};
 
 const goldText = (price: number) => `${formatNumber(price)}골드`;
 

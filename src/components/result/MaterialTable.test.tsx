@@ -26,7 +26,23 @@ describe("MaterialTable", () => {
       screen.queryByRole("columnheader", { name: "보유" })
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
-    expect(cellsOf("원목")).toEqual(["원목", "200개", "2뭉", "1,000골드"]);
+    expect(cellsOf("원목")).toEqual(["원목", "200개", "2뭉↑", "1,000골드"]);
+  });
+
+  it("뭉으로 묶고 낱개가 남으면 뭉 오른쪽에 ↑를 붙인다", () => {
+    render(
+      <MaterialTable
+        materials={[
+          { name: "원목", count: 200, price: 1000 },
+          { name: "돌", count: 198, price: 990 },
+          { name: "천", count: 5, price: 25 },
+        ]}
+      />
+    );
+
+    expect(cellsOf("원목")?.[2]).toBe("2뭉↑");
+    expect(cellsOf("돌")?.[2]).toBe("2뭉");
+    expect(cellsOf("천")?.[2]).toBe("-");
   });
 
   it("보유 재료가 있으면 보유 열을 더하고, 개수·뭉·골드 왼쪽에 부족한 만큼을 작게 붙인다(넉넉하면 붙이지 않는다)", () => {
@@ -42,12 +58,12 @@ describe("MaterialTable", () => {
       />
     );
 
-    // 원목 200개 중 50개 보유: 150개(1뭉) 부족, 1,000골드 중 750골드어치
+    // 원목 200개 중 50개 보유: 150개(1뭉 51개) 부족, 1,000골드 중 750골드어치
     expect(cellsOf("원목")).toEqual([
       "원목",
       "(150개 부족) 200개",
       "50개",
-      "(1뭉 부족) 2뭉",
+      "(1뭉↑ 부족) 2뭉↑",
       "(750골드 부족) 1,000골드",
     ]);
     expect(screen.getByText("(150개 부족)")).toBeInTheDocument();

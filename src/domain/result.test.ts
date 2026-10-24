@@ -1,5 +1,6 @@
 import {
   getTotalCost,
+  hasMungRemainder,
   isResult,
   MUNG_UNIT,
   parseResultList,
@@ -45,6 +46,19 @@ describe("toMung", () => {
     [250, 2],
   ])("%p개 → %p뭉", (count, mung) => {
     expect(toMung(count)).toBe(mung);
+  });
+});
+
+describe("hasMungRemainder", () => {
+  it.each([
+    [0, false],
+    [98, false],
+    [MUNG_UNIT, false],
+    [MUNG_UNIT * 2, false],
+    [150, true],
+    [315.5, true],
+  ])("%p개 → 낱개 남음 %p", (count, expected) => {
+    expect(hasMungRemainder(count)).toBe(expected);
   });
 });
 
