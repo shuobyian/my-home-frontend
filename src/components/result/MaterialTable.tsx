@@ -1,16 +1,19 @@
 import { MaterialCost } from "@/types/result";
 import { OwnedCounts, shortage, shortagePrice } from "@/domain/inventory";
-import { hasMungRemainder, toMung } from "@/domain/result";
+import { mungRemainder, toMung } from "@/domain/result";
 import { formatNumber } from "@/lib/format";
 import { Table, TableColumn } from "@/ui";
 import { styles } from "./MaterialTable.styles";
 
 const countText = (count: number) => `${formatNumber(count)}개`;
 
-// 1뭉이 안 되면 '-'. 뭉으로 묶고 낱개가 남으면 오른쪽에 '↑'
+// 1뭉이 안 되면 '-'. 낱개가 남으면 그 개수를 소수 두 자리로 붙인다(1뭉 46개 → 1.46뭉).
+// 낱개는 99개 미만이라 두 자리면 되고, 소수 개수의 낱개는 버린다
 const mungText = (count: number) => {
   if (toMung(count) === 0) return "-";
-  return `${formatNumber(toMung(count))}뭉${hasMungRemainder(count) ? "↑" : ""}`;
+  const mung = formatNumber(toMung(count));
+  const rest = Math.floor(mungRemainder(count));
+  return rest > 0 ? `${mung}.${String(rest).padStart(2, "0")}뭉` : `${mung}뭉`;
 };
 
 const goldText = (price: number) => `${formatNumber(price)}골드`;

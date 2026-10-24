@@ -1,8 +1,8 @@
 import {
   getTotalCost,
-  hasMungRemainder,
   isResult,
   MUNG_UNIT,
+  mungRemainder,
   parseResultList,
   requiresAffinity,
   toMung,
@@ -49,16 +49,16 @@ describe("toMung", () => {
   });
 });
 
-describe("hasMungRemainder", () => {
+describe("mungRemainder", () => {
   it.each([
-    [0, false],
-    [98, false],
-    [MUNG_UNIT, false],
-    [MUNG_UNIT * 2, false],
-    [150, true],
-    [315.5, true],
-  ])("%p개 → 낱개 남음 %p", (count, expected) => {
-    expect(hasMungRemainder(count)).toBe(expected);
+    [0, 0],
+    [98, 98],
+    [MUNG_UNIT, 0],
+    [MUNG_UNIT * 2, 0],
+    [145, 46],
+    [315.5, 18.5],
+  ])("%p개 → 낱개 %p개", (count, expected) => {
+    expect(mungRemainder(count)).toBe(expected);
   });
 });
 

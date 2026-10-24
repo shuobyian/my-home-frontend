@@ -26,21 +26,26 @@ describe("MaterialTable", () => {
       screen.queryByRole("columnheader", { name: "보유" })
     ).not.toBeInTheDocument();
     expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
-    expect(cellsOf("원목")).toEqual(["원목", "200개", "2뭉↑", "1,000골드"]);
+    expect(cellsOf("원목")).toEqual(["원목", "200개", "2.02뭉", "1,000골드"]);
   });
 
-  it("뭉으로 묶고 낱개가 남으면 뭉 오른쪽에 ↑를 붙인다", () => {
+  it("뭉으로 묶고 낱개가 남으면 그 개수를 소수 두 자리로 붙인다", () => {
     render(
       <MaterialTable
         materials={[
-          { name: "원목", count: 200, price: 1000 },
+          { name: "고래", count: 145, price: 1450 },
+          { name: "고무", count: 304, price: 3040 },
+          { name: "꽁치", count: 315.5, price: 3155 },
           { name: "돌", count: 198, price: 990 },
           { name: "천", count: 5, price: 25 },
         ]}
       />
     );
 
-    expect(cellsOf("원목")?.[2]).toBe("2뭉↑");
+    expect(cellsOf("고래")?.[2]).toBe("1.46뭉");
+    expect(cellsOf("고무")?.[2]).toBe("3.07뭉");
+    // 소수 개수의 낱개(18.5개)는 버린다
+    expect(cellsOf("꽁치")?.[2]).toBe("3.18뭉");
     expect(cellsOf("돌")?.[2]).toBe("2뭉");
     expect(cellsOf("천")?.[2]).toBe("-");
   });
@@ -63,7 +68,7 @@ describe("MaterialTable", () => {
       "원목",
       "(150개 부족) 200개",
       "50개",
-      "(1뭉↑ 부족) 2뭉↑",
+      "(1.51뭉 부족) 2.02뭉",
       "(750골드 부족) 1,000골드",
     ]);
     expect(screen.getByText("(150개 부족)")).toBeInTheDocument();

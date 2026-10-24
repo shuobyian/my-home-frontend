@@ -38,9 +38,9 @@ export function toMung(count: number) {
   return Math.floor(count / MUNG_UNIT);
 }
 
-// 1뭉 이상이고 뭉으로 묶고도 낱개가 남는지
-export function hasMungRemainder(count: number) {
-  return toMung(count) > 0 && count % MUNG_UNIT > 0;
+// 뭉으로 묶고 남는 낱개 수(0 이상 MUNG_UNIT 미만)
+export function mungRemainder(count: number) {
+  return count % MUNG_UNIT;
 }
 
 // 제작에 드는 전체 비용(재료비 + 제작비)
