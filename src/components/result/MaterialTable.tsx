@@ -13,12 +13,13 @@ const mungText = (count: number) =>
 
 const goldText = (price: number) => `${formatNumber(price)}골드`;
 
-// 원래 값 옆에 작은 회색 글씨로 '(N 부족)'을 붙인다. 부족하지 않으면 원래 값만
+// 원래 값 왼쪽에 작은 회색 글씨로 '(N 부족)'을 붙인다(오른쪽 정렬된 원래 값이 줄을 맞추도록).
+// 부족하지 않으면 원래 값만
 function withShortage(value: string, lacking: string | null) {
   if (!lacking) return value;
   return (
     <>
-      {value} <span css={styles.shortage}>({lacking} 부족)</span>
+      <span css={styles.shortage}>({lacking} 부족)</span> {value}
     </>
   );
 }
