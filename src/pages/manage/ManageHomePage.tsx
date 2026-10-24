@@ -41,11 +41,13 @@ import {
 
 const nameOf = ({ name }: Pick<Product, "name">) => name.trim();
 
-// 이름 목록에 새 이름을 더한다. 더할 것이 없으면 같은 배열을 돌려준다(저장·렌더를 줄인다)
+// 이름 목록에 새 이름을 더하고 중복을 없앤다. 더할 것도 없앨 중복도 없으면 같은 배열을 돌려준다(저장·렌더를 줄인다).
+// 이전에 기록된 목록에는 중복이 있을 수 있으므로, 크기만으로는 더한 이름이 없다고 판단하지 않는다
 function withNames(known: string[], names: Iterable<string>) {
   const next = new Set(known);
+  const unique = next.size === known.length;
   for (const name of names) next.add(name);
-  return next.size === known.length ? known : [...next];
+  return unique && next.size === known.length ? known : [...next];
 }
 
 // 서버 목록과 비교한 업로드 계획과, 올릴 물품의 재료 참조 문제.
@@ -104,8 +106,9 @@ export function ManageHomePage() {
   // 처음 실행이면 마운트 시점 초안 이름으로 시작한다(이전에는 my-home-product가 마지막으로 올린 목록이었다)
   const [knownNames, setKnownNames] = useState<string[]>(
     () =>
-      parseNameList(readJSON(STORAGE_KEY.PRODUCT_KNOWN_NAMES)) ??
-      products.map(nameOf)
+      parseNameList(readJSON(STORAGE_KEY.PRODUCT_KNOWN_NAMES)) ?? [
+        ...new Set(products.map(nameOf)),
+      ]
   );
   useEffect(() => {
     writeJSON(STORAGE_KEY.PRODUCT_KNOWN_NAMES, knownNames);

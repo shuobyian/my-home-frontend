@@ -350,6 +350,47 @@ describe("ManageHomePage", () => {
     expect(saveButton()).toBeDisabled();
   });
 
+  it("처음 실행 초안에 같은 이름이 여러 번 있어도 서버 이름을 빠뜨리지 않는다", async () => {
+    removeItem(STORAGE_KEY.PRODUCT_KNOWN_NAMES);
+    writeJSON(STORAGE_KEY.PRODUCT, [chair, { ...chair, id: 2 }, desk]);
+    api.fetchAllProducts.mockResolvedValue([
+      chair,
+      createProduct({ id: 5, name: "의자" }),
+    ]);
+    renderPage();
+    await planned(0);
+
+    await waitFor(() =>
+      expect(knownNames()).toEqual(["나무 의자", "책상", "의자"])
+    );
+  });
+
+  it("기록된 이름에 중복이 있어도, 중복 수만큼 들어온 새 이름을 빠뜨리지 않는다", async () => {
+    // 이전 버전은 같은 이름을 여러 번 기록할 수 있었다
+    writeJSON(STORAGE_KEY.PRODUCT_KNOWN_NAMES, ["나무 의자", "나무 의자"]);
+    writeJSON(STORAGE_KEY.PRODUCT, [chair]);
+    api.fetchAllProducts.mockResolvedValue([
+      chair,
+      createProduct({ id: 5, name: "의자" }),
+    ]);
+    const { unmount } = renderPage();
+    await planned(0);
+    await waitFor(() => expect(knownNames()).toEqual(["나무 의자", "의자"]));
+    unmount();
+
+    // 서버에서 의자가 지워진 뒤에도 초안의 의자는 새 물품이 아니라 지워진 물품이다
+    writeJSON(STORAGE_KEY.PRODUCT, [
+      chair,
+      createProduct({ id: 5, name: "의자" }),
+    ]);
+    api.fetchAllProducts.mockResolvedValue([chair]);
+    renderPage();
+    await planned(0);
+    expect(
+      within(rowOf("의자")).getByText("서버에서 삭제됨")
+    ).toBeInTheDocument();
+  });
+
   it("서버 목록을 받지 못하면 저장할 수 없다고 알리고 편집은 계속할 수 있다", async () => {
     api.fetchMarkets.mockRejectedValue(new MyHomeError({ message: "실패" }));
     writeJSON(STORAGE_KEY.PRODUCT, [chair, table]);
