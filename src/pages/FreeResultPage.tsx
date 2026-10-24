@@ -8,6 +8,7 @@ import { ResultTable } from "@/components/result/ResultTable";
 import { parseMarketList } from "@/domain/market";
 import { parseResultList } from "@/domain/result";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
+import { useOwnedCounts } from "@/pages/useOwnedCounts";
 import { useCalculateResultsQuery } from "@/queries/result";
 import { useState } from "react";
 import { Navigate, useLocation } from "react-router";
@@ -17,6 +18,7 @@ import { Button, Stack, Text, Title, useToast } from "@/ui";
 export function FreeResultPage() {
   const toast = useToast();
   const addToCart = useAddToCart("free");
+  const owned = useOwnedCounts();
 
   // 시세 입력 화면이 넘긴 시세. 주소로 직접 들어왔거나 형식이 맞지 않으면 입력 화면으로 돌려보낸다.
   const { state }: { state: unknown } = useLocation();
@@ -98,6 +100,7 @@ export function FreeResultPage() {
           loading={isLoading && !showSaved}
           contents={filtered}
           onRowClick={addToCart}
+          owned={owned}
         />
       )}
     </Stack>

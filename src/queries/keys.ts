@@ -37,6 +37,12 @@ export const experienceKeys = {
     [...experienceKeys.walnutAll, params] as const,
 };
 
+// 회원마다 다르므로 회원 id를 키에 넣는다(다른 계정으로 바꿔 로그인해도 앞 계정의 값을 보여 주지 않는다)
+export const inventoryKeys = {
+  all: ["inventory"] as const,
+  mine: (userId: number | undefined) => [...inventoryKeys.all, userId] as const,
+};
+
 export const catalogKeys = {
   all: ["catalog"] as const,
   check: ["catalog", "check"] as const,

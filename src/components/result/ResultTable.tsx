@@ -1,3 +1,4 @@
+import { OwnedCounts } from "@/domain/inventory";
 import { getToolLabel } from "@/domain/labels";
 import { Result } from "@/types/result";
 import { ResultDetail } from "@/components/result/ResultDetail";
@@ -38,6 +39,8 @@ interface ResultTableProps {
   contents: Result[];
   // 행을 누르면 호출된다(예: 장바구니에 담기)
   onRowClick?: (result: Result) => void;
+  // 로그인한 회원의 보유 재료. 펼친 상세의 기초 재료 표에 부족 개수를 함께 보여 준다
+  owned?: OwnedCounts;
 }
 
 export function ResultTable({
@@ -45,6 +48,7 @@ export function ResultTable({
   pagination,
   contents,
   onRowClick,
+  owned,
 }: ResultTableProps) {
   return (
     <Table
@@ -63,7 +67,9 @@ export function ResultTable({
           : // 쪽을 표에서 나눌 때는 50개를 넘으면 쪽당 개수를 고를 수 있게 한다
             { showSizeChanger: contents.length > 50 }
       }
-      expandedRowRender={(record) => <ResultDetail result={record} />}
+      expandedRowRender={(record) => (
+        <ResultDetail result={record} owned={owned} />
+      )}
       onRowClick={onRowClick}
     />
   );

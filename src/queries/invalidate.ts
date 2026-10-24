@@ -2,6 +2,7 @@ import {
   calculatorKeys,
   catalogKeys,
   experienceKeys,
+  inventoryKeys,
   marketKeys,
   productKeys,
   resultKeys,
@@ -10,6 +11,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 // 물품이나 시세를 저장하면 서버가 결과까지 다시 맞추므로 한 도메인만 다시 받으면 화면끼리 어긋난다.
 // 호두작 계산은 결과(앰플 가격)를 쓰므로 함께 무효화하고, 레벨별 경험치 표는 바뀌지 않아 그대로 둔다.
+// 보유 재료도 시세 이름을 따라가고 지운 시세는 빠지므로 함께 다시 받는다.
 export const CATALOG_QUERY_KEYS = [
   productKeys.all,
   marketKeys.all,
@@ -17,6 +19,7 @@ export const CATALOG_QUERY_KEYS = [
   calculatorKeys.all,
   catalogKeys.all,
   experienceKeys.walnutAll,
+  inventoryKeys.all,
 ] as const;
 
 // 카탈로그 쓰기(물품·시세·결과) 뒤에 부른다.
