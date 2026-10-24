@@ -6,10 +6,11 @@ import { useMarketsQuery } from "@/queries/market";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Market } from "@/types/market";
-import { Stack, Text, Title } from "@/ui";
+import { Stack, Text, Title, useToast } from "@/ui";
 
 export function FreePage() {
   const navigate = useNavigate();
+  const toast = useToast();
   const { data, isFetchedAfterMount } = useMarketsQuery();
   const serverMarkets = isFetchedAfterMount ? data : undefined;
 
@@ -43,6 +44,9 @@ export function FreePage() {
       <MarketPriceForm
         serverMarkets={serverMarkets}
         initialMarkets={savedMarkets}
+        onMarketsAdded={(added) =>
+          toast.success(`새 재료 ${added.length}개를 시세에 추가했습니다.`)
+        }
         submitText='결과 만들기'
         onSubmit={onSubmit}
       />
