@@ -38,6 +38,11 @@ export function toMung(count: number) {
   return Math.floor(count / MUNG_UNIT);
 }
 
+// 뭉으로 묶고 남는 낱개 수(0 이상 MUNG_UNIT 미만)
+export function mungRemainder(count: number) {
+  return count % MUNG_UNIT;
+}
+
 // 제작에 드는 전체 비용(재료비 + 제작비)
 export function getTotalCost(result: Result) {
   return result.totalPrice + result.craftingPrice;

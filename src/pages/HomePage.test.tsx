@@ -113,11 +113,10 @@ describe("HomePage", () => {
     await waitFor(() =>
       expect(cellsOf("원목")).toEqual([
         "원목",
-        "150개",
+        "(50개 부족) 150개",
         "100개",
-        "50개",
-        "1뭉",
-        "75,000골드",
+        "1.51뭉",
+        "(25,000골드 부족) 75,000골드",
       ])
     );
   });
@@ -130,9 +129,7 @@ describe("HomePage", () => {
     expect(
       screen.getByRole("columnheader", { name: "골드" })
     ).toBeInTheDocument();
-    expect(
-      screen.queryByRole("columnheader", { name: "부족" })
-    ).not.toBeInTheDocument();
+    expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
   });
 

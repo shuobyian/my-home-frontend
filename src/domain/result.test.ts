@@ -2,6 +2,7 @@ import {
   getTotalCost,
   isResult,
   MUNG_UNIT,
+  mungRemainder,
   parseResultList,
   requiresAffinity,
   toMung,
@@ -45,6 +46,19 @@ describe("toMung", () => {
     [250, 2],
   ])("%p개 → %p뭉", (count, mung) => {
     expect(toMung(count)).toBe(mung);
+  });
+});
+
+describe("mungRemainder", () => {
+  it.each([
+    [0, 0],
+    [98, 98],
+    [MUNG_UNIT, 0],
+    [MUNG_UNIT * 2, 0],
+    [145, 46],
+    [315.5, 18.5],
+  ])("%p개 → 낱개 %p개", (count, expected) => {
+    expect(mungRemainder(count)).toBe(expected);
   });
 });
 
