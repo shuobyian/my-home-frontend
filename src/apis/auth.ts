@@ -1,6 +1,6 @@
 import { client } from "@/apis/client";
 import { ENDPOINTS } from "@/apis/endpoints";
-import { AuthSession, Credentials } from "@/types/auth";
+import { AuthSession, Credentials, SignupInput } from "@/types/auth";
 
 export async function login(body: Credentials) {
   const { data } = await client.post<AuthSession>(ENDPOINTS.AUTH_LOGIN, body);
@@ -8,7 +8,7 @@ export async function login(body: Credentials) {
 }
 
 // 가입하면 바로 로그인된 세션을 돌려준다
-export async function signup(body: Credentials) {
+export async function signup(body: SignupInput) {
   const { data } = await client.post<AuthSession>(ENDPOINTS.AUTH_SIGNUP, body);
   return data;
 }

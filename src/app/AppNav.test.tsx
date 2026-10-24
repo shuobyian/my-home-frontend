@@ -75,7 +75,12 @@ describe("AppNav 메뉴 구분", () => {
   });
 
   it("관리자가 아닌 회원에게도 관리자 메뉴를 감춘다", () => {
-    saveAuthSession(createSession({}, { username: "member", isAdmin: false }));
+    saveAuthSession(
+      createSession(
+        {},
+        { username: "member", nickname: "늘흰", isAdmin: false }
+      )
+    );
     renderNav();
 
     for (const name of ADMIN_LABELS) {
@@ -85,7 +90,7 @@ describe("AppNav 메뉴 구분", () => {
   });
 
   it("관리자에게는 관리자 메뉴를 구분해 보여 준다", () => {
-    saveAuthSession(createSession());
+    saveAuthSession(createSession({}, { nickname: "운영자" }));
     renderNav();
 
     expect(screen.getByText("관리자")).toBeInTheDocument();
@@ -198,12 +203,15 @@ describe("AppNav 로그인 상태", () => {
     ).not.toBeInTheDocument();
   });
 
-  it("로그인하면 아이디와 로그아웃 버튼을 보여 주고, 서버 요청이 실패해도 이 기기에서는 로그아웃한다", async () => {
+  it("로그인하면 닉네임과 로그아웃 버튼을 보여 주고, 서버 요청이 실패해도 이 기기에서는 로그아웃한다", async () => {
     mockedLogout.mockRejectedValue(new MyHomeError({ message: "연결 실패" }));
-    saveAuthSession(createSession({}, { username: "member" }));
+    saveAuthSession(
+      createSession({}, { username: "member", nickname: "늘흰" })
+    );
     renderNav();
 
-    expect(screen.getByText("member")).toBeInTheDocument();
+    expect(screen.getByText("늘흰")).toBeInTheDocument();
+    expect(screen.queryByText("member")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "로그아웃" }));
 
     expect(
@@ -211,6 +219,6 @@ describe("AppNav 로그인 상태", () => {
     ).toBeInTheDocument();
     expect(mockedLogout).toHaveBeenCalledTimes(1);
     expect(getAuthSession()).toBeNull();
-    expect(screen.queryByText("member")).not.toBeInTheDocument();
+    expect(screen.queryByText("늘흰")).not.toBeInTheDocument();
   });
 });

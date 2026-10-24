@@ -1,6 +1,6 @@
 import { login, logout, signup } from "@/apis/auth";
 import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
-import { Credentials } from "@/types/auth";
+import { Credentials, SignupInput } from "@/types/auth";
 import { useMutation } from "@tanstack/react-query";
 
 // 성공하면 세션을 저장한다. 화면은 state/auth의 useCurrentUser로 바로 반영된다.
@@ -13,7 +13,7 @@ export const useLoginMutation = () =>
 
 export const useSignupMutation = () =>
   useMutation({
-    mutationFn: (body: Credentials) => signup(body),
+    mutationFn: (body: SignupInput) => signup(body),
     onSuccess: (session) => saveAuthSession(session),
   });
 

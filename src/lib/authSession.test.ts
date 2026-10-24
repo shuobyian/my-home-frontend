@@ -54,6 +54,10 @@ describe("authSession", () => {
     ["손상된 값", "{broken"],
     ["형태가 다른 값", JSON.stringify({ token: "t", user: { id: 1 } })],
     [
+      "닉네임이 없는 예전 세션",
+      JSON.stringify(createSession({}, { nickname: undefined })),
+    ],
+    [
       "만료된 세션",
       JSON.stringify(createSession({ expiresAt: "2000-01-01T00:00:00Z" })),
     ],

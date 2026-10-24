@@ -78,12 +78,13 @@ export function AppNav() {
         <li aria-hidden='true' css={[styles.divider, styles.pushDown]} />
         {user ? (
           <>
-            <li css={styles.wideOnly}>{user.username}</li>
+            {/* 로그인한 회원은 게임 닉네임으로 보여 준다 */}
+            <li css={styles.wideOnly}>{user.nickname}</li>
             <li css={styles.entry}>
               <button
                 type='button'
                 aria-busy={logout.isPending || undefined}
-                title={`${user.username} 로그아웃`}
+                title={`${user.nickname} 로그아웃`}
                 css={styles.item}
                 onClick={() => {
                   if (!logout.isPending) logout.mutate();

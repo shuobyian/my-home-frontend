@@ -47,7 +47,6 @@ function AuthScreen({ mode }: { mode: AuthMode }) {
   const { state } = useLocation();
   const login = useLoginMutation();
   const signup = useSignupMutation();
-  const { mutate, isPending, error } = mode === "login" ? login : signup;
   const text = TEXT[mode];
 
   if (user) {
@@ -61,12 +60,21 @@ function AuthScreen({ mode }: { mode: AuthMode }) {
         style={{ width: "100%", maxWidth: 400, padding: "var(--ui-space-6)" }}
       >
         <Title level={3}>{text.title}</Title>
-        <AuthForm
-          mode={mode}
-          loading={isPending}
-          error={error}
-          onSubmit={(credentials) => mutate(credentials)}
-        />
+        {mode === "login" ? (
+          <AuthForm
+            mode='login'
+            loading={login.isPending}
+            error={login.error}
+            onSubmit={(credentials) => login.mutate(credentials)}
+          />
+        ) : (
+          <AuthForm
+            mode='signup'
+            loading={signup.isPending}
+            error={signup.error}
+            onSubmit={(input) => signup.mutate(input)}
+          />
+        )}
         <Paragraph style={{ margin: "var(--ui-space-4) 0 0" }}>
           {text.switchPrompt}{" "}
           {/* 돌아갈 화면(state)을 다른 쪽 화면으로 넘어가도 유지한다 */}
