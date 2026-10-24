@@ -114,10 +114,12 @@ describe("HomePage", () => {
       expect(cellsOf("원목")).toEqual([
         "원목",
         "150개",
-        "100개",
-        "50개",
         "1뭉",
         "75,000골드",
+        "100개",
+        "50개",
+        "-",
+        "25,000골드",
       ])
     );
   });
@@ -131,7 +133,7 @@ describe("HomePage", () => {
       screen.getByRole("columnheader", { name: "골드" })
     ).toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: "부족" })
+      screen.queryByRole("columnheader", { name: "부족 개수" })
     ).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
   });

@@ -26,12 +26,12 @@ describe("MaterialTable", () => {
       screen.queryByRole("columnheader", { name: "보유" })
     ).not.toBeInTheDocument();
     expect(
-      screen.queryByRole("columnheader", { name: "부족" })
+      screen.queryByRole("columnheader", { name: "부족 개수" })
     ).not.toBeInTheDocument();
     expect(cellsOf("원목")).toEqual(["원목", "200개", "2뭉", "1,000골드"]);
   });
 
-  it("보유 재료가 있으면 개수 옆에 보유 개수와 부족 개수(넉넉하면 0개)를 보여 준다", () => {
+  it("보유 재료가 있으면 원래 개수·뭉·골드 뒤에 보유 개수와 부족 개수·뭉·골드(넉넉하면 0)를 보여 준다", () => {
     render(
       <MaterialTable
         materials={materials}
@@ -47,12 +47,32 @@ describe("MaterialTable", () => {
     expect(cellsOf("원목")).toEqual([
       "원목",
       "200개",
-      "50개",
-      "150개",
       "2뭉",
       "1,000골드",
+      "50개",
+      "150개",
+      "1뭉",
+      "750골드",
     ]);
-    expect(cellsOf("못")).toEqual(["못", "10개", "30개", "0개", "-", "50골드"]);
-    expect(cellsOf("천")).toEqual(["천", "5개", "0개", "5개", "-", "25골드"]);
+    expect(cellsOf("못")).toEqual([
+      "못",
+      "10개",
+      "-",
+      "50골드",
+      "30개",
+      "0개",
+      "-",
+      "0골드",
+    ]);
+    expect(cellsOf("천")).toEqual([
+      "천",
+      "5개",
+      "-",
+      "25골드",
+      "0개",
+      "5개",
+      "-",
+      "25골드",
+    ]);
   });
 });

@@ -11,3 +11,9 @@ export function toOwnedCounts(items: readonly InventoryItem[]): OwnedCounts {
 export function shortage(count: number, owned: number) {
   return Math.max(0, count - owned);
 }
+
+// 부족 개수만큼의 가격. 가격은 시세 × 개수이므로 개수로 나눠 시세를 되돌린다
+export function shortagePrice(count: number, price: number, owned: number) {
+  if (count <= 0) return 0;
+  return (price * shortage(count, owned)) / count;
+}
