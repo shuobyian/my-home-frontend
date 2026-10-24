@@ -62,7 +62,7 @@ export const styles = {
     }
   `,
 
-  // 탭 막대에서는 칸이 너비를 나눠 갖고(터치 최소 크기 44px. 관리자 메뉴까지 8칸이 375px에 들어간다),
+  // 탭 막대에서는 칸이 너비를 나눠 갖고(터치 최소 크기 44px. 관리자 메뉴까지 7칸이 375px에 들어간다),
   // 세로 줄에서는 높이만큼만 차지한다
   entry: css`
     display: flex;
@@ -73,7 +73,7 @@ export const styles = {
     }
   `,
 
-  // 링크(NavLink)와 버튼(장바구니·로그인·로그아웃)이 같은 모양을 쓴다.
+  // 링크와 버튼(로그인·로그아웃)이 같은 모양을 쓴다.
   // 현재 화면은 aria-current="page"로 표시한다. :hover 규칙은 전역 a:hover보다 앞서도록 클래스 안에 둔다.
   item: css`
     position: relative;
@@ -126,7 +126,6 @@ export const styles = {
   `,
 
   icon: css`
-    position: relative;
     display: inline-flex;
     flex: none;
     font-size: 24px;
@@ -151,23 +150,6 @@ export const styles = {
       overflow: visible;
       clip: auto;
     }
-  `,
-
-  // 장바구니에 담긴 수량. 숫자만 보이므로 접근 이름은 버튼의 aria-label로 알린다
-  badge: css`
-    position: absolute;
-    top: -6px;
-    right: -10px;
-    min-width: 18px;
-    height: 18px;
-    padding: 0 5px;
-    font-size: var(--ui-font-size-sm);
-    font-weight: 600;
-    line-height: 18px;
-    text-align: center;
-    color: var(--ui-color-text-inverse);
-    background: var(--ui-color-danger);
-    border-radius: 9px;
   `,
 
   // 메뉴 묶음 사이의 구분선. 탭 막대에서는 세로선, 세로 줄에서는 가로선이다

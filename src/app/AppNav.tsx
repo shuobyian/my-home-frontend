@@ -1,12 +1,10 @@
 import { styles } from "@/app/AppNav.styles";
 import { ADMIN_MENU, MenuItem, USER_MENU } from "@/app/menus";
 import { ROUTES } from "@/app/routes";
-import { CartDrawer } from "@/components/cart/CartDrawer";
 import { useLogoutMutation } from "@/queries/auth";
 import { useCurrentUser } from "@/state/auth";
-import { useCart } from "@/state/cart";
-import { CartIcon, LoginIcon, LogoutIcon } from "@/ui";
-import { ReactNode, useState } from "react";
+import { LoginIcon, LogoutIcon } from "@/ui";
+import { ReactNode } from "react";
 import {
   createPath,
   Link,
@@ -16,21 +14,10 @@ import {
 } from "react-router";
 
 // 아이콘과 이름. 이름은 좁은 화면에서 눈에만 보이지 않는다.
-function ItemContent({
-  icon,
-  label,
-  badge,
-}: {
-  icon: ReactNode;
-  label: string;
-  badge?: ReactNode;
-}) {
+function ItemContent({ icon, label }: { icon: ReactNode; label: string }) {
   return (
     <>
-      <span css={styles.icon}>
-        {icon}
-        {badge}
-      </span>
+      <span css={styles.icon}>{icon}</span>
       <span css={styles.label}>{label}</span>
     </>
   );
@@ -66,102 +53,71 @@ export function AppNav() {
   const location = useLocation();
   const user = useCurrentUser();
   const logout = useLogoutMutation();
-  const { totalCount } = useCart();
-  const [cartOpen, setCartOpen] = useState(false);
   // 로그인·회원가입 화면에서는 로그인 메뉴를 감춘다(그 화면이 곧 로그인 폼)
   const onAuthPage = [ROUTES.LOGIN, ROUTES.SIGNUP].some((path) =>
     matchPath(path, location.pathname)
   );
 
   return (
-    <>
-      <nav aria-label='주 메뉴' css={styles.nav}>
-        <ul css={styles.list}>
-          {USER_MENU.map((item) => (
-            <MenuLink key={item.to} item={item} />
-          ))}
-          <li css={styles.entry}>
-            <button
-              type='button'
-              aria-haspopup='dialog'
-              // 수량 표시는 숫자만 보이므로 접근 이름에는 "개"를 붙여 알린다
-              aria-label={
-                totalCount > 0 ? `장바구니 ${totalCount}개` : undefined
-              }
-              title='장바구니'
-              css={styles.item}
-              onClick={() => setCartOpen(true)}
-            >
-              <ItemContent
-                icon={<CartIcon />}
-                label='장바구니'
-                badge={
-                  totalCount > 0 && (
-                    <span aria-hidden='true' css={styles.badge}>
-                      {totalCount > 99 ? "99+" : totalCount}
-                    </span>
-                  )
+    <nav aria-label='주 메뉴' css={styles.nav}>
+      <ul css={styles.list}>
+        {USER_MENU.map((item) => (
+          <MenuLink key={item.to} item={item} />
+        ))}
+
+        {user?.isAdmin && (
+          <>
+            <li aria-hidden='true' css={styles.divider} />
+            <li css={styles.wideOnly}>관리자</li>
+            {ADMIN_MENU.map((item) => (
+              <MenuLink key={item.to} item={item} />
+            ))}
+          </>
+        )}
+
+        <li aria-hidden='true' css={[styles.divider, styles.pushDown]} />
+        {user ? (
+          <>
+            <li css={styles.wideOnly}>{user.username}</li>
+            <li css={styles.entry}>
+              <button
+                type='button'
+                aria-busy={logout.isPending || undefined}
+                title={`${user.username} 로그아웃`}
+                css={styles.item}
+                onClick={() => {
+                  if (!logout.isPending) logout.mutate();
+                }}
+              >
+                <ItemContent icon={<LogoutIcon />} label='로그아웃' />
+              </button>
+            </li>
+          </>
+        ) : (
+          !onAuthPage && (
+            <li css={styles.entry}>
+              <button
+                type='button'
+                title='로그인'
+                css={styles.item}
+                // 로그인하면 지금 화면으로 돌아온다(화면의 state도 함께. 예: 자유 모드 결과).
+                // ponytail: 히스토리에는 지금 화면이 한 번 더 쌓인다(로그인 화면 자리를 지금 화면으로 바꾸므로).
+                // 뒤로 가기 한 번이 헛도는 게 문제가 되면 로그인 뒤 navigate(-1)로 돌아가게 바꾼다.
+                onClick={() =>
+                  navigate(ROUTES.LOGIN, {
+                    state: {
+                      from: createPath(location),
+                      fromState: location.state,
+                    },
+                  })
                 }
-              />
-            </button>
-          </li>
-
-          {user?.isAdmin && (
-            <>
-              <li aria-hidden='true' css={styles.divider} />
-              <li css={styles.wideOnly}>관리자</li>
-              {ADMIN_MENU.map((item) => (
-                <MenuLink key={item.to} item={item} />
-              ))}
-            </>
-          )}
-
-          <li aria-hidden='true' css={[styles.divider, styles.pushDown]} />
-          {user ? (
-            <>
-              <li css={styles.wideOnly}>{user.username}</li>
-              <li css={styles.entry}>
-                <button
-                  type='button'
-                  aria-busy={logout.isPending || undefined}
-                  title={`${user.username} 로그아웃`}
-                  css={styles.item}
-                  onClick={() => {
-                    if (!logout.isPending) logout.mutate();
-                  }}
-                >
-                  <ItemContent icon={<LogoutIcon />} label='로그아웃' />
-                </button>
-              </li>
-            </>
-          ) : (
-            !onAuthPage && (
-              <li css={styles.entry}>
-                <button
-                  type='button'
-                  title='로그인'
-                  css={styles.item}
-                  // 로그인하면 지금 화면으로 돌아온다(화면의 state도 함께. 예: 자유 모드 결과).
-                  // ponytail: 히스토리에는 지금 화면이 한 번 더 쌓인다(로그인 화면 자리를 지금 화면으로 바꾸므로).
-                  // 뒤로 가기 한 번이 헛도는 게 문제가 되면 로그인 뒤 navigate(-1)로 돌아가게 바꾼다.
-                  onClick={() =>
-                    navigate(ROUTES.LOGIN, {
-                      state: {
-                        from: createPath(location),
-                        fromState: location.state,
-                      },
-                    })
-                  }
-                >
-                  <ItemContent icon={<LoginIcon />} label='로그인' />
-                </button>
-              </li>
-            )
-          )}
-        </ul>
-      </nav>
-      {/* 서랍은 메뉴 밖에 둔다(메뉴의 스크롤·쌓임 맥락에 갇히지 않게) */}
-      <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-    </>
+              >
+                <ItemContent icon={<LoginIcon />} label='로그인' />
+              </button>
+            </li>
+          )
+        )}
+      </ul>
+    </nav>
   );
 }

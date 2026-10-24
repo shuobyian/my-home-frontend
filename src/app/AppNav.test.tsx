@@ -8,7 +8,6 @@ import {
   getAuthSession,
   saveAuthSession,
 } from "@/lib/authSession";
-import { CartProvider } from "@/state/cart";
 import { createSession } from "@/test/fixtures";
 import {
   InitialEntry,
@@ -37,15 +36,13 @@ function LoginProbe() {
 function renderNav(path: InitialEntry = "/walnut") {
   return render(
     <QueryClientProvider client={new QueryClient()}>
-      <CartProvider>
-        <MemoryRouter initialEntries={[path]}>
-          <AppNav />
-          <Routes>
-            <Route path='/login' element={<LoginProbe />} />
-            <Route path='*' element={null} />
-          </Routes>
-        </MemoryRouter>
-      </CartProvider>
+      <MemoryRouter initialEntries={[path]}>
+        <AppNav />
+        <Routes>
+          <Route path='/login' element={<LoginProbe />} />
+          <Route path='*' element={null} />
+        </Routes>
+      </MemoryRouter>
     </QueryClientProvider>
   );
 }
@@ -57,7 +54,7 @@ beforeEach(() => {
 });
 
 describe("AppNav 메뉴 구분", () => {
-  it("로그인하지 않았으면 누구나 쓰는 메뉴만 보여 주고 관리자 메뉴는 감춘다", () => {
+  it("로그인하지 않았으면 누구나 쓰는 메뉴만 보여 주고 관리자 메뉴는 감춘다(장바구니는 메뉴에 두지 않는다)", () => {
     renderNav();
 
     const nav = screen.getByRole("navigation", { name: "주 메뉴" });
@@ -65,8 +62,8 @@ describe("AppNav 메뉴 구분", () => {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
     }
     expect(
-      within(nav).getByRole("button", { name: "장바구니" })
-    ).toBeInTheDocument();
+      within(nav).queryByRole("button", { name: /장바구니/ })
+    ).not.toBeInTheDocument();
     for (const name of ADMIN_LABELS) {
       expect(within(nav).queryByRole("link", { name })).not.toBeInTheDocument();
     }
@@ -167,18 +164,6 @@ describe("AppNav 현재 화면 표시", () => {
       "href",
       "/manage/market"
     );
-  });
-});
-
-describe("AppNav 장바구니", () => {
-  it("누르면 장바구니 서랍을 연다", async () => {
-    renderNav();
-
-    fireEvent.click(screen.getByRole("button", { name: "장바구니" }));
-
-    expect(
-      await screen.findByRole("dialog", { name: "장바구니" })
-    ).toBeInTheDocument();
   });
 });
 

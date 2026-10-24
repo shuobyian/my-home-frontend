@@ -18,7 +18,7 @@ export interface MenuItem {
   end?: boolean;
 }
 
-// 누구나 쓰는 메뉴. 장바구니는 화면 이동이 아니라 서랍이라 AppNav가 따로 그린다.
+// 누구나 쓰는 메뉴. 장바구니는 메뉴가 아니라 홈·자유 모드 화면의 버튼(CartButton)으로 연다.
 export const USER_MENU: readonly MenuItem[] = [
   { label: "홈", to: ROUTES.HOME, icon: <HomeIcon />, end: true },
   { label: "호두작", to: ROUTES.WALNUT, icon: <WalnutIcon /> },
