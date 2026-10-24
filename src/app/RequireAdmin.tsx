@@ -6,22 +6,15 @@ import { useLoginMutation } from "@/queries/auth";
 import { Suspense, useEffect, useState } from "react";
 import {
   createPath,
-  matchPath,
   Navigate,
   Outlet,
   useLocation,
   useNavigate,
 } from "react-router";
 import { useCurrentUser } from "@/state/auth";
-import { Button, Modal, Paragraph, Result, Segmented, Spin, Stack } from "@/ui";
+import { Button, Modal, Paragraph, Result, Spin } from "@/ui";
 
-const MANAGE_MENU = [
-  { label: "Raw 엑셀 데이터", value: ROUTES.MANAGE },
-  { label: "물품 리스트", value: ROUTES.MANAGE_PRODUCT },
-  { label: "시세 리스트", value: ROUTES.MANAGE_MARKET },
-];
-
-// 관리 화면 게이트. 관리자로 로그인하기 전에는 관리 화면을 그리지 않아
+// 관리 화면 게이트. 관리 메뉴는 AppNav의 ADMIN_MENU가 맡는다. 관리자로 로그인하기 전에는 관리 화면을 그리지 않아
 // 관리 API 요청과 관리 화면 코드 다운로드가 일어나지 않는다.
 // 실제 보호는 서버가 한다(쓰기 API는 관리자 토큰이 있어야 한다).
 export function RequireAdmin() {
@@ -65,30 +58,16 @@ export function RequireAdmin() {
     );
   }
 
-  // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴를 찾는다
-  const selected = MANAGE_MENU.find(({ value }) =>
-    matchPath(value, location.pathname)
-  )?.value;
-
   return (
-    <Stack vertical gap={24}>
-      {/* 세로 Stack이 너비를 늘리지 않도록 감싼다 */}
-      <div>
-        <Segmented
-          aria-label='관리 메뉴'
-          options={MANAGE_MENU}
-          value={selected}
-          onChange={(value) => navigate(value)}
-        />
-      </div>
-      {/* 관리 화면 코드를 받는 중이거나 오류가 나도 메뉴는 그대로 둔다 */}
+    <>
+      {/* 관리 화면 코드를 받는 중이거나 오류가 나도 다시 로그인 창은 그대로 둔다 */}
       <RouteErrorBoundary>
         <Suspense fallback={<Spin />}>
           <Outlet />
         </Suspense>
       </RouteErrorBoundary>
       {!isAdmin && <ReLoginModal />}
-    </Stack>
+    </>
   );
 }
 

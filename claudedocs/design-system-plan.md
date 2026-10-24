@@ -60,7 +60,7 @@ src/ui/
 - `Empty` — `description?`(기본 "데이터 없음"), `children`(동작 버튼 등).
 - `Result` — `status: "404" | "warning" | "error"`, `title`, `description?`, `actions?`.
 - `Alert` — 오류 안내 상자. `title`, `description?`, `role="alert"`.
-- 아이콘 — `DeleteIcon`, `PictureIcon`, `CloseIcon`, `PlusIcon`, `MinusIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `EyeIcon`, `EyeOffIcon`, `SuccessIcon`, `ErrorIcon`, `WarningIcon`, `InfoIcon`, `EmptyIcon`.
+- 아이콘 — `DeleteIcon`, `PictureIcon`, `CloseIcon`, `PlusIcon`, `MinusIcon`, `ChevronLeftIcon`, `ChevronRightIcon`, `EyeIcon`, `EyeOffIcon`, `SuccessIcon`, `ErrorIcon`, `WarningIcon`, `InfoIcon`, `EmptyIcon`, 메뉴용 `HomeIcon`, `WalnutIcon`, `SlidersIcon`, `CartIcon`, `LoginIcon`, `LogoutIcon`, `SpreadsheetIcon`, `BoxIcon`, `TrendingUpIcon`.
 - 전역 클래스 `ui-sr-only`(화면에서만 숨김), `<hr>` 기본 스타일(Divider 대체).
 
 ### 폼

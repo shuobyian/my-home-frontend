@@ -51,6 +51,8 @@ echo "VITE_API_BASE_URL=https://my-home-backend-jqsu.onrender.com" > .env.develo
 - `/login`·`/signup`에서 로그인·회원가입합니다. 서버가 준 토큰은 `localStorage`의 `my-home-auth`에 두고, API 요청마다 `Authorization: Bearer <토큰>`으로 보냅니다.
 - 토큰이 만료되었거나 서버가 401을 돌려주면 이 기기의 로그인을 지웁니다.
 - 관리 화면(`/manage`)과 물품·시세·결과를 바꾸는 API는 관리자 계정만 씁니다. 관리자 계정은 백엔드에서 `python manage.py createsuperuser`로 만듭니다(my-home-backend README 참고).
+- 메뉴는 `src/app/menus.tsx`에서 `USER_MENU`(누구나)와 `ADMIN_MENU`(관리자)로 나뉩니다. `AppNav`는 관리자로 로그인했을 때만 관리자 메뉴를 구분선 아래에 보여 줍니다. 메뉴를 감추는 것은 편의일 뿐이고, 화면은 `RequireAdmin`이, 데이터는 서버가 막습니다.
+- 메뉴는 화면 너비에 맞춰 바뀝니다: 1024px 이상은 왼쪽 사이드바(아이콘+이름), 768px 이상은 왼쪽 아이콘 줄, 그보다 좁으면 아래 탭 막대(아이콘만)입니다.
 
 ## 배포 (Vercel)
 
