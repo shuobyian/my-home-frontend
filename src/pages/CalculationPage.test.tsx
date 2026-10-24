@@ -87,25 +87,13 @@ describe("CalculationPage", () => {
     await waitFor(() =>
       expect(cellsOf("원목")).toEqual([
         "원목",
-        "80개",
-        "-",
-        "40,000골드",
+        "80개 (35개 부족)",
         "45개",
-        "35개",
         "-",
-        "17,500골드",
+        "40,000골드 (17,500골드 부족)",
       ])
     );
-    expect(cellsOf("못")).toEqual([
-      "못",
-      "5개",
-      "-",
-      "50골드",
-      "99개",
-      "0개",
-      "-",
-      "0골드",
-    ]);
+    expect(cellsOf("못")).toEqual(["못", "5개", "99개", "-", "50골드"]);
     // 총 가격 옆에 부족한 원목 35개만큼의 가격
     expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
     expect(screen.getByText("부족 총 17,500골드")).toBeInTheDocument();

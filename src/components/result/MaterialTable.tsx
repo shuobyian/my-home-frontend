@@ -3,93 +3,101 @@ import { OwnedCounts, shortage, shortagePrice } from "@/domain/inventory";
 import { toMung } from "@/domain/result";
 import { formatNumber } from "@/lib/format";
 import { Table, TableColumn } from "@/ui";
+import { styles } from "./MaterialTable.styles";
+
+const countText = (count: number) => `${formatNumber(count)}개`;
 
 // 1뭉이 안 되면 '-'
 const mungText = (count: number) =>
   toMung(count) > 0 ? `${formatNumber(toMung(count))}뭉` : "-";
 
-const nameColumn: TableColumn<MaterialCost> = {
-  title: "재료",
-  key: "name",
-  render: ({ name }) => name,
-};
+const goldText = (price: number) => `${formatNumber(price)}골드`;
 
-const costColumns: TableColumn<MaterialCost>[] = [
-  {
-    title: "개수",
-    key: "count",
-    render: ({ count }) => `${formatNumber(count)}개`,
-    align: "right",
-    sorter: (a, b) => a.count - b.count,
-  },
-  {
-    title: "뭉",
-    key: "mung",
-    render: ({ count }) => mungText(count),
-    align: "right",
-  },
-  {
-    title: "골드",
-    key: "price",
-    render: ({ price }) => `${formatNumber(price)}골드`,
-    align: "right",
-    sorter: (a, b) => a.price - b.price,
-  },
-];
+// 원래 값 옆에 작은 회색 글씨로 '(N 부족)'을 붙인다. 부족하지 않으면 원래 값만
+function withShortage(value: string, lacking: string | null) {
+  if (!lacking) return value;
+  return (
+    <>
+      {value} <span css={styles.shortage}>({lacking} 부족)</span>
+    </>
+  );
+}
 
-// 원래 개수·뭉·골드 뒤에 둘 보유 개수와 부족 개수·뭉·골드(로그인해서 보유 재료를 받았을 때만)
-function ownedColumns(owned: OwnedCounts): TableColumn<MaterialCost>[] {
-  const ownedOf = (name: string) => owned.get(name) ?? 0;
+// 보유 재료가 있으면(로그인) 보유 열을 더하고, 개수·뭉·골드 옆에 부족(개수 - 보유)한 만큼을 붙인다
+function materialColumns(owned?: OwnedCounts): TableColumn<MaterialCost>[] {
+  const ownedOf = (name: string) => owned?.get(name) ?? 0;
+  // 보유 재료를 모르면(로그아웃) 부족도 보여 주지 않는다
   const shortageOf = ({ name, count }: MaterialCost) =>
-    shortage(count, ownedOf(name));
+    owned ? shortage(count, ownedOf(name)) : 0;
   const shortagePriceOf = ({ name, count, price }: MaterialCost) =>
-    shortagePrice(count, price, ownedOf(name));
+    owned ? shortagePrice(count, price, ownedOf(name)) : 0;
+
+  const ownedColumn: TableColumn<MaterialCost> = {
+    title: "보유",
+    key: "owned",
+    render: ({ name }) => countText(ownedOf(name)),
+    align: "right",
+  };
+
   return [
     {
-      title: "보유",
-      key: "owned",
-      render: ({ name }) => `${formatNumber(ownedOf(name))}개`,
+      title: "재료",
+      key: "name",
+      render: ({ name }) => name,
+    },
+    {
+      title: "개수",
+      key: "count",
+      render: (material) => {
+        const lacking = shortageOf(material);
+        return withShortage(
+          countText(material.count),
+          lacking > 0 ? countText(lacking) : null
+        );
+      },
+      align: "right",
+      sorter: (a, b) => a.count - b.count,
+    },
+    ...(owned ? [ownedColumn] : []),
+    {
+      title: "뭉",
+      key: "mung",
+      render: (material) => {
+        const lacking = shortageOf(material);
+        return withShortage(
+          mungText(material.count),
+          toMung(lacking) > 0 ? mungText(lacking) : null
+        );
+      },
       align: "right",
     },
     {
-      title: "부족 개수",
-      key: "shortage",
-      render: (material) => `${formatNumber(shortageOf(material))}개`,
+      title: "골드",
+      key: "price",
+      render: (material) => {
+        const lacking = shortagePriceOf(material);
+        return withShortage(
+          goldText(material.price),
+          lacking > 0 ? goldText(lacking) : null
+        );
+      },
       align: "right",
-      sorter: (a, b) => shortageOf(a) - shortageOf(b),
-    },
-    {
-      title: "부족 뭉",
-      key: "shortageMung",
-      render: (material) => mungText(shortageOf(material)),
-      align: "right",
-    },
-    {
-      title: "부족 골드",
-      key: "shortagePrice",
-      render: (material) => `${formatNumber(shortagePriceOf(material))}골드`,
-      align: "right",
-      sorter: (a, b) => shortagePriceOf(a) - shortagePriceOf(b),
+      sorter: (a, b) => a.price - b.price,
     },
   ];
 }
 
 interface MaterialTableProps {
   materials: MaterialCost[];
-  // 로그인한 회원의 보유 재료. 있으면 보유 개수와 부족(개수 - 보유)의 개수·뭉·골드 열을 함께 보여 준다
+  // 로그인한 회원의 보유 재료. 있으면 보유 열과, 개수·뭉·골드 옆에 부족(개수 - 보유)한 만큼을 함께 보여 준다
   owned?: OwnedCounts;
 }
 
 export function MaterialTable({ materials, owned }: MaterialTableProps) {
-  const columns = [
-    nameColumn,
-    ...costColumns,
-    ...(owned ? ownedColumns(owned) : []),
-  ];
   return (
     <Table
       size='small'
-      columns={columns}
+      columns={materialColumns(owned)}
       data={materials}
       rowKey={(material) => material.name}
       pagination={{ showSizeChanger: true }}
