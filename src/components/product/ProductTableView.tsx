@@ -2,8 +2,10 @@ import { SearchBar } from "@/components/common/SearchBar";
 import { productColumns } from "@/components/product/productColumns";
 import { ProductModal } from "@/components/product/ProductModal";
 import { ProductNameList } from "@/components/product/ProductNameList";
+import { CatalogNames } from "@/domain/catalog";
 import { formatNumber } from "@/lib/format";
 import { ReactNode, useState } from "react";
+import { NewMarket } from "@/types/market";
 import { Product, ProductCreateRequest } from "@/types/product";
 import { Button, Stack, Table, TableColumn, Text, useDialogs } from "@/ui";
 
@@ -25,9 +27,18 @@ interface ProductTableViewProps {
   };
   // 이름 검색. 있으면 검색창을 보여 준다.
   onSearch?: (name: string) => void;
+  // 물품 모달로 넘긴다(ProductModal 참고)
+  catalogNames?: CatalogNames;
+  requireNewMarketPrices?: boolean;
+  // 있으면 물품명 다음에 상태 열을 둔다
+  renderStatus?: (product: Product) => ReactNode;
   // 아래 콜백은 실패하면 reject한다(모달·선택 상태를 유지).
-  onAdd: (product: ProductCreateRequest) => Promise<void>;
-  onEdit: (product: Product) => Promise<void>;
+  // newMarkets는 물품보다 먼저 시세에 추가할 새 재료다(requireNewMarketPrices가 아니면 []).
+  onAdd: (
+    product: ProductCreateRequest,
+    newMarkets: NewMarket[]
+  ) => Promise<void>;
+  onEdit: (product: Product, newMarkets: NewMarket[]) => Promise<void>;
   onRemove: (products: Product[]) => Promise<void>;
   toolbarExtra?: ReactNode;
 }
@@ -39,12 +50,28 @@ export function ProductTableView({
   loading,
   pagination,
   onSearch,
+  catalogNames,
+  requireNewMarketPrices,
+  renderStatus,
   onAdd,
   onEdit,
   onRemove,
   toolbarExtra,
 }: ProductTableViewProps) {
   const dialogs = useDialogs();
+  const tableColumns = renderStatus
+    ? [
+        columns[0],
+        {
+          title: "상태",
+          key: "status",
+          render: renderStatus,
+          width: 160,
+          ellipsis: true,
+        },
+        ...columns.slice(1),
+      ]
+    : columns;
 
   // 페이지를 넘겨도 선택을 유지한다(표가 처리). 검색어가 바뀌면 초기화한다.
   const [selection, setSelection] = useState<Product[]>([]);
@@ -90,7 +117,7 @@ export function ProductTableView({
         <Table
           rowKey={({ id }) => id}
           loading={loading}
-          columns={columns}
+          columns={tableColumns}
           data={products}
           pagination={{
             ...(pagination && {
@@ -113,10 +140,12 @@ export function ProductTableView({
       {editing && (
         <ProductModal
           product={editing.product}
-          onSubmit={(value) =>
+          catalogNames={catalogNames}
+          requireNewMarketPrices={requireNewMarketPrices}
+          onSubmit={(value, newMarkets) =>
             editing.product
-              ? onEdit(value as Product)
-              : onAdd(value as ProductCreateRequest)
+              ? onEdit(value as Product, newMarkets)
+              : onAdd(value as ProductCreateRequest, newMarkets)
           }
           onClose={() => setEditing(null)}
         />

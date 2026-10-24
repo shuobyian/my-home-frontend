@@ -57,7 +57,10 @@ export function classifyMaterial(
   return isMarket ? "market-as-sub" : "unknown-product";
 }
 
-export const MATERIAL_REF_TEXT: Record<Exclude<MaterialRef, "ok">, string> = {
+// 손봐야 하거나 확인할 참조("ok"가 아닌 것)
+export type MaterialRefIssue = Exclude<MaterialRef, "ok">;
+
+export const MATERIAL_REF_TEXT: Record<MaterialRefIssue, string> = {
   "missing-market": "시세에 없는 새 재료입니다.",
   "product-as-basic": "물품 이름입니다. '하위재료 O'로 바꾸세요.",
   "unknown-product": "없는 물품입니다.",
@@ -68,7 +71,7 @@ export const MATERIAL_REF_TEXT: Record<Exclude<MaterialRef, "ok">, string> = {
 };
 
 // 서버가 저장을 거절하는 참조. 시세 없는 새 재료(missing-market)는 시세를 먼저 추가하면 저장할 수 있다.
-export const BLOCKING_REFS: readonly MaterialRef[] = [
+export const BLOCKING_REFS: readonly MaterialRefIssue[] = [
   "product-as-basic",
   "unknown-product",
   "market-as-sub",
@@ -77,7 +80,8 @@ export const BLOCKING_REFS: readonly MaterialRef[] = [
 
 export const isBlockingRef = (
   ref: MaterialRef | undefined
-): ref is MaterialRef => ref !== undefined && BLOCKING_REFS.includes(ref);
+): ref is MaterialRefIssue =>
+  BLOCKING_REFS.some((blocking) => blocking === ref);
 
 // 이름만으로 하위재료 여부를 정할 수 있으면 정한다(물품에만 있으면 false, 시세에만 있으면 true)
 export function inferBasic(
@@ -147,7 +151,7 @@ export interface UploadProblems {
   // 시세에 없는 최하위재료와 그것을 쓰는 업로드 물품(처음 나온 순서)
   missingMarkets: { name: string; usedBy: string[] }[];
   // 서버가 거절할 참조(BLOCKING_REFS)
-  rowProblems: { product: string; material: string; ref: MaterialRef }[];
+  rowProblems: { product: string; material: string; ref: MaterialRefIssue }[];
 }
 
 // 일괄 업로드할 물품의 재료 참조를 검사한다.
