@@ -24,6 +24,18 @@ export interface Result {
   totalPrice: number;
 }
 
+// 저장된 결과 행 그대로(POST /result 응답). 재료 이름·개수·가격은 쉼표로 이은 문자열이다
+export interface ResultRow {
+  id: number;
+  createdAt: string;
+  updatedAt: string | null;
+  product_id: number;
+  names: string;
+  counts: string;
+  prices: string;
+  totalPrice: number;
+}
+
 export interface ResultSearchParams {
   page: number;
   size: number;

@@ -2,22 +2,16 @@ import {
   createProduct,
   createProducts,
   deleteProducts,
+  fetchAllProducts,
   fetchProducts,
   updateProduct,
 } from "@/apis/product";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { useInvalidateCatalog } from "@/queries/invalidate";
+import { productKeys } from "@/queries/keys";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { ProductSearchParams } from "@/types/product";
 
-export const productKeys = {
-  all: ["product"] as const,
-  list: (params: ProductSearchParams) =>
-    [...productKeys.all, "list", params] as const,
-};
+export { productKeys } from "@/queries/keys";
 
 export const useProductsQuery = (params: ProductSearchParams) =>
   useQuery({
@@ -27,35 +21,39 @@ export const useProductsQuery = (params: ProductSearchParams) =>
     placeholderData: keepPreviousData,
   });
 
-// 물품이 바뀌면 물품 목록을 다시 불러온다.
-// 완료를 기다리지 않아 호출부의 성공 메시지가 바로 뜬다.
-function useInvalidateProducts() {
-  const queryClient = useQueryClient();
-  return () => {
-    queryClient.invalidateQueries({ queryKey: productKeys.all });
-  };
-}
+// 쪽을 나누지 않은 전체 물품(이름 비교·물품 찾기용)
+export const useAllProductsQuery = ({
+  enabled = true,
+}: { enabled?: boolean } = {}) =>
+  useQuery({
+    queryKey: productKeys.allList,
+    queryFn: fetchAllProducts,
+    enabled,
+    // 화면에서 오류를 직접 보여 준다
+    throwOnError: false,
+  });
 
+// 물품을 저장하면 서버가 결과도 함께 만들고 다시 계산하므로 카탈로그 전체를 다시 받는다
 export const useCreateProductMutation = () =>
   useMutation({
     mutationFn: createProduct,
-    onSuccess: useInvalidateProducts(),
+    onSuccess: useInvalidateCatalog(),
   });
 
 export const useCreateProductsMutation = () =>
   useMutation({
     mutationFn: createProducts,
-    onSuccess: useInvalidateProducts(),
+    onSuccess: useInvalidateCatalog(),
   });
 
 export const useUpdateProductMutation = () =>
   useMutation({
     mutationFn: updateProduct,
-    onSuccess: useInvalidateProducts(),
+    onSuccess: useInvalidateCatalog(),
   });
 
 export const useDeleteProductsMutation = () =>
   useMutation({
     mutationFn: deleteProducts,
-    onSuccess: useInvalidateProducts(),
+    onSuccess: useInvalidateCatalog(),
   });

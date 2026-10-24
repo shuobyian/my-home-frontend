@@ -3,6 +3,9 @@ export const STORAGE_KEY = {
   MARKET: "my-home-market",
   RESULT: "my-home-result",
   PRODUCT: "my-home-product",
+  // Raw 화면에서 서버에 올렸거나 서버 목록에서 본 물품 이름(string[]).
+  // 서버에 없는 이름이 새 물품인지, 서버에서 지워진 물품인지 가르는 데 쓴다.
+  PRODUCT_KNOWN_NAMES: "my-home-product-known-names",
   CART: "my-home-cart:v2",
   // 이전 장바구니 형식(결과 id → { item, count }). 새 형식으로 옮긴 뒤 삭제한다.
   LEGACY_CART: "my-home-selected-results",

@@ -1,5 +1,9 @@
 import { useEffect, useEffectEvent, useState } from "react";
-import { findNewMarkets } from "@/domain/market";
+import {
+  findNewMarkets,
+  mergeMarkets,
+  renameByServerId,
+} from "@/domain/market";
 import { Market } from "@/types/market";
 import { Button, Field, Input, NumberInput, Stack, Table, useForm } from "@/ui";
 
@@ -15,37 +19,27 @@ interface MarketPriceFormProps {
   initialMarkets?: Market[];
   // 서버에만 있어 표에 덧붙인 재료를 알린다
   onMarketsAdded?: (added: Market[]) => void;
-  // 서버에 저장하는 화면은 정수 시세를 필수로 받는다(PUT /market 규칙)
-  requirePrice?: boolean;
   submitText: string;
   submitting?: boolean;
   onSubmit: (markets: Market[]) => void;
 }
 
-// 재료 시세 입력 표
+// 재료 시세 입력 표(자유 모드). 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
 export function MarketPriceForm({
   serverMarkets,
   initialMarkets,
   onMarketsAdded,
-  requirePrice = false,
   submitText,
   submitting,
   onSubmit,
 }: MarketPriceFormProps) {
   const source = initialMarkets ?? serverMarkets;
-  const { values, errors, setValues, handleSubmit } = useForm<{
+  // 비운 칸도 그대로 넘기므로 검증할 것이 없다
+  const { values, setValues, handleSubmit } = useForm<{
     markets: MarketRow[];
   }>(
     () => ({ markets: source ?? [] }),
-    ({ markets }) =>
-      requirePrice
-        ? Object.fromEntries(
-            markets.map((market, index) => [
-              `markets.${index}.price`,
-              market.price == null ? "시세를 입력해주세요" : undefined,
-            ])
-          )
-        : {}
+    () => ({})
   );
 
   // 처음 값이 준비되면 한 번만 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록).
@@ -56,17 +50,21 @@ export function MarketPriceForm({
     setValues({ markets: source });
   }
 
-  // 저장해 둔 값으로 시작한 표는 서버 시세가 도착했을 때 한 번만 새 재료를 덧붙인다.
-  // 서버 값으로 시작했거나 이미 덧붙였다면 하지 않는다(이후 재조회도 입력 중인 값을 건드리지 않는다)
+  // 저장해 둔 값으로 시작한 표는 서버 시세가 도착했을 때 한 번만 서버에 맞춘다.
+  // 이름이 바뀐 재료(같은 id)는 입력값을 지킨 채 새 이름으로 바꾸고, 새 재료는 끝에 덧붙인다.
+  // 서버 값으로 시작했거나 이미 맞췄다면 하지 않는다(이후 재조회도 입력 중인 값을 건드리지 않는다)
   const [merged, setMerged] = useState(!initialMarkets);
   const [added, setAdded] = useState<Market[]>([]);
   if (!merged && serverMarkets) {
     setMerged(true);
-    const newMarkets = findNewMarkets(values.markets, serverMarkets);
-    if (newMarkets.length > 0) {
-      setValues(({ markets }) => ({ markets: [...markets, ...newMarkets] }));
-      setAdded(newMarkets);
+    const renamed = renameByServerId(values.markets, serverMarkets);
+    const newMarkets = findNewMarkets(renamed, serverMarkets);
+    if (renamed !== values.markets || newMarkets.length > 0) {
+      setValues(({ markets }) => ({
+        markets: mergeMarkets(markets, serverMarkets),
+      }));
     }
+    if (newMarkets.length > 0) setAdded(newMarkets);
   }
 
   const notifyAdded = useEffectEvent((markets: Market[]) =>
@@ -86,12 +84,12 @@ export function MarketPriceForm({
   return (
     <form
       onSubmit={handleSubmit(({ markets }) =>
-        // 입력칸이 있는 값만 넘긴다. 필수가 아니면 빈 시세(null)도 그대로 넘긴다(parseMarketList가 받는다)
+        // 입력칸이 있는 값만 넘긴다. 빈 시세(null)도 그대로 넘긴다(parseMarketList가 받는다)
         onSubmit(
           markets.map(({ id, name, price }) => ({
             id,
             name,
-            // ponytail: FreePage 경로(requirePrice 아님)에서 넘어가는 null을 이 단언이 가린다.
+            // ponytail: 비운 칸에서 넘어가는 null을 이 단언이 가린다.
             // Market.price를 number | null로 넓히고 서버 계약(계산 요청이 null 시세를 받는지)을 확인한 뒤 없앤다
             price: price as number,
           }))
@@ -130,15 +128,12 @@ export function MarketPriceForm({
               <Field
                 label={`${market.name} 시세`}
                 hideLabel
-                required={requirePrice}
-                error={errors[`markets.${index}.price`]}
                 style={{ marginBottom: 0 }}
               >
                 <NumberInput
                   suffix='골드'
                   style={{ width: 180 }}
                   min={0}
-                  precision={requirePrice ? 0 : undefined}
                   value={market.price}
                   onChange={(price) => setPrice(index, price)}
                 />

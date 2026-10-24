@@ -6,6 +6,7 @@ import {
   SpreadsheetIcon,
   TrendingUpIcon,
   WalnutIcon,
+  WarningIcon,
 } from "@/ui";
 import { ReactNode } from "react";
 
@@ -35,4 +36,5 @@ export const ADMIN_MENU: readonly MenuItem[] = [
   },
   { label: "물품 리스트", to: ROUTES.MANAGE_PRODUCT, icon: <BoxIcon /> },
   { label: "시세 리스트", to: ROUTES.MANAGE_MARKET, icon: <TrendingUpIcon /> },
+  { label: "데이터 점검", to: ROUTES.MANAGE_CHECK, icon: <WarningIcon /> },
 ];

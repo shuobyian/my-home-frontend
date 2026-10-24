@@ -243,42 +243,83 @@ export function normalizeProductIds(products: Product[]): Product[] {
   });
 }
 
-// 일괄 저장(POST /product/all) 확인용 요약. 서버는 이름 기준으로 새 물품만 추가하고
-// 이미 있는 물품의 수정·삭제는 반영하지 않으므로, 마지막 저장본과 이름으로 비교한다.
-export interface BulkSaveSummary {
-  // 마지막 저장본에 없는 이름(서버에도 이미 있으면 서버가 건너뛴다)
-  toAdd: Product[];
-  // toAdd 중 같은 행의 이름만 바뀐 것(기존 물품은 남고 새 물품으로 추가된다)
-  renamed: Product[];
-  // 이름은 같고 내용이 바뀐 것(반영되지 않는다)
-  edited: Product[];
-  // 마지막 저장본에는 있었지만 지금은 없는 것(서버에서 지워지지 않는다)
-  removed: Product[];
+// 서버 물품을 Raw 초안 행으로 바꾼다. 서버가 붙인 재료의 id·product_id는 빼고 엑셀에 담는 필드만 남긴다
+export function toDraftProducts(products: readonly Product[]): Product[] {
+  return normalizeProductIds(
+    products.map(
+      ({ id, name, level, craftingPrice, tool, category, materials }) => ({
+        id,
+        name,
+        level,
+        craftingPrice,
+        tool,
+        category,
+        materials: materials.map(({ name, basic, count }) => ({
+          name,
+          basic,
+          count,
+        })),
+      })
+    )
+  );
 }
 
-const nameOf = ({ name }: Product) => name.trim();
-const contentOf = ({ id, ...rest }: Product) => JSON.stringify(rest);
+// 일괄 업로드(POST /product/all) 계획. 서버는 이름 기준으로 새 물품만 추가하고
+// 이미 있는 물품의 수정·삭제는 반영하지 않으므로, 지금 서버 목록과 이름으로 비교한다.
+export interface BulkUploadPlan {
+  // 서버에 없고 올린 적도 없는 이름(업로드 대상)
+  toAdd: Product[];
+  // 서버에 없지만 올린 적이 있는 이름. 서버에서 지워졌거나 이름이 바뀐 물품이라 다시 올리지 않는다
+  revived: Product[];
+  // 서버에 같은 이름이 있지만 내용이 다른 것(반영되지 않는다)
+  differs: Product[];
+  // 서버에만 있는 물품 수
+  serverOnly: number;
+}
 
-export function summarizeBulkSave(
-  lastSaved: Product[],
-  current: Product[]
-): BulkSaveSummary {
-  const savedByName = new Map(lastSaved.map((p) => [nameOf(p), p]));
-  const savedById = new Map(lastSaved.map((p) => [p.id, p]));
+const nameOf = ({ name }: Pick<Product, "name">) => name.trim();
+
+// 서버가 저장하는 내용만 비교한다(id, 서버 재료의 id 등은 무시)
+const contentOf = ({
+  level,
+  craftingPrice,
+  tool,
+  category,
+  materials,
+}: Product) =>
+  JSON.stringify([
+    level,
+    craftingPrice,
+    tool,
+    category,
+    materials.map(({ name, basic, count }) => [name.trim(), basic, count]),
+  ]);
+
+// knownNames: 이 브라우저에서 서버에 올렸거나 서버 목록에서 본 적이 있는 물품 이름
+export function planBulkUpload(
+  current: readonly Product[],
+  serverProducts: readonly Product[],
+  knownNames: Iterable<string>
+): BulkUploadPlan {
+  const serverByName = new Map(serverProducts.map((p) => [nameOf(p), p]));
+  const known = new Set(Array.from(knownNames, (name) => name.trim()));
   const currentNames = new Set(current.map(nameOf));
 
-  const toAdd = current.filter((p) => !savedByName.has(nameOf(p)));
-
-  return {
-    toAdd,
-    renamed: toAdd.filter((p) => {
-      const prev = savedById.get(p.id);
-      return prev !== undefined && nameOf(prev) !== nameOf(p);
-    }),
-    edited: current.filter((p) => {
-      const prev = savedByName.get(nameOf(p));
-      return prev !== undefined && contentOf(prev) !== contentOf(p);
-    }),
-    removed: lastSaved.filter((p) => !currentNames.has(nameOf(p))),
+  const plan: BulkUploadPlan = {
+    toAdd: [],
+    revived: [],
+    differs: [],
+    serverOnly: [...serverByName.keys()].filter(
+      (name) => !currentNames.has(name)
+    ).length,
   };
+  current.forEach((product) => {
+    const server = serverByName.get(nameOf(product));
+    if (!server) {
+      (known.has(nameOf(product)) ? plan.revived : plan.toAdd).push(product);
+    } else if (contentOf(server) !== contentOf(product)) {
+      plan.differs.push(product);
+    }
+  });
+  return plan;
 }
