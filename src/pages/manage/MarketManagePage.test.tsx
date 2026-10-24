@@ -11,6 +11,7 @@ import { MarketManagePage } from "@/pages/manage/MarketManagePage";
 import { createCatalogCheck } from "@/test/fixtures";
 import { Market } from "@/types/market";
 import { UIProvider } from "@/ui";
+import { MemoryRouter } from "react-router";
 
 // 화면 코드는 apis/를 직접 가져오지 않으므로(레이어 규칙) 모듈 경로로만 모킹한다
 const api = vi.hoisted(() => ({
@@ -39,7 +40,10 @@ function renderPage() {
       client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
     >
       <UIProvider>
-        <MarketManagePage />
+        {/* 점검 배너의 링크 때문에 라우터가 필요하다 */}
+        <MemoryRouter>
+          <MarketManagePage />
+        </MemoryRouter>
       </UIProvider>
     </QueryClientProvider>
   );
@@ -65,6 +69,14 @@ beforeEach(() => {
 });
 
 describe("MarketManagePage", () => {
+  it("위쪽에 점검 요약을 보여 준다", async () => {
+    renderPage();
+
+    expect(
+      await screen.findByText("모든 물품이 결과 리스트에 반영되어 있습니다.")
+    ).toBeInTheDocument();
+  });
+
   it("새 행은 id 없이 저장하고, 저장 뒤 서버 값으로 다시 채운다", async () => {
     renderPage();
     expect(await screen.findByLabelText("원목 시세")).toHaveValue("500");

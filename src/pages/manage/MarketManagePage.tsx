@@ -1,4 +1,5 @@
 import { getErrorMessage } from "@/apis/errors";
+import { CatalogStatusBanner } from "@/components/catalog/CatalogStatusBanner";
 import { MarketEditor } from "@/components/market/MarketEditor";
 import { MarketRowDiff } from "@/domain/market";
 import { formatNumber } from "@/lib/format";
@@ -22,7 +23,8 @@ export function MarketManagePage() {
     ? marketsQuery.data
     : undefined;
   // 시세마다 쓰는 물품(사용처를 알아야 삭제·이름 변경 안내를 할 수 있다)
-  const { data: check } = useCatalogCheckQuery();
+  const checkQuery = useCatalogCheckQuery();
+  const { data: check } = checkQuery;
   const usage = useMemo(
     () => check && new Map(check.markets.map((m) => [m.name, m.usedBy])),
     [check]
@@ -111,6 +113,13 @@ export function MarketManagePage() {
   return (
     <div>
       <Title level={4}>시세 리스트</Title>
+      <div style={{ marginBottom: 8 }}>
+        <CatalogStatusBanner
+          check={check}
+          loading={checkQuery.isPending}
+          error={checkQuery.isError}
+        />
+      </div>
       <Paragraph tone='secondary'>
         저장하면 모든 물품의 결과가 새 시세로 바로 다시 계산되고, 새 시세로
         계산할 수 있게 된 물품의 결과도 만들어집니다. 이름을 바꾸면 그 재료를

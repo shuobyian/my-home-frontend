@@ -8,6 +8,7 @@ import {
   ProductExcelRow,
   planBulkUpload,
   productsToExcelRows,
+  toDraftProducts,
 } from "@/domain/productExcel";
 import { Product } from "@/types/product";
 
@@ -405,5 +406,28 @@ describe("parseSavedProducts", () => {
   it("배열이 아니면 빈 배열", () => {
     expect(parseSavedProducts(undefined)).toEqual([]);
     expect(parseSavedProducts({})).toEqual([]);
+  });
+});
+
+describe("toDraftProducts", () => {
+  it("서버 물품에서 엑셀에 담는 필드만 남기고 id를 보정한다", () => {
+    const server = [
+      {
+        ...createProduct({ id: 7, name: "식탁" }),
+        materials: [
+          { id: 30, product_id: 7, name: "원목", basic: true, count: 2 },
+        ],
+      },
+      createProduct({ id: 7, name: "의자" }),
+    ];
+
+    expect(toDraftProducts(server)).toEqual([
+      createProduct({
+        id: 7,
+        name: "식탁",
+        materials: [{ name: "원목", basic: true, count: 2 }],
+      }),
+      createProduct({ id: 8, name: "의자" }),
+    ]);
   });
 });

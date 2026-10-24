@@ -152,6 +152,8 @@ export interface UploadProblems {
   missingMarkets: { name: string; usedBy: string[] }[];
   // 서버가 거절할 참조(BLOCKING_REFS)
   rowProblems: { product: string; material: string; ref: MaterialRefIssue }[];
+  // 업로드 안에서 두 번 이상 나온 물품 이름(처음 나온 순서). 서버가 업로드 전체를 거절한다
+  duplicates: string[];
 }
 
 // 일괄 업로드할 물품의 재료 참조를 검사한다.
@@ -162,9 +164,14 @@ export function findUploadProblems(
 ): UploadProblems {
   const usedByMarket = new Map<string, string[]>();
   const rowProblems: UploadProblems["rowProblems"] = [];
+  const seenProblems = new Set<string>();
+  const seenNames = new Set<string>();
+  const duplicates = new Set<string>();
 
   rows.forEach(({ name, materials }) => {
     const product = name.trim();
+    if (seenNames.has(product)) duplicates.add(product);
+    seenNames.add(product);
     materials.forEach((material: ProductMaterial) => {
       const ref = classifyMaterial(material, names, product);
       const materialName = material.name.trim();
@@ -173,6 +180,10 @@ export function findUploadProblems(
         if (!usedBy.includes(product)) usedBy.push(product);
         usedByMarket.set(materialName, usedBy);
       } else if (isBlockingRef(ref)) {
+        // 같은 물품에 같은 재료 줄이 둘이어도 한 번만 알린다
+        const key = JSON.stringify([product, materialName, ref]);
+        if (seenProblems.has(key)) return;
+        seenProblems.add(key);
         rowProblems.push({ product, material: materialName, ref });
       }
     });
@@ -184,7 +195,32 @@ export function findUploadProblems(
       usedBy,
     })),
     rowProblems,
+    duplicates: [...duplicates],
   };
+}
+
+// 업로드할 물품 이름별 문제 문구(Raw 표의 상태 칸에 쓴다)
+export function uploadMessagesByProduct({
+  missingMarkets,
+  rowProblems,
+  duplicates,
+}: UploadProblems): Map<string, string[]> {
+  const messages = new Map<string, string[]>();
+  const add = (product: string, message: string) =>
+    messages.set(product, [...(messages.get(product) ?? []), message]);
+
+  duplicates.forEach((product) =>
+    add(product, "같은 이름의 새 물품이 여러 번 있습니다.")
+  );
+  missingMarkets.forEach(({ name, usedBy }) =>
+    usedBy.forEach((product) =>
+      add(product, `${name}: ${MATERIAL_REF_TEXT["missing-market"]}`)
+    )
+  );
+  rowProblems.forEach(({ product, material, ref }) =>
+    add(product, `${material}: ${MATERIAL_REF_TEXT[ref]}`)
+  );
+  return messages;
 }
 
 // 저장해 둔 이름 목록을 복원한다. 형태가 맞지 않으면 undefined.

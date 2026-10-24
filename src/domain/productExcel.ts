@@ -243,6 +243,27 @@ export function normalizeProductIds(products: Product[]): Product[] {
   });
 }
 
+// 서버 물품을 Raw 초안 행으로 바꾼다. 서버가 붙인 재료의 id·product_id는 빼고 엑셀에 담는 필드만 남긴다
+export function toDraftProducts(products: readonly Product[]): Product[] {
+  return normalizeProductIds(
+    products.map(
+      ({ id, name, level, craftingPrice, tool, category, materials }) => ({
+        id,
+        name,
+        level,
+        craftingPrice,
+        tool,
+        category,
+        materials: materials.map(({ name, basic, count }) => ({
+          name,
+          basic,
+          count,
+        })),
+      })
+    )
+  );
+}
+
 // 일괄 업로드(POST /product/all) 계획. 서버는 이름 기준으로 새 물품만 추가하고
 // 이미 있는 물품의 수정·삭제는 반영하지 않으므로, 지금 서버 목록과 이름으로 비교한다.
 export interface BulkUploadPlan {

@@ -6,6 +6,7 @@ import {
   parseNameList,
   statusByProductId,
   toCatalogNames,
+  uploadMessagesByProduct,
 } from "@/domain/catalog";
 import {
   createCatalogCheck,
@@ -151,7 +152,18 @@ describe("findUploadProblems", () => {
     expect(findUploadProblems(rows, withUploads("판자", "식탁"))).toEqual({
       missingMarkets: [],
       rowProblems: [],
+      duplicates: [],
     });
+  });
+
+  it("업로드 안에서 겹치는 물품 이름을 한 번씩 모은다(앞뒤 공백은 지우고 비교)", () => {
+    const rows = ["반지", "목걸이", " 반지", "반지", "목걸이"].map((name) =>
+      createProduct({ name, materials: [] })
+    );
+
+    expect(
+      findUploadProblems(rows, withUploads("반지", "목걸이")).duplicates
+    ).toEqual(["반지", "목걸이"]);
   });
 
   it("시세 없는 재료를 처음 나온 순서로 모으고 쓰는 물품을 중복 없이 붙인다", () => {
@@ -190,6 +202,8 @@ describe("findUploadProblems", () => {
           { name: "원목", basic: true, count: 1 },
           // 시세와 물품에 모두 있는 이름(ambiguous)은 경고일 뿐 거절되지 않는다
           { name: "판자", basic: true, count: 1 },
+          // 같은 재료 줄이 또 있어도 한 번만 모은다
+          { name: "천", basic: false, count: 2 },
         ],
       }),
     ];
@@ -204,6 +218,37 @@ describe("findUploadProblems", () => {
       { product: "식탁", material: "천", ref: "market-as-sub" },
       { product: "식탁", material: "식탁", ref: "self" },
     ]);
+  });
+});
+
+describe("uploadMessagesByProduct", () => {
+  it("업로드 문제를 물품 이름별 문구로 모은다", () => {
+    expect(
+      uploadMessagesByProduct({
+        missingMarkets: [{ name: "은", usedBy: ["반지", "목걸이"] }],
+        rowProblems: [
+          { product: "반지", material: "천", ref: "market-as-sub" },
+        ],
+        duplicates: ["목걸이"],
+      })
+    ).toEqual(
+      new Map([
+        [
+          "목걸이",
+          [
+            "같은 이름의 새 물품이 여러 번 있습니다.",
+            "은: 시세에 없는 새 재료입니다.",
+          ],
+        ],
+        [
+          "반지",
+          [
+            "은: 시세에 없는 새 재료입니다.",
+            "천: 시세 재료 이름입니다. '최하위재료'로 바꾸세요.",
+          ],
+        ],
+      ])
+    );
   });
 });
 
