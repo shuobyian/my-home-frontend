@@ -2,8 +2,8 @@ import { MaterialCost } from "@/types/result";
 import { OwnedCounts, shortage, shortagePrice } from "@/domain/inventory";
 import { mungRemainder, toMung } from "@/domain/result";
 import { formatNumber } from "@/lib/format";
+import { ShortageText } from "@/components/common/ShortageText";
 import { Table, TableColumn } from "@/ui";
-import { styles } from "./MaterialTable.styles";
 
 const countText = (count: number) => `${formatNumber(count)}개`;
 
@@ -24,7 +24,7 @@ function withShortage(value: string, lacking: string | null) {
   if (!lacking) return value;
   return (
     <>
-      <span css={styles.shortage}>({lacking} 부족)</span> {value}
+      <ShortageText>{lacking}</ShortageText> {value}
     </>
   );
 }

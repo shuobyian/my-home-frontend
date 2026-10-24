@@ -79,7 +79,7 @@ describe("CalculationPage", () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     mockedFetchInventory.mockResolvedValue([
       { marketId: 1, name: "원목", count: 45 },
-      { marketId: 2, name: "못", count: 99 },
+      { marketId: 2, name: "못", count: 3 },
     ]);
     renderPage();
 
@@ -93,10 +93,16 @@ describe("CalculationPage", () => {
         "(17,500골드 부족) 40,000골드",
       ])
     );
-    expect(cellsOf("못")).toEqual(["못", "5개", "99개", "-", "50골드"]);
-    // 총 가격 옆에 부족한 원목 35개만큼의 가격
+    expect(cellsOf("못")).toEqual([
+      "못",
+      "(2개 부족) 5개",
+      "3개",
+      "-",
+      "(20골드 부족) 50골드",
+    ]);
+    // 총 가격 왼쪽에 부족한 만큼의 가격 합(원목 17,500 + 못 20)
     expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
-    expect(screen.getByText("부족 총 17,500골드")).toBeInTheDocument();
+    expect(screen.getByText("(17,520골드 부족)")).toBeInTheDocument();
   });
 
   it("로그인하지 않았으면 기초 재료 합산만 보여 준다", () => {
@@ -104,7 +110,7 @@ describe("CalculationPage", () => {
 
     expect(cellsOf("원목")).toEqual(["원목", "80개", "-", "40,000골드"]);
     expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
-    expect(screen.queryByText(/부족 총/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
   });
 });
