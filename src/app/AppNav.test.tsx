@@ -47,7 +47,12 @@ function renderNav(path: InitialEntry = "/walnut") {
   );
 }
 
-const ADMIN_LABELS = ["Raw 엑셀 데이터", "물품 리스트", "시세 리스트"];
+const ADMIN_LABELS = [
+  "Raw 엑셀 데이터",
+  "물품 리스트",
+  "시세 리스트",
+  "데이터 점검",
+];
 
 beforeEach(() => {
   clearAuthSession();
@@ -163,6 +168,10 @@ describe("AppNav 현재 화면 표시", () => {
     expect(screen.getByRole("link", { name: "시세 리스트" })).toHaveAttribute(
       "href",
       "/manage/market"
+    );
+    expect(screen.getByRole("link", { name: "데이터 점검" })).toHaveAttribute(
+      "href",
+      "/manage/check"
     );
   });
 });

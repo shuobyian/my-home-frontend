@@ -1,5 +1,6 @@
 import { AppLayout } from "@/app/AppLayout";
 import {
+  CatalogCheckPage,
   ManageHomePage,
   MarketManagePage,
   ProductManagePage,
@@ -32,6 +33,7 @@ export function AppRoutes() {
           <Route path={ROUTES.MANAGE} element={<ManageHomePage />} />
           <Route path={ROUTES.MANAGE_PRODUCT} element={<ProductManagePage />} />
           <Route path={ROUTES.MANAGE_MARKET} element={<MarketManagePage />} />
+          <Route path={ROUTES.MANAGE_CHECK} element={<CatalogCheckPage />} />
         </Route>
         <Route path='*' element={<NotFoundPage />} />
       </Route>

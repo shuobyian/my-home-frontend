@@ -11,4 +11,5 @@ export const ROUTES = {
   MANAGE: "/manage",
   MANAGE_PRODUCT: "/manage/product",
   MANAGE_MARKET: "/manage/market",
+  MANAGE_CHECK: "/manage/check",
 } as const;
