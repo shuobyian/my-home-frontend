@@ -5,6 +5,7 @@ import {
   CalculatorRequest,
   CalculatorResponse,
   Result,
+  ResultRow,
   ResultSearchParams,
 } from "@/types/result";
 
@@ -15,10 +16,11 @@ export async function fetchResults(params: ResultSearchParams) {
   return data;
 }
 
-// 결과가 아직 없는 물품의 결과를 서버에 저장된 시세로 새로 만든다 (관리자).
-// 이미 모두 있으면 서버가 400("추가할 결과가 없습니다.")을 돌려준다.
-export async function createResults() {
-  await client.post(ENDPOINTS.RESULT);
+// 결과 전체 동기화 (관리자). 빠진 결과를 만들고 낡은 결과를 현재 레시피·시세로 고친다.
+// 계산할 수 없는 물품은 건너뛰고 항상 성공(201)한다. 응답은 이번에 새로 만든 결과 행이다(없으면 []).
+export async function syncResults() {
+  const { data } = await client.post<ResultRow[]>(ENDPOINTS.RESULT);
+  return data;
 }
 
 // 사용자가 입력한 시세로 결과를 계산한다 (자유 모드, 서버에 저장하지 않음)

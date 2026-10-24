@@ -6,12 +6,11 @@ import {
   useProductsQuery,
   useUpdateProductMutation,
 } from "@/queries/product";
-import { useCreateResultsMutation } from "@/queries/result";
 import { useState } from "react";
 import { ProductSearchParams } from "@/types/product";
-import { Button, Stack, Title, useToast } from "@/ui";
+import { Stack, Title, useToast } from "@/ui";
 
-// 서버에 저장된 물품 목록 관리(조회·추가·수정·삭제, 결과 리스트 생성)
+// 서버에 저장된 물품 목록 관리(조회·추가·수정·삭제). 결과는 물품을 저장할 때 서버가 함께 맞춘다.
 export function ProductManagePage() {
   const toast = useToast();
 
@@ -25,7 +24,6 @@ export function ProductManagePage() {
   const createProduct = useCreateProductMutation();
   const updateProduct = useUpdateProductMutation();
   const deleteProducts = useDeleteProductsMutation();
-  const createResults = useCreateResultsMutation();
 
   // 마지막 페이지의 물품을 모두 지우는 등으로 보던 페이지가 범위를 넘으면 마지막 페이지로 바로잡는다.
   // 새 페이지를 받는 동안 보이는 이전 목록으로는 판단하지 않는다(한 쪽씩 연달아 넘어가지 않도록).
@@ -49,27 +47,9 @@ export function ProductManagePage() {
 
   return (
     <Stack vertical>
-      <Stack justify='space-between' wrap>
-        <Title level={4} style={{ margin: 0 }}>
-          물품 리스트
-        </Title>
-        <Button
-          variant='primary'
-          loading={createResults.isPending}
-          onClick={() =>
-            createResults.mutate(undefined, {
-              onSuccess: () => {
-                toast.success("결과가 생성되었습니다.");
-              },
-              onError: (error) => {
-                toast.error(getErrorMessage(error));
-              },
-            })
-          }
-        >
-          결과 리스트 생성
-        </Button>
-      </Stack>
+      <Title level={4} style={{ margin: 0 }}>
+        물품 리스트
+      </Title>
       <ProductTableView
         products={data?.content ?? []}
         total={data?.totalElements ?? 0}

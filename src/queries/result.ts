@@ -1,10 +1,7 @@
-import { calculateResults, createResults, fetchResults } from "@/apis/result";
-import {
-  keepPreviousData,
-  useMutation,
-  useQuery,
-  useQueryClient,
-} from "@tanstack/react-query";
+import { calculateResults, fetchResults, syncResults } from "@/apis/result";
+import { useInvalidateCatalog } from "@/queries/invalidate";
+import { calculatorKeys, resultKeys } from "@/queries/keys";
+import { keepPreviousData, useMutation, useQuery } from "@tanstack/react-query";
 import { Page } from "@/types/page";
 import {
   CalculatorRequest,
@@ -13,16 +10,7 @@ import {
   ResultSearchParams,
 } from "@/types/result";
 
-export const resultKeys = {
-  all: ["result"] as const,
-  list: (params: ResultSearchParams) =>
-    [...resultKeys.all, "list", params] as const,
-};
-
-export const calculatorKeys = {
-  all: ["calculator"] as const,
-  result: (body: CalculatorRequest) => [...calculatorKeys.all, body] as const,
-};
+export { calculatorKeys, resultKeys } from "@/queries/keys";
 
 // 캐시 원본을 바꾸지 않도록 복사본을 정렬한다
 const sortMaterialsByName = (result: Result): Result => ({
@@ -47,15 +35,12 @@ export const useResultsQuery = (params: ResultSearchParams) =>
     placeholderData: keepPreviousData,
   });
 
-export const useCreateResultsMutation = () => {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: createResults,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: resultKeys.all });
-    },
+// 결과 전체 동기화(빠진 결과 생성 + 낡은 결과 갱신). 결과를 쓰는 화면을 모두 다시 받는다
+export const useSyncResultsMutation = () =>
+  useMutation({
+    mutationFn: syncResults,
+    onSuccess: useInvalidateCatalog(),
   });
-};
 
 export const useCalculateResultsQuery = (
   body: CalculatorRequest,

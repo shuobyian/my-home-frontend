@@ -17,6 +17,12 @@ export async function fetchProducts(params: ProductSearchParams) {
   return data;
 }
 
+// 쪽을 나누지 않고 모든 물품을 받는다(size를 보내지 않으면 서버가 전체를 준다)
+export async function fetchAllProducts() {
+  const { data } = await client.get<Page<Product>>(ENDPOINTS.PRODUCT);
+  return data.content;
+}
+
 export async function createProduct(body: ProductCreateRequest) {
   const { data } = await client.post<Product>(ENDPOINTS.PRODUCT, body);
   return data;

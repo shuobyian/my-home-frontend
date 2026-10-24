@@ -5,6 +5,7 @@ export const ENDPOINTS = {
   RESULT: "/result",
   CALCULATOR: "/result/calculator",
   MARKET: "/market",
+  CATALOG_CHECK: "/catalog/check",
   EXPERIENCE: "/experience",
   WALNUT: "/experience/walnut",
   AUTH_SIGNUP: "/auth/signup",
