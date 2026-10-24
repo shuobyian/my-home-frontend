@@ -1,5 +1,6 @@
 import { getErrorMessage } from "@/apis/errors";
 import { ROUTES } from "@/app/routes";
+import { CartButton } from "@/components/cart/CartButton";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { Panel } from "@/components/common/Panel";
 import { SearchBar } from "@/components/common/SearchBar";
@@ -62,6 +63,7 @@ export function FreeResultPage() {
           {showSaved ? "저장된 결과" : "입력한 시세로 계산한 결과"}
         </Title>
         <Stack wrap>
+          <CartButton />
           {showSaved ? (
             <Button onClick={() => setShowSaved(false)}>
               새 계산 결과 보기

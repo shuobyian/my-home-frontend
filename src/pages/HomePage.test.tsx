@@ -75,6 +75,17 @@ describe("HomePage", () => {
     );
   });
 
+  it("장바구니 버튼으로 담은 물품을 확인한다(메뉴가 아니라 화면에 둔다)", async () => {
+    renderHome("/");
+    fireEvent.click(await screen.findByText("전체 결과"));
+
+    // 담으면 버튼에 수량이 보이고, 누르면 담긴 물품이 서랍에 나온다
+    fireEvent.click(screen.getByRole("button", { name: "장바구니 1개" }));
+
+    const dialog = await screen.findByRole("dialog", { name: "장바구니" });
+    expect(dialog).toHaveTextContent("전체 결과");
+  });
+
   it("검색하면 주소에 반영하고, 뒤로 가면 이전 조건과 입력창으로 돌아간다", async () => {
     renderHome("/?name=나무");
     await screen.findByText("나무 결과");

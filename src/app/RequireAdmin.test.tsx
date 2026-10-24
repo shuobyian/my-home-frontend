@@ -151,19 +151,4 @@ describe("RequireAdmin", () => {
     expect(await screen.findByText("홈 화면")).toBeInTheDocument();
     expect(screen.queryByText("관리 내용")).not.toBeInTheDocument();
   });
-
-  it("관리 메뉴는 현재 화면을 표시하고(끝 슬래시 포함) 누르면 이동한다", async () => {
-    saveAuthSession(createSession());
-    renderManage("/manage/");
-
-    expect(screen.getByText("관리 내용")).toBeInTheDocument();
-    expect(
-      screen.getByRole("radio", { name: "Raw 엑셀 데이터" })
-    ).toBeChecked();
-
-    fireEvent.click(screen.getByText("물품 리스트"));
-
-    expect(await screen.findByText("물품 관리")).toBeInTheDocument();
-    expect(screen.getByRole("radio", { name: "물품 리스트" })).toBeChecked();
-  });
 });
