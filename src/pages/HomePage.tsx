@@ -1,3 +1,4 @@
+import { CartButton } from "@/components/cart/CartButton";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { ResultSearchForm } from "@/components/result/ResultSearchForm";
 import { ResultTable } from "@/components/result/ResultTable";
@@ -58,13 +59,24 @@ export function HomePage() {
 
   return (
     <Stack vertical>
-      <Stack vertical gap={0}>
-        <Text>물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.</Text>
-        <Text>빈칸 입력 시 모든 물품 확인이 가능합니다.</Text>
-        <Text>
-          물품을 누르면 장바구니에 담깁니다. 펼치기(+)로 상세 정보를 볼 수
-          있습니다.
-        </Text>
+      {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
+      <Stack
+        justify='space-between'
+        align='flex-start'
+        wrap
+        style={{ flexDirection: "row-reverse" }}
+      >
+        <CartButton />
+        <Stack vertical gap={0}>
+          <Text>
+            물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.
+          </Text>
+          <Text>빈칸 입력 시 모든 물품 확인이 가능합니다.</Text>
+          <Text>
+            물품을 누르면 장바구니에 담깁니다. 펼치기(+)로 상세 정보를 볼 수
+            있습니다.
+          </Text>
+        </Stack>
       </Stack>
       <ResultSearchForm
         filter={search}

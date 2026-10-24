@@ -4,6 +4,7 @@ import { ROUTES } from "@/app/routes";
 import { FreePage } from "@/pages/FreePage";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import { MemoryRouter, Route, Routes } from "react-router";
+import { CartProvider } from "@/state/cart";
 import { Market } from "@/types/market";
 import { UIProvider } from "@/ui";
 
@@ -23,22 +24,40 @@ function renderFree() {
       client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
     >
       <UIProvider>
-        <MemoryRouter initialEntries={[ROUTES.FREE]}>
-          <Routes>
-            <Route path={ROUTES.FREE} element={<FreePage />} />
-            <Route path={ROUTES.FREE_RESULT} element={<div>결과 화면</div>} />
-          </Routes>
-        </MemoryRouter>
+        <CartProvider>
+          <MemoryRouter initialEntries={[ROUTES.FREE]}>
+            <Routes>
+              <Route path={ROUTES.FREE} element={<FreePage />} />
+              <Route path={ROUTES.FREE_RESULT} element={<div>결과 화면</div>} />
+            </Routes>
+          </MemoryRouter>
+        </CartProvider>
       </UIProvider>
     </QueryClientProvider>
   );
 }
 
-afterEach(() => {
+beforeEach(() => {
   localStorage.clear();
+  mockedFetchMarkets.mockResolvedValue([]);
 });
 
 describe("FreePage", () => {
+  it("시세 입력 안내와 함께 장바구니 버튼을 보여 주고, 누르면 서랍을 연다", async () => {
+    renderFree();
+
+    expect(
+      screen.getByText(
+        "자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다."
+      )
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "장바구니" }));
+
+    expect(
+      await screen.findByRole("dialog", { name: "장바구니" })
+    ).toBeInTheDocument();
+  });
+
   it("저장본에 없는 서버 재료를 표에 덧붙이고, 저장해 둔 입력값은 지킨다", async () => {
     writeJSON(STORAGE_KEY.MARKET, [{ ...wood, price: 700 }]);
     mockedFetchMarkets.mockResolvedValue([wood, egg]);

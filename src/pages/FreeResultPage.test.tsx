@@ -57,4 +57,13 @@ describe("FreeResultPage", () => {
       markets: [{ id: 1, name: "원목", price: 500 }],
     });
   });
+
+  it("담은 물품을 확인할 수 있게 장바구니 버튼을 둔다", async () => {
+    mockedCalculate.mockResolvedValue({ results: [] });
+    renderWithState({ markets: [{ id: 1, name: "원목", price: 500 }] });
+
+    expect(
+      await screen.findByRole("button", { name: "장바구니" })
+    ).toBeInTheDocument();
+  });
 });
