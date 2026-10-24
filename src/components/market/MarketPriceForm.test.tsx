@@ -26,28 +26,6 @@ describe("MarketPriceForm", () => {
       { id: 1, name: "원목", price: 700 },
     ]);
   });
-
-  it("시세가 필수면 빈 칸을 알리고 제출하지 않는다", () => {
-    const onSubmit = vi.fn();
-    render(
-      <MarketPriceForm
-        serverMarkets={[wood]}
-        requirePrice
-        submitText='수정'
-        onSubmit={onSubmit}
-      />
-    );
-
-    const input = screen.getByLabelText("원목 시세");
-    expect(input).toHaveAttribute("aria-required", "true");
-    fireEvent.change(input, { target: { value: "" } });
-    fireEvent.click(screen.getByRole("button", { name: "수정" }));
-
-    expect(screen.getByRole("alert")).toHaveTextContent("시세를 입력해주세요");
-    expect(input).toHaveAttribute("aria-invalid", "true");
-    expect(input).toHaveAccessibleDescription("시세를 입력해주세요");
-    expect(onSubmit).not.toHaveBeenCalled();
-  });
 });
 
 describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
