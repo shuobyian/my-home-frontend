@@ -1,4 +1,10 @@
-import { findNewMarkets, mergeMarkets, parseMarketList } from "@/domain/market";
+import {
+  diffMarketRows,
+  findNewMarkets,
+  mergeMarkets,
+  parseMarketList,
+  validateMarketName,
+} from "@/domain/market";
 
 describe("parseMarketList", () => {
   it("시세 배열이면 그대로 반환한다(입력 전 빈 시세 포함)", () => {
@@ -85,5 +91,77 @@ describe("mergeMarkets", () => {
     const before = structuredClone(saved);
     mergeMarkets(saved, [{ id: 84, name: "이스터 에그", price: 0 }]);
     expect(saved).toEqual(before);
+  });
+});
+
+describe("validateMarketName", () => {
+  const others = new Set(["원목", "천"]);
+
+  it.each([
+    ["", "이름을 입력해주세요"],
+    ["   ", "이름을 입력해주세요"],
+    ["금,은", "이름에 쉼표(,)는 쓸 수 없습니다"],
+    ["가".repeat(256), "255자 이하로 입력해주세요"],
+    ["원목", "이미 있는 시세 이름입니다"],
+    [" 천 ", "이미 있는 시세 이름입니다"],
+  ])("%p → %s", (name, message) => {
+    expect(validateMarketName(name, others)).toBe(message);
+  });
+
+  it("문제가 없으면 undefined(255자까지 허용)", () => {
+    expect(validateMarketName("금", others)).toBeUndefined();
+    expect(validateMarketName("가".repeat(255), others)).toBeUndefined();
+  });
+});
+
+describe("diffMarketRows", () => {
+  const original = [
+    { id: 1, name: "원목", price: 500 },
+    { id: 2, name: "천", price: 300 },
+    { id: 3, name: "금", price: 1000 },
+  ];
+
+  it("바뀐 기존 행은 바뀐 필드만, 새 행은 id 없이 보내고 바뀌지 않은 행은 뺀다", () => {
+    const { changes, renames } = diffMarketRows(original, [
+      { id: 1, name: "원목", price: 700 },
+      { id: 2, name: " 비단 ", price: 300 },
+      { id: 3, name: "금", price: 1000 },
+      { name: " 은 ", price: 50 },
+    ]);
+
+    expect(changes).toEqual([
+      { id: 1, price: 700 },
+      { id: 2, name: "비단" },
+      { name: "은", price: 50 },
+    ]);
+    expect(renames).toEqual([{ from: "천", to: "비단" }]);
+  });
+
+  it("이름과 시세를 함께 바꾸면 한 항목에 담는다", () => {
+    expect(
+      diffMarketRows(original, [{ id: 1, name: "참나무", price: 900 }]).changes
+    ).toEqual([{ id: 1, name: "참나무", price: 900 }]);
+  });
+
+  it("기존 행의 비운 시세 칸은 바꾸지 않은 것으로 보고, 새 행은 비운 채로 담는다", () => {
+    expect(
+      diffMarketRows(original, [
+        { id: 1, name: "원목", price: null },
+        { name: "은", price: null },
+      ]).changes
+    ).toEqual([{ name: "은" }]);
+  });
+
+  it("서버에 없는 id의 행은 전체 값을 보내 서버가 알리게 한다", () => {
+    expect(
+      diffMarketRows(original, [{ id: 99, name: "철", price: 10 }]).changes
+    ).toEqual([{ id: 99, name: "철", price: 10 }]);
+  });
+
+  it("바뀐 것이 없으면 빈 목록", () => {
+    expect(diffMarketRows(original, original)).toEqual({
+      changes: [],
+      renames: [],
+    });
   });
 });

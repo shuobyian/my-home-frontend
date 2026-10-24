@@ -6,8 +6,8 @@ import {
   normalizeProductIds,
   parseSavedProducts,
   ProductExcelRow,
+  planBulkUpload,
   productsToExcelRows,
-  summarizeBulkSave,
 } from "@/domain/productExcel";
 import { Product } from "@/types/product";
 
@@ -295,41 +295,96 @@ describe("normalizeProductIds", () => {
   });
 });
 
-describe("summarizeBulkSave", () => {
-  const saved = [
+// 마지막 저장본 기준이던 summarizeBulkSave 사례를 서버 목록 기준으로 옮겼다.
+// 지운 물품을 되살리지 않도록 서버에 없는 이름을 올린 적 있는 이름(revived)과 새 이름(toAdd)으로 나눈다.
+describe("planBulkUpload", () => {
+  const server = [
     createProduct({ id: 1, name: "A" }),
     createProduct({ id: 2, name: "B" }),
     createProduct({ id: 3, name: "C" }),
   ];
 
-  it("마지막 저장본과 이름으로 비교해 추가·이름 변경·수정·삭제를 구분한다", () => {
+  it("서버 목록과 이름으로 비교해 추가·되살림·내용 다름·서버에만 있음을 구분한다", () => {
     const current = [
       createProduct({ id: 1, name: "A" }),
       createProduct({ id: 2, name: "B2" }),
       createProduct({ id: 3, name: "C", level: 99 }),
       createProduct({ id: 4, name: "D" }),
+      createProduct({ id: 5, name: "E" }),
     ];
 
-    const summary = summarizeBulkSave(saved, current);
+    const plan = planBulkUpload(current, server, ["A", "B", "C", "E"]);
 
-    expect(summary.toAdd.map(({ name }) => name)).toEqual(["B2", "D"]);
-    expect(summary.renamed.map(({ name }) => name)).toEqual(["B2"]);
-    expect(summary.edited.map(({ name }) => name)).toEqual(["C"]);
-    expect(summary.removed.map(({ name }) => name)).toEqual(["B"]);
+    expect(plan.toAdd.map(({ name }) => name)).toEqual(["B2", "D"]);
+    // E는 올린 적이 있는데 서버에 없다(서버에서 지워졌거나 이름이 바뀜)
+    expect(plan.revived.map(({ name }) => name)).toEqual(["E"]);
+    expect(plan.differs.map(({ name }) => name)).toEqual(["C"]);
+    expect(plan.serverOnly).toBe(1);
   });
 
-  it("저장한 적이 없으면 가져온 행은 모두 추가 대상이다", () => {
-    expect(summarizeBulkSave([], saved).toAdd).toEqual(saved);
+  it("서버가 비었고 올린 적이 없으면 모든 행이 추가 대상이다", () => {
+    expect(planBulkUpload(server, [], []).toAdd).toEqual(server);
   });
 
   it("id만 바뀐 행은 변경으로 보지 않는다", () => {
-    const reNumbered = saved.map((p, i) => ({ ...p, id: i + 100 }));
-    expect(summarizeBulkSave(saved, reNumbered)).toEqual({
+    const reNumbered = server.map((p, i) => ({ ...p, id: i + 100 }));
+    expect(planBulkUpload(reNumbered, server, [])).toEqual({
       toAdd: [],
-      renamed: [],
-      edited: [],
-      removed: [],
+      revived: [],
+      differs: [],
+      serverOnly: 0,
     });
+  });
+
+  it("서버 재료에 붙은 id 같은 필드는 비교하지 않고, 재료 내용·순서가 다르면 다르다고 본다", () => {
+    const materials = [
+      { name: "원목", basic: true, count: 2 },
+      { name: "판자", basic: false, count: 1 },
+    ];
+    const serverWithIds = [
+      createProduct({
+        name: "식탁",
+        materials: materials.map((m, i) => ({ ...m, id: i + 10 })),
+      }),
+    ];
+
+    expect(
+      planBulkUpload(
+        [createProduct({ name: "식탁", materials })],
+        serverWithIds,
+        []
+      ).differs
+    ).toEqual([]);
+    expect(
+      planBulkUpload(
+        [createProduct({ name: "식탁", materials: [...materials].reverse() })],
+        serverWithIds,
+        []
+      ).differs
+    ).toHaveLength(1);
+  });
+
+  it("level·craftingPrice·tool·category가 다르면 다르다고 본다", () => {
+    const base = createProduct({ name: "A" });
+    const changed = [
+      { ...base, level: 2 },
+      { ...base, craftingPrice: 1 },
+      { ...base, tool: ToolType.MIMI },
+      { ...base, category: CategoryType.EVENT },
+    ];
+    changed.forEach((product) => {
+      expect(planBulkUpload([product], [base], []).differs).toEqual([product]);
+    });
+  });
+
+  it("이름 앞뒤 공백은 지우고 비교한다", () => {
+    const plan = planBulkUpload(
+      [createProduct({ name: " A " }), createProduct({ name: "E " })],
+      server,
+      [" E"]
+    );
+    expect(plan.toAdd).toEqual([]);
+    expect(plan.revived.map(({ name }) => name)).toEqual(["E "]);
   });
 });
 

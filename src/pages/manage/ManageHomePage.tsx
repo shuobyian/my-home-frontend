@@ -6,7 +6,7 @@ import {
   nextProductId,
   normalizeProductIds,
   parseSavedProducts,
-  summarizeBulkSave,
+  planBulkUpload,
 } from "@/domain/productExcel";
 import { formatNumber } from "@/lib/format";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
@@ -56,9 +56,11 @@ export function ManageHomePage() {
 
   const confirmSave = () => {
     const snapshot = products;
-    const { toAdd, renamed, edited, removed } = summarizeBulkSave(
+    // 마지막 저장본을 서버 목록 대신 비교 기준으로 쓴다
+    const { toAdd, differs, serverOnly } = planBulkUpload(
+      snapshot,
       lastSaved,
-      snapshot
+      []
     );
 
     dialogs.confirm({
@@ -78,20 +80,14 @@ export function ManageHomePage() {
               <ProductNameList products={toAdd} />
             </div>
           )}
-          {renamed.length > 0 && (
-            <Text tone='warning'>
-              이름을 바꾼 {formatNumber(renamed.length)}개는 새 물품으로
-              추가되고, 원래 이름의 물품은 서버에 그대로 남습니다.
-            </Text>
-          )}
-          {(edited.length > 0 || removed.length > 0) && (
+          {(differs.length > 0 || serverOnly > 0) && (
             <div>
               <Text tone='warning'>
-                반영되지 않는 변경: 수정 {formatNumber(edited.length)}개, 삭제{" "}
-                {formatNumber(removed.length)}개. 기존 물품의 수정·삭제는 '물품
+                반영되지 않는 변경: 수정 {formatNumber(differs.length)}개, 삭제{" "}
+                {formatNumber(serverOnly)}개. 기존 물품의 수정·삭제는 '물품
                 리스트'에서 해주세요.
               </Text>
-              <ProductNameList products={[...edited, ...removed]} />
+              <ProductNameList products={differs} />
             </div>
           )}
         </Stack>

@@ -1,4 +1,4 @@
-import { Market } from "@/types/market";
+import { Market, MarketUpdateItem } from "@/types/market";
 
 function isMarket(value: unknown): value is Market {
   if (typeof value !== "object" || value === null) return false;
@@ -37,4 +37,70 @@ export function mergeMarkets<T extends Pick<Market, "name">>(
   server: readonly Market[]
 ): (T | Market)[] {
   return [...saved, ...findNewMarkets(saved, server)];
+}
+
+// 서버(시세 serializer)와 같은 이름 길이 한계
+const NAME_MAX_LENGTH = 255;
+
+// 시세 이름 검사. otherNames는 겹치면 안 되는 다른 이름(서버 시세, 같은 표의 다른 행)이다.
+// 서버는 앞뒤 공백을 지우고 저장하므로 지운 이름으로 비교한다.
+export function validateMarketName(
+  name: string,
+  otherNames: ReadonlySet<string>
+): string | undefined {
+  const trimmed = name.trim();
+  if (!trimmed) return "이름을 입력해주세요";
+  // 결과의 재료 목록을 쉼표로 이어 저장하므로 서버가 쉼표를 받지 않는다
+  if (trimmed.includes(",")) return "이름에 쉼표(,)는 쓸 수 없습니다";
+  if (trimmed.length > NAME_MAX_LENGTH) return "255자 이하로 입력해주세요";
+  if (otherNames.has(trimmed)) return "이미 있는 시세 이름입니다";
+  return undefined;
+}
+
+// 시세 편집 표의 한 행. 새 행은 id가 없고, 비운 시세 칸은 null이다.
+export interface MarketRowValue {
+  id?: number;
+  name: string;
+  price: number | null;
+}
+
+export interface MarketRowDiff {
+  // PUT /market 본문. 기존 행은 바뀐 필드만 { id, name?, price? }로, 새 행은 { name, price }로 보낸다
+  changes: MarketUpdateItem[];
+  // 이름을 바꾼 기존 시세(원래 이름 → 새 이름)
+  renames: { from: string; to: string }[];
+}
+
+// 서버 시세와 편집한 표를 비교해 바뀐 것만 고른다(표 순서). 바뀌지 않은 행은 빼고,
+// 비운 시세 칸(null)은 기존 행에서는 바꾸지 않은 것으로 본다(저장 전 검증이 막는다).
+export function diffMarketRows(
+  original: readonly Market[],
+  rows: readonly MarketRowValue[]
+): MarketRowDiff {
+  const byId = new Map(original.map((market) => [market.id, market]));
+  const changes: MarketUpdateItem[] = [];
+  const renames: MarketRowDiff["renames"] = [];
+
+  rows.forEach(({ id, name, price }) => {
+    const trimmed = name.trim();
+    const before = id === undefined ? undefined : byId.get(id);
+    if (id === undefined || !before) {
+      // 새 행. 서버에서 사라진 id는 그대로 보내 서버가 알리게 한다("존재하지 않는 시세입니다")
+      changes.push({
+        ...(id !== undefined && { id }),
+        name: trimmed,
+        ...(price !== null && { price }),
+      });
+      return;
+    }
+    const change: MarketUpdateItem = {};
+    if (trimmed !== before.name) {
+      change.name = trimmed;
+      renames.push({ from: before.name, to: trimmed });
+    }
+    if (price !== null && price !== before.price) change.price = price;
+    if (Object.keys(change).length > 0) changes.push({ id, ...change });
+  });
+
+  return { changes, renames };
 }
