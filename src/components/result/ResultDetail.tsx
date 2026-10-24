@@ -1,5 +1,5 @@
 import { ItemImage } from "@/components/common/ItemImage";
-import { OwnedCounts } from "@/domain/inventory";
+import { OwnedCounts, sumShortagePrice } from "@/domain/inventory";
 import { getTotalCost, requiresAffinity } from "@/domain/result";
 import { Result } from "@/types/result";
 import { formatGold, formatNumber } from "@/lib/format";
@@ -9,7 +9,7 @@ import { Stack, Text } from "@/ui";
 
 interface ResultDetailProps {
   result: Result;
-  // 로그인한 회원의 보유 재료. 있으면 기초 재료 표에 부족 개수를 함께 보여 준다
+  // 로그인한 회원의 보유 재료. 있으면 필요 금액 아래에 부족 재료비를, 기초 재료 표에 부족 개수를 함께 보여 준다
   owned?: OwnedCounts;
 }
 
@@ -29,6 +29,12 @@ export function ResultDetail({ result, owned }: ResultDetailProps) {
               result.totalPrice
             )} + 제작비: ${formatGold(result.craftingPrice)})`}
           />
+          {owned && (
+            <InfoRow
+              title='부족 재료비'
+              value={formatGold(sumShortagePrice(result.materials, owned))}
+            />
+          )}
           <ItemImage name={result.name} variant='detail' />
         </Stack>
         <Stack vertical gap={10} align='flex-start'>
