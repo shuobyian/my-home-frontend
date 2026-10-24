@@ -1,5 +1,7 @@
 import { CartSummary } from "@/components/cart/CartSummary";
+import { useOwnedCounts } from "@/pages/useOwnedCounts";
 
 export function CalculationPage() {
-  return <CartSummary />;
+  const owned = useOwnedCounts();
+  return <CartSummary owned={owned} />;
 }

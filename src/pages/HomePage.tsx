@@ -7,6 +7,7 @@ import {
   ResultSearchState,
   toResultSearchParams,
 } from "@/domain/resultSearch";
+import { useOwnedCounts } from "@/pages/useOwnedCounts";
 import { useResultsQuery } from "@/queries/result";
 import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
@@ -17,6 +18,7 @@ const PAGE_SIZE = 10;
 // 홈: 결과 검색. 검색 조건과 페이지는 URL에 두어 뒤로 가기·새로고침·공유 시에도 유지한다.
 export function HomePage() {
   const addToCart = useAddToCart("server");
+  const owned = useOwnedCounts();
 
   const [searchParams, setSearchParams] = useSearchParams();
   const queryString = searchParams.toString();
@@ -92,6 +94,7 @@ export function HomePage() {
         }}
         contents={results?.content ?? []}
         onRowClick={addToCart}
+        owned={owned}
       />
     </Stack>
   );

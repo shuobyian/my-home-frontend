@@ -14,7 +14,7 @@ function setup() {
 }
 
 describe("useInvalidateCatalog", () => {
-  it("물품·시세·결과·계산기·점검·호두작 계산을 함께 무효화하고, 경험치 표는 두지 않는다", () => {
+  it("물품·시세·결과·계산기·점검·호두작 계산·보유 재료를 함께 무효화하고, 경험치 표는 두지 않는다", () => {
     const { queryClient, invalidate } = setup();
     const keys = [
       productKeys.list({ page: 0, size: 10 }),
@@ -24,6 +24,7 @@ describe("useInvalidateCatalog", () => {
       ["calculator", { markets: [] }],
       ["catalog", "check"],
       experienceKeys.walnut({ presentLevel: 1 }),
+      ["inventory", 1],
       experienceKeys.list(),
     ];
     keys.forEach((key) => queryClient.setQueryData(key, 1));
@@ -34,6 +35,7 @@ describe("useInvalidateCatalog", () => {
       (key) => queryClient.getQueryState(key)?.isInvalidated
     );
     expect(invalidated).toEqual([
+      true,
       true,
       true,
       true,

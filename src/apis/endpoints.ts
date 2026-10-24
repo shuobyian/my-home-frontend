@@ -11,4 +11,5 @@ export const ENDPOINTS = {
   AUTH_SIGNUP: "/auth/signup",
   AUTH_LOGIN: "/auth/login",
   AUTH_LOGOUT: "/auth/logout",
+  INVENTORY: "/inventory",
 } as const;

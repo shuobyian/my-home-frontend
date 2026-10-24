@@ -2,14 +2,20 @@ import { ROUTES } from "@/app/routes";
 import { CartEntryList } from "@/components/cart/CartEntryList";
 import { MaterialTable } from "@/components/result/MaterialTable";
 import { CART_SOURCE_LABEL, sumPrice } from "@/domain/cart";
+import { OwnedCounts } from "@/domain/inventory";
 import { formatGold, formatNumber } from "@/lib/format";
 import { useNavigate } from "react-router";
 import { useCart } from "@/state/cart";
 import { Button, Empty, Stack, Text, Title } from "@/ui";
 import { styles } from "./CartSummary.styles";
 
+interface CartSummaryProps {
+  // 로그인한 회원의 보유 재료. 있으면 합산한 기초 재료 표에 부족 개수를 함께 보여 준다
+  owned?: OwnedCounts;
+}
+
 // 장바구니에 담긴 물품과 기초 재료 합산 결과
-export function CartSummary() {
+export function CartSummary({ owned }: CartSummaryProps) {
   const navigate = useNavigate();
   const { entries, totalCount, materials } = useCart();
   const totalPrice = sumPrice(materials);
@@ -49,7 +55,7 @@ export function CartSummary() {
               <Text strong>기초 재료</Text>
               <Text strong>총 {formatGold(totalPrice)}</Text>
             </Stack>
-            <MaterialTable materials={materials} />
+            <MaterialTable materials={materials} owned={owned} />
           </Stack>
         </Stack>
       )}

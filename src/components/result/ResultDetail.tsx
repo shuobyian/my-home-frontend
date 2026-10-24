@@ -1,4 +1,5 @@
 import { ItemImage } from "@/components/common/ItemImage";
+import { OwnedCounts } from "@/domain/inventory";
 import { getTotalCost, requiresAffinity } from "@/domain/result";
 import { Result } from "@/types/result";
 import { formatGold, formatNumber } from "@/lib/format";
@@ -8,9 +9,11 @@ import { Stack, Text } from "@/ui";
 
 interface ResultDetailProps {
   result: Result;
+  // 로그인한 회원의 보유 재료. 있으면 기초 재료 표에 부족 개수를 함께 보여 준다
+  owned?: OwnedCounts;
 }
 
-export function ResultDetail({ result }: ResultDetailProps) {
+export function ResultDetail({ result, owned }: ResultDetailProps) {
   return (
     <Stack vertical gap={20}>
       <Stack justify='space-between' align='baseline' gap={20} wrap>
@@ -38,7 +41,7 @@ export function ResultDetail({ result }: ResultDetailProps) {
       </Stack>
       <Stack vertical>
         <Text strong>기초 재료</Text>
-        <MaterialTable materials={result.materials} />
+        <MaterialTable materials={result.materials} owned={owned} />
       </Stack>
     </Stack>
   );

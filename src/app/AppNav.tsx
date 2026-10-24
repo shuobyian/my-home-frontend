@@ -1,5 +1,5 @@
 import { styles } from "@/app/AppNav.styles";
-import { ADMIN_MENU, MenuItem, USER_MENU } from "@/app/menus";
+import { ADMIN_MENU, MEMBER_MENU, MenuItem, USER_MENU } from "@/app/menus";
 import { ROUTES } from "@/app/routes";
 import { useLogoutMutation } from "@/queries/auth";
 import { useCurrentUser } from "@/state/auth";
@@ -48,6 +48,7 @@ function MenuLink({ item }: { item: MenuItem }) {
 // 모든 화면 공통 메뉴. 인스타그램처럼 아이콘 중심이다: 넓은 화면은 왼쪽 사이드바(아이콘+이름),
 // 중간은 왼쪽 아이콘 줄, 좁은 화면은 아래 탭 막대.
 // 누구나 쓰는 메뉴(USER_MENU)와 관리자에게만 보이는 메뉴(ADMIN_MENU)를 구분선으로 나눈다.
+// 로그인한 회원의 메뉴(MEMBER_MENU)는 누구나 쓰는 메뉴에 이어 붙인다.
 export function AppNav() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -64,6 +65,8 @@ export function AppNav() {
         {USER_MENU.map((item) => (
           <MenuLink key={item.to} item={item} />
         ))}
+        {user &&
+          MEMBER_MENU.map((item) => <MenuLink key={item.to} item={item} />)}
 
         {user?.isAdmin && (
           <>

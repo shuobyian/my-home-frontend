@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { act, fireEvent, render, screen, within } from "@testing-library/react";
 import { logout } from "@/apis/auth";
 import { MyHomeError } from "@/apis/errors";
 import { AppNav } from "@/app/AppNav";
@@ -72,6 +72,20 @@ describe("AppNav 메뉴 구분", () => {
     for (const name of ADMIN_LABELS) {
       expect(within(nav).queryByRole("link", { name })).not.toBeInTheDocument();
     }
+  });
+
+  it("보유 재료 메뉴는 로그인한 회원에게만 보여 준다", () => {
+    renderNav();
+    expect(
+      screen.queryByRole("link", { name: "보유 재료" })
+    ).not.toBeInTheDocument();
+
+    act(() => saveAuthSession(createSession({}, { isAdmin: false })));
+
+    expect(screen.getByRole("link", { name: "보유 재료" })).toHaveAttribute(
+      "href",
+      "/inventory"
+    );
   });
 
   it("관리자가 아닌 회원에게도 관리자 메뉴를 감춘다", () => {

@@ -1,9 +1,16 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import {
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+  within,
+} from "@testing-library/react";
+import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
 import { HomePage } from "@/pages/HomePage";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider } from "@/state/cart";
-import { createResult } from "@/test/fixtures";
+import { createResult, createSession } from "@/test/fixtures";
 import { ResultSearchParams } from "@/types/result";
 import { UIProvider } from "@/ui";
 
@@ -13,6 +20,22 @@ vi.mock("@/apis/result", async (importOriginal) => ({
   ...(await importOriginal<object>()),
   fetchResults: (params: unknown) => mockedFetchResults(params),
 }));
+
+const mockedFetchInventory = vi.hoisted(() => vi.fn());
+vi.mock("@/apis/inventory", () => ({
+  fetchInventory: () => mockedFetchInventory(),
+}));
+
+// 첫 칸이 재료 이름인 행의 칸 글자
+const cellsOf = (name: string) =>
+  screen
+    .getAllByRole("row")
+    .map((row) =>
+      within(row)
+        .queryAllByRole("cell")
+        .map((cell) => cell.textContent)
+    )
+    .find((cells) => cells[0] === name);
 
 // 현재 주소를 보여 주고, 뒤로 가기를 할 수 있게 하는 도우미
 function LocationProbe() {
@@ -64,7 +87,55 @@ beforeEach(() => {
   );
 });
 
+afterEach(() => {
+  clearAuthSession();
+});
+
 describe("HomePage", () => {
+  it("로그인하면 펼친 결과의 기초 재료에 보유 개수와 부족 개수를 함께 보여 준다", async () => {
+    saveAuthSession(createSession({}, { isAdmin: false }));
+    mockedFetchInventory.mockResolvedValue([
+      { marketId: 1, name: "원목", count: 100 },
+    ]);
+    mockedFetchResults.mockResolvedValue({
+      content: [
+        createResult({
+          name: "나무 의자",
+          materials: [{ name: "원목", count: 150, price: 75000 }],
+        }),
+      ],
+      totalElements: 1,
+    });
+    renderHome("/");
+
+    fireEvent.click(await screen.findByRole("button", { name: "행 펼치기" }));
+
+    await waitFor(() =>
+      expect(cellsOf("원목")).toEqual([
+        "원목",
+        "150개",
+        "100개",
+        "50개",
+        "1뭉",
+        "75,000골드",
+      ])
+    );
+  });
+
+  it("로그인하지 않았으면 보유 재료를 받지 않고 기초 재료만 보여 준다", async () => {
+    renderHome("/");
+
+    fireEvent.click(await screen.findByRole("button", { name: "행 펼치기" }));
+
+    expect(
+      screen.getByRole("columnheader", { name: "골드" })
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("columnheader", { name: "부족" })
+    ).not.toBeInTheDocument();
+    expect(mockedFetchInventory).not.toHaveBeenCalled();
+  });
+
   it("주소의 검색 조건으로 조회하고 입력창에 채운다", async () => {
     renderHome("/?name=나무");
 
