@@ -27,7 +27,7 @@ export function ProductManagePage() {
   const statuses = useMemo(() => check && statusByProductId(check), [check]);
   const catalogNames = useMemo(() => check && toCatalogNames(check), [check]);
 
-  const saveProduct = useSaveProduct();
+  const saveProduct = useSaveProduct(catalogNames?.markets);
   const deleteProducts = useDeleteProductsMutation();
 
   // 마지막 페이지의 물품을 모두 지우는 등으로 보던 페이지가 범위를 넘으면 마지막 페이지로 바로잡는다.

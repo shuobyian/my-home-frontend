@@ -47,9 +47,9 @@ export function CatalogCheckPage() {
   const syncResults = useSyncResultsMutation();
   const updateMarkets = useUpdateMarketsMutation();
   const deleteMarkets = useDeleteMarketsMutation();
-  const saveProduct = useSaveProduct();
 
   const catalogNames = useMemo(() => check && toCatalogNames(check), [check]);
+  const saveProduct = useSaveProduct(catalogNames?.markets);
   const [editing, setEditing] = useState<Product | null>(null);
   // 시세 추가 모달에 미리 채울 재료 이름
   const [newMarketName, setNewMarketName] = useState<string | null>(null);

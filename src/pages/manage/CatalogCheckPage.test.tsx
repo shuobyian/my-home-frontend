@@ -278,6 +278,175 @@ describe("CatalogCheckPage", () => {
     );
   });
 
+  it("새 시세를 만든 뒤 물품 저장이 실패해 그 시세를 지웠다면, 같은 재료로 다시 저장할 때 시세를 다시 만든다", async () => {
+    // 서버 흉내: 시세 추가·삭제를 기억하고, 점검과 물품 저장이 그 상태를 따른다
+    const silver = { id: 6, name: "은", price: 100, usedBy: [] };
+    const unusedSilver = createProblem({
+      ...unusedMarket,
+      material: "은",
+      marketId: 6,
+      message: "어떤 물품도 쓰지 않는 시세입니다. (은)",
+    });
+    let hasSilver = false;
+    api.fetchCatalogCheck.mockImplementation(async () => {
+      const check = checkWith();
+      return hasSilver
+        ? {
+            ...check,
+            markets: [...check.markets, silver],
+            problems: [...check.problems, unusedSilver],
+          }
+        : check;
+    });
+    api.updateMarkets.mockImplementation(async () => {
+      hasSilver = true;
+      return [];
+    });
+    api.deleteMarkets.mockImplementation(async () => {
+      hasSilver = false;
+      return { deletedIds: [6] };
+    });
+    // 첫 저장은 다른 이유로 실패하고, 그 뒤로는 서버처럼 시세가 없으면 거절한다
+    api.updateProduct
+      .mockRejectedValueOnce(
+        new MyHomeError({
+          message: "합계 금액이 너무 커서 저장할 수 없습니다. (나무 의자)",
+        })
+      )
+      .mockImplementation(async (body: unknown) => {
+        if (!hasSilver) {
+          throw new MyHomeError({
+            message: "시세 정보가 없는 재료가 있습니다. (나무 의자: 은)",
+          });
+        }
+        return body;
+      });
+    render(
+      <QueryClientProvider
+        client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
+      >
+        <UIProvider>
+          <CatalogCheckPage />
+        </UIProvider>
+      </QueryClientProvider>
+    );
+
+    // 나무 의자의 원목을 새 최하위재료 '은'으로 바꿔 저장한다
+    const editChairWithSilver = async () => {
+      const row = await problemRow(missingPrice.message);
+      const edit = within(row).getByRole("button", { name: "물품 수정" });
+      await waitFor(() => expect(edit).toBeEnabled());
+      fireEvent.click(edit);
+      const dialog = await screen.findByRole("dialog", {
+        name: "나무 의자 정보 수정",
+      });
+      fireEvent.change(within(dialog).getAllByLabelText("물품명")[1], {
+        target: { value: "은" },
+      });
+      fireEvent.change(await within(dialog).findByLabelText("새 시세: 은"), {
+        target: { value: "100" },
+      });
+      fireEvent.click(within(dialog).getByRole("button", { name: "수정" }));
+      return dialog;
+    };
+
+    // 1) 은 시세는 만들어지고 물품 저장은 실패한다. 알림창을 닫고 모달도 취소한다
+    const first = await editChairWithSilver();
+    const alert = await screen.findByRole("dialog", {
+      name: "저장하지 못했습니다",
+    });
+    fireEvent.click(within(alert).getByRole("button", { name: "확인" }));
+    fireEvent.click(within(first).getByRole("button", { name: "취소" }));
+    expect(api.updateMarkets).toHaveBeenCalledTimes(1);
+
+    // 2) 남은 은은 쓰지 않는 시세로 보이고, 같은 화면에서 지운다
+    const unusedRow = await problemRow(unusedSilver.message);
+    fireEvent.click(
+      within(unusedRow).getByRole("button", { name: "시세 삭제" })
+    );
+    fireEvent.click(
+      within(
+        await screen.findByRole("dialog", {
+          name: "'은' 시세를 삭제하시겠습니까?",
+        })
+      ).getByRole("button", { name: "삭제" })
+    );
+    await waitFor(() =>
+      expect(screen.queryByText(unusedSilver.message)).not.toBeInTheDocument()
+    );
+
+    // 3) 같은 재료로 다시 고치면 지운 시세를 다시 만든 뒤 물품을 저장한다
+    await editChairWithSilver();
+    expect(
+      await screen.findByText(
+        "새 시세 1개와 함께 수정했습니다. 이 물품을 재료로 쓰는 물품의 결과도 다시 계산했습니다."
+      )
+    ).toBeInTheDocument();
+    expect(api.updateMarkets).toHaveBeenCalledTimes(2);
+    expect(api.updateMarkets).toHaveBeenLastCalledWith([
+      { name: "은", price: 100 },
+    ]);
+  });
+
+  it("새 시세 추가가 실패하면 점검을 다시 받아, 그사이 생긴 시세로 다시 저장할 수 있다", async () => {
+    // 다른 탭에서 원목 시세를 먼저 추가했지만 이 화면의 점검 정보는 아직 낡았다
+    let hasWood = false;
+    api.updateMarkets.mockImplementation(async () => {
+      hasWood = true;
+      throw new MyHomeError({ message: "이미 존재하는 시세 이름입니다." });
+    });
+    renderPage();
+    // 처음 받은 뒤로는 서버 흉내를 따른다
+    api.fetchCatalogCheck.mockImplementation(async () => {
+      const check = checkWith(
+        hasWood
+          ? [blocked, missingResult]
+          : [missingPrice, blocked, missingResult]
+      );
+      return hasWood
+        ? {
+            ...check,
+            markets: [
+              ...check.markets,
+              { id: 5, name: "원목", price: 300, usedBy: ["나무 의자"] },
+            ],
+          }
+        : check;
+    });
+    const row = await problemRow(missingPrice.message);
+    const edit = within(row).getByRole("button", { name: "물품 수정" });
+    await waitFor(() => expect(edit).toBeEnabled());
+    fireEvent.click(edit);
+    const dialog = await screen.findByRole("dialog", {
+      name: "나무 의자 정보 수정",
+    });
+    fireEvent.change(within(dialog).getByLabelText("새 시세: 원목"), {
+      target: { value: "300" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "수정" }));
+
+    const alert = await screen.findByRole("dialog", {
+      name: "저장하지 못했습니다",
+    });
+    expect(alert).toHaveTextContent("이미 존재하는 시세 이름입니다.");
+    fireEvent.click(within(alert).getByRole("button", { name: "확인" }));
+
+    // 다시 받은 점검에는 원목 시세가 있으므로 새 시세를 받지 않고 물품만 저장한다
+    await waitFor(() =>
+      expect(
+        within(dialog).queryByLabelText("새 시세: 원목")
+      ).not.toBeInTheDocument()
+    );
+    fireEvent.click(within(dialog).getByRole("button", { name: "수정" }));
+    expect(
+      await screen.findByText(
+        "수정했습니다. 이 물품을 재료로 쓰는 물품의 결과도 다시 계산했습니다."
+      )
+    ).toBeInTheDocument();
+    expect(api.updateMarkets).toHaveBeenCalledTimes(1);
+    expect(api.updateProduct).toHaveBeenCalledWith(chair);
+  });
+
   it("하위 물품 때문에 계산할 수 없는 물품은 원인 물품의 모달을 연다", async () => {
     renderPage();
     const row = await problemRow(blocked.message);
