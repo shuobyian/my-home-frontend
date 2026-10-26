@@ -1,9 +1,10 @@
 import { SearchBar } from "@/components/common/SearchBar";
 import { InventoryBulkModal } from "@/components/inventory/InventoryBulkModal";
 import { styles } from "@/components/common/CardGrid.styles";
+import { groupMaterials } from "@/domain/materialGroup";
 import { InventoryItem, InventoryUpdateItem } from "@/types/inventory";
 import { Market } from "@/types/market";
-import { Button, Empty, Field, NumberInput, Stack, Text } from "@/ui";
+import { Button, Empty, Field, NumberInput, Stack, Text, Title } from "@/ui";
 import { useId, useMemo, useState } from "react";
 
 interface InventoryFormProps {
@@ -16,7 +17,8 @@ interface InventoryFormProps {
   onSubmit: (changes: InventoryUpdateItem[]) => void;
 }
 
-// 기초 재료마다 가진 개수를 입력하는 카드 목록. 검색으로 좁혀도 입력한 값은 그대로 둔다.
+// 기초 재료마다 가진 개수를 입력하는 카드 목록. 재료를 얻는 곳별로 묶어 보여 준다.
+// 검색으로 좁혀도 입력한 값은 그대로 둔다.
 // 일괄 입력은 붙여 넣은 글로 입력칸만 채우고, 저장은 저장하기로 한 번에 한다
 export function InventoryForm({
   markets,
@@ -84,29 +86,38 @@ export function InventoryForm({
             description={query ? "검색한 재료가 없습니다." : "재료가 없습니다."}
           />
         ) : (
-          <ul css={styles.grid}>
-            {rows.map((market) => (
-              <li key={market.id} css={styles.card}>
-                <Text strong>{market.name}</Text>
-                <Field
-                  label={`${market.name} 보유 개수`}
-                  hideLabel
-                  style={{ marginBottom: 0 }}
-                >
-                  <NumberInput
-                    style={{ width: "100%" }}
-                    min={0}
-                    precision={0}
-                    placeholder='0'
-                    value={valueOf(market.id) ?? null}
-                    onChange={(count) =>
-                      setEdits((prev) => new Map(prev).set(market.id, count))
-                    }
-                  />
-                </Field>
-              </li>
+          <Stack vertical>
+            {groupMaterials(rows).map(({ label, items }) => (
+              <section key={label} aria-label={label}>
+                <Title level={5}>{label}</Title>
+                <ul css={styles.grid}>
+                  {items.map((market) => (
+                    <li key={market.id} css={styles.card}>
+                      <Text strong>{market.name}</Text>
+                      <Field
+                        label={`${market.name} 보유 개수`}
+                        hideLabel
+                        style={{ marginBottom: 0 }}
+                      >
+                        <NumberInput
+                          style={{ width: "100%" }}
+                          min={0}
+                          precision={0}
+                          placeholder='0'
+                          value={valueOf(market.id) ?? null}
+                          onChange={(count) =>
+                            setEdits((prev) =>
+                              new Map(prev).set(market.id, count)
+                            )
+                          }
+                        />
+                      </Field>
+                    </li>
+                  ))}
+                </ul>
+              </section>
             ))}
-          </ul>
+          </Stack>
         )}
       </form>
       {bulkOpen && (

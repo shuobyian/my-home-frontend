@@ -149,6 +149,25 @@ describe("InventoryPage", () => {
     );
   });
 
+  it("재료 카드를 얻는 곳별로 묶어 보여 준다", async () => {
+    saveAuthSession(createSession({}, { isAdmin: false }));
+    api.fetchMarkets.mockResolvedValue([
+      { id: 1, name: "원목", price: 500 },
+      { id: 44, name: "철", price: 7000 },
+      { id: 1001, name: "밀", price: 1010 },
+    ]);
+    renderPage();
+    await screen.findByLabelText("밀 보유 개수");
+
+    const groups = screen.getAllByRole("region");
+    expect(groups.map((group) => group.getAttribute("aria-label"))).toEqual([
+      "작물",
+      "광물",
+      "기타",
+    ]);
+    expect(groups[1]).toContainElement(input("철"));
+  });
+
   it("저장하지 못하면 서버 메시지를 보여 주고 입력한 값은 그대로 둔다", async () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     api.updateInventory.mockRejectedValue(
