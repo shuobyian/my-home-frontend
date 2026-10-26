@@ -24,7 +24,7 @@ export const MATERIAL_GROUPS: readonly {
     ],
   },
   {
-    label: "과일·나무 열매",
+    label: "나무 열매",
     names: [
       "사과",
       "오렌지",
