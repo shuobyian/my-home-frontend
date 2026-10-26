@@ -64,7 +64,7 @@ export function ResultCards({
       <Modal
         open={!!detail}
         title={detail?.name}
-        width={720}
+        width={1040}
         onClose={() => setDetail(undefined)}
         footer={
           detail &&
