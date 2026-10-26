@@ -7,20 +7,10 @@ import { getTotalCost, requiresAffinity } from "@/domain/result";
 import { formatGold, formatNumber } from "@/lib/format";
 import { useState } from "react";
 import { Result } from "@/types/result";
-import { Button, CartIcon, Empty, Modal, Pager, Spin, Text, Title } from "@/ui";
-
-// 쪽을 카드 목록에서 나눌 때(자유 모드) 고를 수 있는 쪽당 개수. 2·3·4열로 나누어떨어진다
-const PAGE_SIZES = [12, 24, 48, 96];
+import { Button, CartIcon, Empty, Modal, Spin, Text, Title } from "@/ui";
 
 interface ResultCardsProps {
   loading: boolean;
-  // 있으면 서버 페이지(contents는 이미 그 쪽의 결과). page는 0부터, onChange는 1부터 알린다
-  pagination?: {
-    page: number;
-    size: number;
-    total: number;
-    onChange: (page: number) => void;
-  };
   contents: Result[];
   // 담기 버튼을 누르면 호출된다(장바구니에 담기). 없으면 담기 버튼을 두지 않는다
   onAdd?: (result: Result) => void;
@@ -28,50 +18,25 @@ interface ResultCardsProps {
   owned?: OwnedCounts;
 }
 
-// 결과를 카드로 보여 준다. 상세(기초 재료 표)는 상세 버튼으로 여는 창에서 본다
+// 결과를 쪽 나눔 없이 모두 카드로 보여 준다. 상세(기초 재료 표)는 상세 버튼으로 여는 창에서 본다
 export function ResultCards({
   loading,
-  pagination,
   contents,
   onAdd,
   owned,
 }: ResultCardsProps) {
   const [detail, setDetail] = useState<Result>();
-  const [clientPage, setClientPage] = useState(1);
-  const [clientPageSize, setClientPageSize] = useState(PAGE_SIZES[0]);
-
-  const pageSize = pagination?.size ?? clientPageSize;
-  const total = pagination?.total ?? contents.length;
-  const pageCount = Math.max(1, Math.ceil(total / pageSize));
-  // 결과가 줄어 보던 쪽이 사라지면 마지막 쪽으로 고정한다
-  if (!pagination && clientPage > pageCount) setClientPage(pageCount);
-  const page = pagination
-    ? pagination.page + 1
-    : Math.min(clientPage, pageCount);
-  const items = pagination
-    ? contents
-    : contents.slice((page - 1) * pageSize, page * pageSize);
-
-  const changePage = (nextPage: number, nextSize: number) => {
-    if (pagination) {
-      pagination.onChange(nextPage);
-      return;
-    }
-    // 쪽당 개수가 늘어 보던 쪽이 사라지면 마지막 쪽으로 맞춘다
-    setClientPage(Math.min(nextPage, Math.ceil(total / nextSize) || 1));
-    setClientPageSize(nextSize);
-  };
 
   return (
     <Spin spinning={loading}>
-      {items.length === 0 ? (
+      {contents.length === 0 ? (
         // 불러오는 동안에는 '데이터 없음'을 숨기고 회전 표시가 놓일 자리만 남긴다
         <div style={loading ? { visibility: "hidden" } : undefined}>
           <Empty />
         </div>
       ) : (
         <ul aria-label='결과 목록' css={styles.grid}>
-          {items.map((result) => (
+          {contents.map((result) => (
             <li key={result.id} css={styles.card}>
               <ResultCardBody result={result} owned={owned} />
               <div css={styles.actions}>
@@ -95,16 +60,6 @@ export function ResultCards({
             </li>
           ))}
         </ul>
-      )}
-      {/* 쪽당 개수를 고를 수 있으면 가장 작은 개수보다 많을 때 보인다(고른 개수를 되돌릴 수 있게) */}
-      {total > (pagination ? pageSize : PAGE_SIZES[0]) && (
-        <Pager
-          page={page}
-          pageCount={pageCount}
-          pageSize={pageSize}
-          pageSizes={pagination ? undefined : PAGE_SIZES}
-          onChange={changePage}
-        />
       )}
       <Modal
         open={!!detail}

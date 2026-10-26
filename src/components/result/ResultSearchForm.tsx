@@ -7,9 +7,6 @@ import { Button, Input, Select, Stack, useForm } from "@/ui";
 
 const ALL = "ALL";
 
-// 검색 조건 중 입력창으로 고르는 부분(페이지 제외)
-export type ResultSearchFilter = Omit<ResultSearchState, "page">;
-
 interface SearchFormValues {
   name: string;
   tool: Tool | typeof ALL;
@@ -20,7 +17,7 @@ const toFormValues = ({
   name,
   tool,
   category,
-}: ResultSearchFilter): SearchFormValues => ({
+}: ResultSearchState): SearchFormValues => ({
   name,
   tool: tool ?? ALL,
   category: category ?? ALL,
@@ -28,8 +25,8 @@ const toFormValues = ({
 
 interface ResultSearchFormProps {
   // 현재 검색 조건. 뒤로 가기 등으로 바뀌면 입력창도 맞춘다.
-  filter: ResultSearchFilter;
-  onSearch: (filter: ResultSearchFilter) => void;
+  filter: ResultSearchState;
+  onSearch: (filter: ResultSearchState) => void;
 }
 
 // 홈 결과 검색 입력(물품명·도구·카테고리)

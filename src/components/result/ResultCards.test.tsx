@@ -12,17 +12,13 @@ const cardNames = () =>
     .map((heading) => heading.textContent);
 
 describe("ResultCards", () => {
-  it("클라이언트 페이지: 12개씩 나누고, 쪽당 개수를 늘리면 한 쪽에 모두 보인다", () => {
+  it("쪽을 나누지 않고 결과를 모두 보여 준다", () => {
     render(<ResultCards loading={false} contents={results} />);
 
-    expect(cardNames()).toHaveLength(12);
-    fireEvent.click(screen.getByRole("button", { name: "다음 페이지" }));
-    expect(cardNames()).toEqual(["물품 13"]);
-
-    fireEvent.change(screen.getByRole("combobox", { name: "페이지당 개수" }), {
-      target: { value: "24" },
-    });
     expect(cardNames()).toHaveLength(13);
+    expect(
+      screen.queryByRole("navigation", { name: "페이지 이동" })
+    ).not.toBeInTheDocument();
   });
 
   it("상세 창에서 담으면 onAdd로 알리고 창을 닫는다", () => {

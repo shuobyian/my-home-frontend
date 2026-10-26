@@ -40,7 +40,7 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
 
   return (
     <span css={styles.avatar}>
-      <img src={src} alt={alt} onError={handleError} />
+      <img src={src} alt={alt} loading='lazy' onError={handleError} />
     </span>
   );
 }

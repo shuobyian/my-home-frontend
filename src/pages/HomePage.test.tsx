@@ -71,11 +71,6 @@ function renderHome(entries: string | string[]) {
   );
 }
 
-const requestedPages = () =>
-  mockedFetchResults.mock.calls.map(
-    ([params]) => (params as ResultSearchParams).page
-  );
-
 beforeEach(() => {
   mockedFetchResults.mockImplementation(
     async ({ name }: ResultSearchParams) => ({
@@ -153,7 +148,7 @@ describe("HomePage", () => {
     expect(await screen.findByText("나무 결과")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("물품명 입력")).toHaveValue("나무");
     expect(mockedFetchResults).toHaveBeenCalledWith(
-      expect.objectContaining({ page: 0, size: 12, name: "나무" })
+      expect.objectContaining({ page: 0, size: 2000, name: "나무" })
     );
   });
 
@@ -190,22 +185,6 @@ describe("HomePage", () => {
     expect(await screen.findByText("나무 결과")).toBeInTheDocument();
     await waitFor(() =>
       expect(screen.getByPlaceholderText("물품명 입력")).toHaveValue("나무")
-    );
-  });
-
-  it("주소의 페이지가 결과 범위를 넘으면 마지막 페이지로 바로잡는다(히스토리에 쌓지 않음)", async () => {
-    renderHome(["/?name=이전", "/?page=9"]);
-
-    await waitFor(() =>
-      expect(screen.getByTestId("search")).toHaveTextContent("?page=2")
-    );
-    // 15개(2쪽)이므로 9쪽(인덱스 8)을 확인한 뒤 2쪽(인덱스 1)을 조회한다
-    await waitFor(() => expect(requestedPages()).toEqual([8, 1]));
-
-    // 보정은 replace라서 뒤로 가면 잘못된 주소(?page=9)가 아니라 그 전 화면으로 간다
-    fireEvent.click(screen.getByText("뒤로"));
-    await waitFor(() =>
-      expect(screen.getByTestId("search")).toHaveTextContent("?name=이전")
     );
   });
 
