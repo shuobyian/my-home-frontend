@@ -76,6 +76,10 @@ export const styles = {
     text-align: center;
   `,
 
+  end: css`
+    text-align: end;
+  `,
+
   // TextArea: 테두리·포커스는 control과 같고 높이는 줄 수(rows)를 따른다. control 뒤에 둔다
   textArea: css`
     display: block;

@@ -132,6 +132,7 @@ export function InventoryForm({
                           />
                           <NumberInput
                             style={{ flex: 1, minWidth: 0 }}
+                            align='end'
                             min={0}
                             precision={0}
                             placeholder='0'
