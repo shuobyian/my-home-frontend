@@ -84,17 +84,29 @@ export function MarketPriceForm({
       ),
     }));
 
+  // 분류는 서버 시세(같은 id)를 따른다. 저장해 둔 시세에는 분류가 없거나 그 뒤 관리자가 바꿨을 수 있다.
+  // 서버 시세가 오기 전에는 저장해 둔 분류로 보인다. 이전에 저장된 문자열 id도 숫자로 맞춰 본다
+  const serverGroups = new Map(
+    serverMarkets?.map(({ id, group }) => [id, group])
+  );
+  const withServerGroup = <T extends MarketRow>(market: T): T => ({
+    ...market,
+    group: serverGroups.get(Number(market.id)) ?? market.group,
+  });
+
   return (
     <form
       onSubmit={handleSubmit(({ markets }) =>
-        // 입력칸이 있는 값만 넘긴다. 빈 시세(null)도 그대로 넘긴다(parseMarketList가 받는다)
+        // 입력칸이 있는 값만 넘긴다. 빈 시세(null)도 그대로 넘긴다(parseMarketList가 받는다).
+        // 분류도 함께 넘겨 다음에 저장본으로 시작할 때 서버 시세가 오기 전에도 묶음이 보이게 한다
         onSubmit(
-          markets.map(({ id, name, price }) => ({
+          markets.map(withServerGroup).map(({ id, name, price, group }) => ({
             id,
             name,
             // ponytail: 비운 칸에서 넘어가는 null을 이 단언이 가린다.
             // Market.price를 number | null로 넓히고 서버 계약(계산 요청이 null 시세를 받는지)을 확인한 뒤 없앤다
             price: price as number,
+            group,
           }))
         )
       )}
@@ -120,7 +132,7 @@ export function MarketPriceForm({
         <Empty />
       ) : (
         <MaterialGroups
-          items={values.markets}
+          items={values.markets.map(withServerGroup)}
           getKey={({ id }) => id}
           renderItem={(market) => (
             <>

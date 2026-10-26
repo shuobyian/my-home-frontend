@@ -1,3 +1,4 @@
+import { MarketGroup } from "@/types/enums";
 import { Market, MarketUpdateItem } from "@/types/market";
 
 function isMarket(value: unknown): value is Market {
@@ -101,14 +102,16 @@ export function validateMarketName(
 }
 
 // 시세 편집 표의 한 행. 새 행은 id가 없고, 비운 시세 칸은 null이다.
+// 분류를 고르지 않은 행은 group이 없다(새 행은 서버 기본값인 기타가 된다)
 export interface MarketRowValue {
   id?: number;
   name: string;
   price: number | null;
+  group?: MarketGroup;
 }
 
 export interface MarketRowDiff {
-  // PUT /market 본문. 기존 행은 바뀐 필드만 { id, name?, price? }로, 새 행은 { name, price }로 보낸다
+  // PUT /market 본문. 기존 행은 바뀐 필드만 { id, name?, price?, group? }로, 새 행은 { name, price, group? }로 보낸다
   changes: MarketUpdateItem[];
   // 이름을 바꾼 기존 시세(원래 이름 → 새 이름)
   renames: { from: string; to: string }[];
@@ -124,7 +127,7 @@ export function diffMarketRows(
   const changes: MarketUpdateItem[] = [];
   const renames: MarketRowDiff["renames"] = [];
 
-  rows.forEach(({ id, name, price }) => {
+  rows.forEach(({ id, name, price, group }) => {
     const trimmed = name.trim();
     const before = id === undefined ? undefined : byId.get(id);
     if (id === undefined || !before) {
@@ -133,6 +136,7 @@ export function diffMarketRows(
         ...(id !== undefined && { id }),
         name: trimmed,
         ...(price !== null && { price }),
+        ...(group !== undefined && { group }),
       });
       return;
     }
@@ -142,6 +146,7 @@ export function diffMarketRows(
       renames.push({ from: before.name, to: trimmed });
     }
     if (price !== null && price !== before.price) change.price = price;
+    if (group !== undefined && group !== before.group) change.group = group;
     if (Object.keys(change).length > 0) changes.push({ id, ...change });
   });
 

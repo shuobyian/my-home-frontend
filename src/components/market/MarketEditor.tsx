@@ -3,8 +3,10 @@ import {
   MarketRowDiff,
   validateMarketName,
 } from "@/domain/market";
+import { MARKET_GROUP_OPTIONS } from "@/domain/labels";
 import { formatNumber } from "@/lib/format";
 import { useState } from "react";
+import { MarketGroup, MarketGroupType } from "@/types/enums";
 import { Market, MarketUpdateItem } from "@/types/market";
 import {
   Button,
@@ -14,6 +16,7 @@ import {
   FormErrors,
   Input,
   NumberInput,
+  Select,
   Stack,
   Text,
   useForm,
@@ -29,15 +32,18 @@ interface EditorRow {
   name: string;
   // 비운 시세 칸은 null
   price: number | null;
+  // 고르지 않은 새 행은 없다(서버 기본값인 기타로 저장된다)
+  group?: MarketGroup;
 }
 
 const toRows = (markets: readonly Market[]): EditorRow[] =>
-  markets.map(({ id, name, price }) => ({
+  markets.map(({ id, name, price, group }) => ({
     key: `id:${id}`,
     id,
     label: name,
     name,
     price,
+    group,
   }));
 
 function validate({ rows }: { rows: EditorRow[] }): FormErrors {
@@ -72,8 +78,8 @@ interface MarketEditorProps {
   onDelete: (market: Market) => void;
 }
 
-// 관리자 시세 편집 카드 목록: 이름·시세 수정, 새 재료 추가, 쓰지 않는 시세 삭제.
-// 얻는 곳별 묶음으로 나눠 보여 준다
+// 관리자 시세 편집 카드 목록: 이름·시세·분류 수정, 새 재료 추가, 쓰지 않는 시세 삭제.
+// 저장된 분류(얻는 곳)별 묶음으로 나눠 보여 준다
 export function MarketEditor({
   markets,
   usage,
@@ -161,9 +167,13 @@ export function MarketEditor({
         <Empty />
       ) : (
         <MaterialGroups
-          // 이름을 고치는 중에 카드가 다른 묶음으로 옮겨 가지 않도록 바뀌지 않는 label로 묶는다.
-          // 새 행은 label이 '새 재료 n'이라 기타로 간다. index는 오류 경로(rows.<index>.*)에 쓴다
-          items={rows.map((row, index) => ({ name: row.label, row, index }))}
+          // 분류를 고르는 중에 카드가 다른 묶음으로 옮겨 가지 않도록 서버에 저장된 분류로 묶는다(저장하면 다시 묶인다).
+          // 새 행은 기타로 간다. index는 오류 경로(rows.<index>.*)에 쓴다
+          items={rows.map((row, index) => ({
+            group: row.id === undefined ? undefined : byId.get(row.id)?.group,
+            row,
+            index,
+          }))}
           getKey={({ row }) => row.key}
           renderItem={({ row, index }) => {
             const market = row.id === undefined ? undefined : byId.get(row.id);
@@ -197,6 +207,17 @@ export function MarketEditor({
                     precision={0}
                     value={row.price}
                     onChange={(price) => setRow(row.key, { price })}
+                  />
+                </Field>
+                <Field
+                  label={`${row.label} 분류`}
+                  hideLabel
+                  style={CARD_FIELD_STYLE}
+                >
+                  <Select
+                    value={row.group ?? MarketGroupType.ETC}
+                    onChange={(group) => setRow(row.key, { group })}
+                    options={MARKET_GROUP_OPTIONS}
                   />
                 </Field>
                 <Stack justify='space-between' wrap>

@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MarketEditor } from "@/components/market/MarketEditor";
+import { MarketGroupType } from "@/types/enums";
 import { Market } from "@/types/market";
 import { ComponentProps } from "react";
 
@@ -48,6 +49,36 @@ describe("MarketEditor", () => {
     save();
 
     expect(onSubmit).toHaveBeenCalledWith([{ name: "은", price: 50 }], []);
+  });
+
+  it("분류를 바꾸면 분류만 제출하고, 카드는 저장할 때까지 저장된 분류의 묶음에 남는다", () => {
+    const { onSubmit } = renderEditor({
+      markets: [{ ...wood, group: MarketGroupType.TIMBER }, cloth, gold],
+    });
+    const group = (name: string) => screen.getByRole("region", { name });
+    expect(screen.getByLabelText("원목 분류")).toHaveValue("TIMBER");
+    expect(group("목재")).toContainElement(screen.getByLabelText("원목 분류"));
+    // 분류가 없는 시세는 기타로 보인다
+    expect(screen.getByLabelText("천 분류")).toHaveValue("ETC");
+
+    change("천 분류", MarketGroupType.CROP);
+    fireEvent.click(screen.getByRole("button", { name: "재료 추가" }));
+    change("새 재료 1 이름", "은");
+    change("새 재료 1 시세", "50");
+    change("새 재료 1 분류", MarketGroupType.MINERAL);
+    expect(group("기타")).toContainElement(screen.getByLabelText("천 분류"));
+    expect(group("기타")).toContainElement(
+      screen.getByLabelText("새 재료 1 분류")
+    );
+    save();
+
+    expect(onSubmit).toHaveBeenCalledWith(
+      [
+        { id: 2, group: MarketGroupType.CROP },
+        { name: "은", price: 50, group: MarketGroupType.MINERAL },
+      ],
+      []
+    );
   });
 
   it("이름을 바꾸면 renames를 함께 넘긴다", () => {
