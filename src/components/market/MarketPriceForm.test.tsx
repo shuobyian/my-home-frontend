@@ -1,5 +1,6 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { MarketPriceForm } from "@/components/market/MarketPriceForm";
+import { MarketGroupType } from "@/types/enums";
 import { Market } from "@/types/market";
 
 const wood: Market = { id: 1, name: "원목", price: 500 };
@@ -30,7 +31,12 @@ describe("MarketPriceForm", () => {
 
 describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
   const cloth: Market = { id: 2, name: "천", price: 300 };
-  const egg: Market = { id: 84, name: "이스터 에그", price: 0 };
+  const egg: Market = {
+    id: 84,
+    name: "이스터 에그",
+    price: 0,
+    group: MarketGroupType.EVENT,
+  };
   const saved: Market[] = [{ ...wood, price: 700 }];
   // 비워 둔 채 저장된 시세(price: null). Market 타입은 아직 null을 담지 못해 단언한다
   const blankCloth = { ...cloth, price: null } as unknown as Market;
@@ -57,7 +63,7 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
     expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
     expect(screen.getByLabelText("천 시세")).toHaveValue("300");
     expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
-    // 화면에는 얻는 곳별 묶음 순서로 보인다(이스터 에그는 이벤트, 분류에 없는 재료는 마지막 기타)
+    // 화면에는 분류 순서로 묶여 보인다(이스터 에그는 이벤트, 분류가 없는 재료는 마지막 기타)
     expect(
       screen
         .getAllByRole("region")
@@ -202,6 +208,31 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "결과 만들기" }));
     expect(onSubmit).toHaveBeenCalledWith([{ id: 1, name: "원목", price: 99 }]);
+  });
+
+  it("저장본의 분류는 서버 시세(같은 id)를 따르고, 제출할 때 함께 넘긴다", () => {
+    const onSubmit = vi.fn();
+    const formProps = { ...props, onSubmit, initialMarkets: saved };
+    const { rerender } = render(<MarketPriceForm {...formProps} />);
+    const expectWoodIn = (name: string) =>
+      expect(screen.getByRole("region", { name })).toContainElement(
+        screen.getByLabelText("원목 시세")
+      );
+    // 서버 시세가 오기 전에는 저장본의 분류(없으면 기타)로 보인다
+    expectWoodIn("기타");
+
+    rerender(
+      <MarketPriceForm
+        {...formProps}
+        serverMarkets={[{ ...wood, group: MarketGroupType.TIMBER }]}
+      />
+    );
+    expectWoodIn("목재");
+
+    fireEvent.click(screen.getByRole("button", { name: "결과 만들기" }));
+    expect(onSubmit).toHaveBeenCalledWith([
+      { id: 1, name: "원목", price: 700, group: MarketGroupType.TIMBER },
+    ]);
   });
 
   it("'시세 불러오기'는 지금처럼 서버 시세 전체로 바꾼다", () => {

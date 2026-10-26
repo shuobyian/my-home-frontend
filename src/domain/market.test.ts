@@ -6,6 +6,7 @@ import {
   renameByServerId,
   validateMarketName,
 } from "@/domain/market";
+import { MarketGroupType } from "@/types/enums";
 
 describe("parseMarketList", () => {
   it("시세 배열이면 그대로 반환한다(입력 전 빈 시세 포함)", () => {
@@ -216,6 +217,24 @@ describe("diffMarketRows", () => {
         { name: "은", price: null },
       ]).changes
     ).toEqual([{ name: "은" }]);
+  });
+
+  it("분류는 바뀐 기존 행만 보내고(고르지 않은 행은 그대로), 새 행은 고른 분류를 함께 담는다", () => {
+    const grouped = original.map((market) => ({
+      ...market,
+      group: MarketGroupType.ETC,
+    }));
+    expect(
+      diffMarketRows(grouped, [
+        { id: 1, name: "원목", price: 500, group: MarketGroupType.TIMBER },
+        { id: 2, name: "천", price: 300, group: MarketGroupType.ETC },
+        { id: 3, name: "금", price: 1000 },
+        { name: "은", price: 50, group: MarketGroupType.MINERAL },
+      ]).changes
+    ).toEqual([
+      { id: 1, group: MarketGroupType.TIMBER },
+      { name: "은", price: 50, group: MarketGroupType.MINERAL },
+    ]);
   });
 
   it("서버에 없는 id의 행은 전체 값을 보내 서버가 알리게 한다", () => {

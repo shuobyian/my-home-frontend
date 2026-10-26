@@ -180,12 +180,12 @@ describe("InventoryPage", () => {
     );
   });
 
-  it("재료 카드를 얻는 곳별로 묶어 보여 준다", async () => {
+  it("재료 카드를 서버 시세의 분류별로 묶어 보여 준다", async () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     api.fetchMarkets.mockResolvedValue([
-      { id: 1, name: "원목", price: 500 },
-      { id: 44, name: "철", price: 7000 },
-      { id: 1001, name: "밀", price: 1010 },
+      { id: 1, name: "원목", price: 500, group: "ETC" },
+      { id: 44, name: "철", price: 7000, group: "MINERAL" },
+      { id: 1001, name: "밀", price: 1010, group: "CROP" },
     ]);
     renderPage();
     await screen.findByLabelText("밀 보유 개수");
