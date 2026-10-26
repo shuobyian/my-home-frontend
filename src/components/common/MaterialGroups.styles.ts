@@ -1,17 +1,18 @@
 import { css } from "@emotion/react";
 
-// 재료 묶음마다 세로 열 하나(자유 모드 시세 입력·관리자 시세 편집·보유 재료).
-// 열은 화면 너비에 맞춰 한 줄에 여러 개를 놓고, 묶음마다 재료 수가 달라 열 높이가 다르므로 위쪽에 맞춘다.
-// 입력칸마다 테두리가 있어 카드에는 상자를 두지 않고, 열마다 흰 바탕 하나에 간격으로만 묶는다
+// 재료 묶음마다 상자 하나(자유 모드 시세 입력·관리자 시세 편집·보유 재료).
+// 묶음마다 재료 수가 달라 격자로 놓으면 짧은 묶음 아래가 비므로, 다단(column)으로 위에서부터 채워 쌓는다.
+// 단 수는 화면 너비에 맞추고, 묶음 상자는 단 사이에서 쪼개지 않는다.
+// 입력칸마다 테두리가 있어 카드에는 상자를 두지 않고, 묶음마다 흰 바탕 하나에 간격으로만 묶는다
 export const styles = {
   columns: css`
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: var(--ui-space-3);
-    align-items: start;
+    column-width: 180px;
+    column-gap: var(--ui-space-3);
   `,
 
   column: css`
+    break-inside: avoid;
+    margin-bottom: var(--ui-space-3);
     display: flex;
     flex-direction: column;
     gap: var(--ui-space-3);
