@@ -54,7 +54,11 @@ export function InventoryForm({
     <Stack vertical>
       {/* 검색창은 따로 form이라 저장 form 밖에 두고, 저장 버튼은 form 속성으로 잇는다 */}
       <Stack justify='space-between' wrap>
-        <SearchBar placeholder='재료명 입력' onSearch={setQuery} />
+        <Stack wrap>
+          <SearchBar placeholder='재료명 입력' onSearch={setQuery} />
+          {/* 카드마다 단위 상자를 붙이면 어수선해서 한 번만 적는다 */}
+          <Text tone='secondary'>단위: 개</Text>
+        </Stack>
         <Stack>
           <Button onClick={() => setBulkOpen(true)}>일괄 입력</Button>
           <Button
@@ -91,7 +95,6 @@ export function InventoryForm({
                 >
                   <NumberInput
                     style={{ width: "100%" }}
-                    suffix='개'
                     min={0}
                     precision={0}
                     placeholder='0'
