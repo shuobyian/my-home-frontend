@@ -98,14 +98,18 @@ export function MarketPriceForm({
       )}
     >
       <Stack justify='space-between' style={{ marginBottom: 10 }}>
-        <Button
-          onClick={() => {
-            if (serverMarkets) setValues({ markets: serverMarkets });
-          }}
-          disabled={!serverMarkets}
-        >
-          시세 불러오기
-        </Button>
+        <Stack>
+          <Button
+            onClick={() => {
+              if (serverMarkets) setValues({ markets: serverMarkets });
+            }}
+            disabled={!serverMarkets}
+          >
+            시세 불러오기
+          </Button>
+          {/* 카드마다 단위 상자를 붙이면 어수선해서 한 번만 적는다 */}
+          <Text tone='secondary'>단위: 골드</Text>
+        </Stack>
         <Button variant='primary' type='submit' loading={submitting}>
           {submitText}
         </Button>
@@ -123,7 +127,6 @@ export function MarketPriceForm({
                 style={{ marginBottom: 0 }}
               >
                 <NumberInput
-                  suffix='골드'
                   style={{ width: "100%" }}
                   min={0}
                   value={market.price}

@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Market, MarketUpdateItem } from "@/types/market";
 import {
   Button,
+  DeleteIcon,
   Empty,
   Field,
   FormErrors,
@@ -143,6 +144,8 @@ export function MarketEditor({
           >
             시세 불러오기
           </Button>
+          {/* 카드마다 단위 상자를 붙이면 어수선해서 한 번만 적는다 */}
+          <Text tone='secondary'>단위: 골드</Text>
         </Stack>
         <Button
           variant='primary'
@@ -184,7 +187,6 @@ export function MarketEditor({
                   style={CARD_FIELD_STYLE}
                 >
                   <NumberInput
-                    suffix='골드'
                     style={{ width: "100%" }}
                     min={0}
                     precision={0}
@@ -201,14 +203,14 @@ export function MarketEditor({
                   </Text>
                   {/* 새 행은 바로 뺀다. 저장된 행은 쓰는 물품이 있거나 사용처를 모르면 지울 수 없다(서버도 거절한다) */}
                   <Button
+                    danger
+                    icon={<DeleteIcon />}
                     aria-label={`${row.label} 삭제`}
                     disabled={!!market && (!products || products.length > 0)}
                     onClick={() =>
                       market ? onDelete(market) : removeNewRow(row.key)
                     }
-                  >
-                    삭제
-                  </Button>
+                  />
                 </Stack>
               </li>
             );
