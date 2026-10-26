@@ -111,7 +111,7 @@ describe("MarketEditor", () => {
     expect(screen.getByRole("button", { name: "금 삭제" })).toBeDisabled();
   });
 
-  it("새 행의 삭제는 표에서만 뺀다", () => {
+  it("새 행의 삭제는 목록에서만 뺀다", () => {
     const { onDelete } = renderEditor();
 
     fireEvent.click(screen.getByRole("button", { name: "재료 추가" }));

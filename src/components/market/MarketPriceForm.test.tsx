@@ -59,8 +59,8 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
     expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
     expect(
       screen
-        .getAllByLabelText("물품명")
-        .map((input) => input.getAttribute("value"))
+        .getAllByRole("listitem")
+        .map((card) => card.firstChild?.textContent)
     ).toEqual(["원목", "천", "이스터 에그"]);
     expect(onMarketsAdded).toHaveBeenCalledTimes(1);
     expect(onMarketsAdded).toHaveBeenCalledWith([cloth, egg]);
@@ -186,8 +186,8 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
 
     expect(
       screen
-        .getAllByLabelText("물품명")
-        .map((input) => input.getAttribute("value"))
+        .getAllByRole("listitem")
+        .map((card) => card.firstChild?.textContent)
     ).toEqual(["원목"]);
     expect(screen.getByLabelText("원목 시세")).toHaveValue("99");
     expect(onMarketsAdded).not.toHaveBeenCalled();

@@ -8,14 +8,16 @@ import { useState } from "react";
 import { Market, MarketUpdateItem } from "@/types/market";
 import {
   Button,
+  Empty,
   Field,
   FormErrors,
   Input,
   NumberInput,
   Stack,
-  Table,
+  Text,
   useForm,
 } from "@/ui";
+import { styles } from "./MarketCards.styles";
 
 interface EditorRow {
   // 표의 행 key: 저장된 행은 id:<id>, 새 행은 new:<n>
@@ -51,7 +53,7 @@ function validate({ rows }: { rows: EditorRow[] }): FormErrors {
   return errors;
 }
 
-const CELL_FIELD_STYLE = { marginBottom: 0 };
+const CARD_FIELD_STYLE = { marginBottom: 0 };
 
 interface MarketEditorProps {
   // 서버 시세. 도착하면 한 번만 표를 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록).
@@ -69,7 +71,7 @@ interface MarketEditorProps {
   onDelete: (market: Market) => void;
 }
 
-// 관리자 시세 편집 표: 이름·시세 수정, 새 재료 추가, 쓰지 않는 시세 삭제
+// 관리자 시세 편집 카드 목록: 이름·시세 수정, 새 재료 추가, 쓰지 않는 시세 삭제
 export function MarketEditor({
   markets,
   usage,
@@ -123,12 +125,6 @@ export function MarketEditor({
   const removeNewRow = (key: string) =>
     setValues((prev) => ({ rows: prev.rows.filter((row) => row.key !== key) }));
 
-  // 저장된 행이 쓰는 물품. 사용처를 모르면 undefined
-  const usedBy = (row: EditorRow) => {
-    const market = row.id === undefined ? undefined : byId.get(row.id);
-    return market && usage?.get(market.name);
-  };
-
   return (
     <form
       onSubmit={handleSubmit(({ rows }) => {
@@ -157,100 +153,68 @@ export function MarketEditor({
           저장
         </Button>
       </Stack>
-      <Table
-        rowKey={(row) => row.key}
-        data={rows}
-        pagination={false}
-        columns={[
-          {
-            title: "이름",
-            key: "name",
-            render: (row, index) => (
-              <Field
-                label={`${row.label} 이름`}
-                hideLabel
-                required
-                error={errors[`rows.${index}.name`]}
-                style={CELL_FIELD_STYLE}
-              >
-                <Input
-                  value={row.name}
-                  onChange={(name) => setRow(row.key, { name })}
-                  placeholder='재료 이름'
-                />
-              </Field>
-            ),
-          },
-          {
-            title: "시세",
-            key: "price",
-            render: (row, index) => (
-              <Field
-                label={`${row.label} 시세`}
-                hideLabel
-                required
-                error={errors[`rows.${index}.price`]}
-                style={CELL_FIELD_STYLE}
-              >
-                <NumberInput
-                  suffix='골드'
-                  style={{ width: 180 }}
-                  min={0}
-                  precision={0}
-                  value={row.price}
-                  onChange={(price) => setRow(row.key, { price })}
-                />
-              </Field>
-            ),
-          },
-          {
-            title: "사용 물품",
-            key: "usedBy",
-            width: 120,
-            render: (row) => {
-              const products = usedBy(row);
-              return products ? (
-                <span title={products.join(", ")}>
-                  {formatNumber(products.length)}개
-                </span>
-              ) : (
-                "-"
-              );
-            },
-          },
-          {
-            title: "삭제",
-            key: "delete",
-            width: 100,
-            render: (row) => {
-              const market =
-                row.id === undefined ? undefined : byId.get(row.id);
-              const label = `${row.label} 삭제`;
-              if (!market) {
-                return (
+      {rows.length === 0 ? (
+        <Empty />
+      ) : (
+        <ul css={styles.grid}>
+          {rows.map((row, index) => {
+            const market = row.id === undefined ? undefined : byId.get(row.id);
+            // 저장된 행이 쓰는 물품. 새 행이거나 사용처를 모르면 undefined
+            const products = market && usage?.get(market.name);
+            return (
+              <li key={row.key} css={styles.card}>
+                <Field
+                  label={`${row.label} 이름`}
+                  hideLabel
+                  required
+                  error={errors[`rows.${index}.name`]}
+                  style={CARD_FIELD_STYLE}
+                >
+                  <Input
+                    value={row.name}
+                    onChange={(name) => setRow(row.key, { name })}
+                    placeholder='재료 이름'
+                  />
+                </Field>
+                <Field
+                  label={`${row.label} 시세`}
+                  hideLabel
+                  required
+                  error={errors[`rows.${index}.price`]}
+                  style={CARD_FIELD_STYLE}
+                >
+                  <NumberInput
+                    suffix='골드'
+                    style={{ width: "100%" }}
+                    min={0}
+                    precision={0}
+                    value={row.price}
+                    onChange={(price) => setRow(row.key, { price })}
+                  />
+                </Field>
+                <Stack justify='space-between' wrap>
+                  <Text tone='secondary'>
+                    사용 물품{" "}
+                    <span title={products?.join(", ")}>
+                      {products ? `${formatNumber(products.length)}개` : "-"}
+                    </span>
+                  </Text>
+                  {/* 새 행은 바로 뺀다. 저장된 행은 쓰는 물품이 있거나 사용처를 모르면 지울 수 없다(서버도 거절한다) */}
                   <Button
-                    aria-label={label}
-                    onClick={() => removeNewRow(row.key)}
+                    aria-label={`${row.label} 삭제`}
+                    disabled={!!market && (!products || products.length > 0)}
+                    onClick={() =>
+                      market ? onDelete(market) : removeNewRow(row.key)
+                    }
                   >
                     삭제
                   </Button>
-                );
-              }
-              // 쓰는 물품이 있거나 사용처를 모르면 지울 수 없다(서버도 거절한다)
-              const products = usedBy(row);
-              return (
-                <Button
-                  aria-label={label}
-                  disabled={!products || products.length > 0}
-                  onClick={() => onDelete(market)}
-                >
-                  삭제
-                </Button>
-              );
-            },
-          },
-        ]}
-      />
+                </Stack>
+              </li>
+            );
+          })}
+        </ul>
+      )}
     </form>
   );
 }
