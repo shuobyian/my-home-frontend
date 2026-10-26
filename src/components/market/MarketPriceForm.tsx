@@ -6,7 +6,7 @@ import {
 } from "@/domain/market";
 import { Market } from "@/types/market";
 import { Button, Empty, Field, NumberInput, Stack, Text, useForm } from "@/ui";
-import { styles } from "./MarketCards.styles";
+import { styles } from "@/components/common/CardGrid.styles";
 
 // 비운 시세 칸은 null로 둔다
 type MarketRow = Omit<Market, "price"> & { price: number | null };

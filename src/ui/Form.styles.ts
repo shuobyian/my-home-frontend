@@ -76,6 +76,23 @@ export const styles = {
     text-align: center;
   `,
 
+  // TextArea: 테두리·포커스는 control과 같고 높이는 줄 수(rows)를 따른다. control 뒤에 둔다
+  textArea: css`
+    display: block;
+    height: auto;
+    padding: 4px 11px;
+    resize: vertical;
+
+    &:focus {
+      outline: 0;
+    }
+
+    &::placeholder {
+      color: var(--ui-color-text-secondary);
+      opacity: 1;
+    }
+  `,
+
   // 지우기·비밀번호 보기 버튼
   affix: css`
     display: inline-flex;

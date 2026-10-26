@@ -1,7 +1,9 @@
 import { SearchBar } from "@/components/common/SearchBar";
+import { InventoryBulkModal } from "@/components/inventory/InventoryBulkModal";
+import { styles } from "@/components/common/CardGrid.styles";
 import { InventoryItem, InventoryUpdateItem } from "@/types/inventory";
 import { Market } from "@/types/market";
-import { Button, Field, NumberInput, Stack, Table } from "@/ui";
+import { Button, Empty, Field, NumberInput, Stack, Text } from "@/ui";
 import { useId, useMemo, useState } from "react";
 
 interface InventoryFormProps {
@@ -14,7 +16,8 @@ interface InventoryFormProps {
   onSubmit: (changes: InventoryUpdateItem[]) => void;
 }
 
-// 기초 재료마다 가진 개수를 입력하는 표. 검색으로 표를 좁혀도 입력한 값은 그대로 둔다.
+// 기초 재료마다 가진 개수를 입력하는 카드 목록. 검색으로 좁혀도 입력한 값은 그대로 둔다.
+// 일괄 입력은 붙여 넣은 글로 입력칸만 채우고, 저장은 저장하기로 한 번에 한다
 export function InventoryForm({
   markets,
   inventory,
@@ -30,6 +33,7 @@ export function InventoryForm({
     () => new Map()
   );
   const [query, setQuery] = useState("");
+  const [bulkOpen, setBulkOpen] = useState(false);
   const formId = useId();
 
   const valueOf = (marketId: number) =>
@@ -51,15 +55,18 @@ export function InventoryForm({
       {/* 검색창은 따로 form이라 저장 form 밖에 두고, 저장 버튼은 form 속성으로 잇는다 */}
       <Stack justify='space-between' wrap>
         <SearchBar placeholder='재료명 입력' onSearch={setQuery} />
-        <Button
-          variant='primary'
-          type='submit'
-          form={formId}
-          loading={submitting}
-          disabled={changes.length === 0}
-        >
-          저장하기
-        </Button>
+        <Stack>
+          <Button onClick={() => setBulkOpen(true)}>일괄 입력</Button>
+          <Button
+            variant='primary'
+            type='submit'
+            form={formId}
+            loading={submitting}
+            disabled={changes.length === 0}
+          >
+            저장하기
+          </Button>
+        </Stack>
       </Stack>
       <form
         id={formId}
@@ -68,25 +75,22 @@ export function InventoryForm({
           if (changes.length > 0) onSubmit(changes);
         }}
       >
-        <Table
-          rowKey={(market) => market.id}
-          data={rows}
-          pagination={false}
-          emptyText={query ? "검색한 재료가 없습니다." : "재료가 없습니다."}
-          columns={[
-            { title: "재료", key: "name", render: ({ name }) => name },
-            {
-              title: "보유 개수",
-              key: "count",
-              align: "right",
-              width: 200,
-              render: (market) => (
+        {rows.length === 0 ? (
+          <Empty
+            description={query ? "검색한 재료가 없습니다." : "재료가 없습니다."}
+          />
+        ) : (
+          <ul css={styles.grid}>
+            {rows.map((market) => (
+              <li key={market.id} css={styles.card}>
+                <Text strong>{market.name}</Text>
                 <Field
                   label={`${market.name} 보유 개수`}
                   hideLabel
                   style={{ marginBottom: 0 }}
                 >
                   <NumberInput
+                    style={{ width: "100%" }}
                     suffix='개'
                     min={0}
                     precision={0}
@@ -97,11 +101,20 @@ export function InventoryForm({
                     }
                   />
                 </Field>
-              ),
-            },
-          ]}
-        />
+              </li>
+            ))}
+          </ul>
+        )}
       </form>
+      {bulkOpen && (
+        <InventoryBulkModal
+          markets={markets}
+          onApply={(counts) =>
+            setEdits((prev) => new Map([...prev, ...counts]))
+          }
+          onClose={() => setBulkOpen(false)}
+        />
+      )}
     </Stack>
   );
 }

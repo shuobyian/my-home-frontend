@@ -1,4 +1,5 @@
 import {
+  parseInventoryText,
   shortage,
   shortagePrice,
   sumShortagePrice,
@@ -50,5 +51,40 @@ describe("inventory", () => {
     ]);
 
     expect(sumShortagePrice(materials, owned)).toBe(17500 + 0 + 300);
+  });
+
+  describe("parseInventoryText", () => {
+    const markets = [
+      { id: 1, name: "원목", price: 500 },
+      { id: 2, name: "못", price: 10 },
+      { id: 3, name: "고급 천", price: 70 },
+    ];
+
+    it("한 줄에 하나씩 적은 재료명과 개수를 시세 id별로 읽는다", () => {
+      const text = "원목 3\n못\t1,200\r\n\n 고급 천, 4개 \n";
+
+      expect(parseInventoryText(text, markets)).toEqual({
+        counts: new Map([
+          [1, 3],
+          [2, 1200],
+          [3, 4],
+        ]),
+        skipped: [],
+      });
+    });
+
+    it("형식이 틀리거나 시세에 없는 재료의 줄은 건너뛰고 알려 준다", () => {
+      const text = "재료\t보유 개수\n원목\n철 5\n못 0\n원목 7";
+      const { counts, skipped } = parseInventoryText(text, markets);
+
+      // 같은 재료는 마지막 줄을 쓰고, 0개도 그대로 읽는다
+      expect(counts).toEqual(
+        new Map([
+          [1, 7],
+          [2, 0],
+        ])
+      );
+      expect(skipped).toEqual(["재료\t보유 개수", "원목", "철 5"]);
+    });
   });
 });
