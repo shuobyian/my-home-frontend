@@ -18,7 +18,7 @@ import {
   Text,
   useForm,
 } from "@/ui";
-import { styles } from "@/components/common/CardGrid.styles";
+import { MaterialGroups } from "@/components/common/MaterialGroups";
 
 interface EditorRow {
   // 표의 행 key: 저장된 행은 id:<id>, 새 행은 new:<n>
@@ -72,7 +72,8 @@ interface MarketEditorProps {
   onDelete: (market: Market) => void;
 }
 
-// 관리자 시세 편집 카드 목록: 이름·시세 수정, 새 재료 추가, 쓰지 않는 시세 삭제
+// 관리자 시세 편집 카드 목록: 이름·시세 수정, 새 재료 추가, 쓰지 않는 시세 삭제.
+// 얻는 곳별 묶음으로 나눠 보여 준다
 export function MarketEditor({
   markets,
   usage,
@@ -159,13 +160,17 @@ export function MarketEditor({
       {rows.length === 0 ? (
         <Empty />
       ) : (
-        <ul css={styles.grid}>
-          {rows.map((row, index) => {
+        <MaterialGroups
+          // 이름을 고치는 중에 카드가 다른 묶음으로 옮겨 가지 않도록 바뀌지 않는 label로 묶는다.
+          // 새 행은 label이 '새 재료 n'이라 기타로 간다. index는 오류 경로(rows.<index>.*)에 쓴다
+          items={rows.map((row, index) => ({ name: row.label, row, index }))}
+          getKey={({ row }) => row.key}
+          renderItem={({ row, index }) => {
             const market = row.id === undefined ? undefined : byId.get(row.id);
             // 저장된 행이 쓰는 물품. 새 행이거나 사용처를 모르면 undefined
             const products = market && usage?.get(market.name);
             return (
-              <li key={row.key} css={styles.card}>
+              <>
                 <Field
                   label={`${row.label} 이름`}
                   hideLabel
@@ -212,10 +217,10 @@ export function MarketEditor({
                     }
                   />
                 </Stack>
-              </li>
+              </>
             );
-          })}
-        </ul>
+          }}
+        />
       )}
     </form>
   );

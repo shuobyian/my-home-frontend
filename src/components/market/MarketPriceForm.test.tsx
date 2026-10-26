@@ -57,11 +57,17 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
     expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
     expect(screen.getByLabelText("천 시세")).toHaveValue("300");
     expect(screen.getByLabelText("이스터 에그 시세")).toHaveValue("0");
+    // 화면에는 얻는 곳별 묶음 순서로 보인다(이스터 에그는 이벤트, 분류에 없는 재료는 마지막 기타)
+    expect(
+      screen
+        .getAllByRole("region")
+        .map((group) => group.getAttribute("aria-label"))
+    ).toEqual(["이벤트", "기타"]);
     expect(
       screen
         .getAllByRole("listitem")
         .map((card) => card.firstChild?.textContent)
-    ).toEqual(["원목", "천", "이스터 에그"]);
+    ).toEqual(["이스터 에그", "원목", "천"]);
     expect(onMarketsAdded).toHaveBeenCalledTimes(1);
     expect(onMarketsAdded).toHaveBeenCalledWith([cloth, egg]);
 

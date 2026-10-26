@@ -1,8 +1,7 @@
 import { SearchBar } from "@/components/common/SearchBar";
 import { InventoryBulkModal } from "@/components/inventory/InventoryBulkModal";
-import { styles as cardStyles } from "@/components/common/CardGrid.styles";
+import { MaterialGroups } from "@/components/common/MaterialGroups";
 import { styles } from "@/components/inventory/InventoryForm.styles";
-import { groupMaterials } from "@/domain/materialGroup";
 import { MUNG_UNIT } from "@/domain/result";
 import { InventoryItem, InventoryUpdateItem } from "@/types/inventory";
 import { Market } from "@/types/market";
@@ -15,7 +14,6 @@ import {
   PlusIcon,
   Stack,
   Text,
-  Title,
 } from "@/ui";
 import { useId, useMemo, useState } from "react";
 
@@ -107,56 +105,47 @@ export function InventoryForm({
             description={query ? "검색한 재료가 없습니다." : "재료가 없습니다."}
           />
         ) : (
-          <div css={styles.columns}>
-            {groupMaterials(rows).map(({ label, items }) => (
-              <section key={label} aria-label={label} css={styles.column}>
-                <Title level={5} style={{ margin: 0 }}>
-                  {label}
-                </Title>
-                <ul css={styles.list}>
-                  {items.map((market) => (
-                    <li key={market.id} css={cardStyles.card}>
-                      <Text strong>{market.name}</Text>
-                      <Field
-                        label={`${market.name} 보유 개수`}
-                        hideLabel
-                        style={{ marginBottom: 0 }}
-                      >
-                        <div css={styles.stepper}>
-                          <Button
-                            icon={<MinusIcon />}
-                            aria-label={`${market.name} 1뭉 빼기`}
-                            title={`1뭉(${MUNG_UNIT}개) 빼기`}
-                            disabled={(valueOf(market.id) ?? 0) <= 0}
-                            onClick={() => stepBy(market.id, -MUNG_UNIT)}
-                          />
-                          <NumberInput
-                            style={{ flex: 1, minWidth: 0 }}
-                            align='end'
-                            min={0}
-                            precision={0}
-                            placeholder='0'
-                            value={valueOf(market.id) ?? null}
-                            onChange={(count) =>
-                              setEdits((prev) =>
-                                new Map(prev).set(market.id, count)
-                              )
-                            }
-                          />
-                          <Button
-                            icon={<PlusIcon />}
-                            aria-label={`${market.name} 1뭉 더하기`}
-                            title={`1뭉(${MUNG_UNIT}개) 더하기`}
-                            onClick={() => stepBy(market.id, MUNG_UNIT)}
-                          />
-                        </div>
-                      </Field>
-                    </li>
-                  ))}
-                </ul>
-              </section>
-            ))}
-          </div>
+          <MaterialGroups
+            items={rows}
+            getKey={({ id }) => id}
+            renderItem={(market) => (
+              <>
+                <Text strong>{market.name}</Text>
+                <Field
+                  label={`${market.name} 보유 개수`}
+                  hideLabel
+                  style={{ marginBottom: 0 }}
+                >
+                  <div css={styles.stepper}>
+                    <Button
+                      icon={<MinusIcon />}
+                      aria-label={`${market.name} 1뭉 빼기`}
+                      title={`1뭉(${MUNG_UNIT}개) 빼기`}
+                      disabled={(valueOf(market.id) ?? 0) <= 0}
+                      onClick={() => stepBy(market.id, -MUNG_UNIT)}
+                    />
+                    <NumberInput
+                      style={{ flex: 1, minWidth: 0 }}
+                      align='end'
+                      min={0}
+                      precision={0}
+                      placeholder='0'
+                      value={valueOf(market.id) ?? null}
+                      onChange={(count) =>
+                        setEdits((prev) => new Map(prev).set(market.id, count))
+                      }
+                    />
+                    <Button
+                      icon={<PlusIcon />}
+                      aria-label={`${market.name} 1뭉 더하기`}
+                      title={`1뭉(${MUNG_UNIT}개) 더하기`}
+                      onClick={() => stepBy(market.id, MUNG_UNIT)}
+                    />
+                  </div>
+                </Field>
+              </>
+            )}
+          />
         )}
       </form>
       {bulkOpen && (
