@@ -1,6 +1,7 @@
 import { SearchBar } from "@/components/common/SearchBar";
 import { InventoryBulkModal } from "@/components/inventory/InventoryBulkModal";
-import { styles } from "@/components/common/CardGrid.styles";
+import { styles as cardStyles } from "@/components/common/CardGrid.styles";
+import { styles } from "@/components/inventory/InventoryForm.styles";
 import { groupMaterials } from "@/domain/materialGroup";
 import { InventoryItem, InventoryUpdateItem } from "@/types/inventory";
 import { Market } from "@/types/market";
@@ -17,7 +18,7 @@ interface InventoryFormProps {
   onSubmit: (changes: InventoryUpdateItem[]) => void;
 }
 
-// 기초 재료마다 가진 개수를 입력하는 카드 목록. 재료를 얻는 곳별로 묶어 보여 준다.
+// 기초 재료마다 가진 개수를 입력하는 카드 목록. 재료를 얻는 곳별로 세로 열에 묶어 보여 준다.
 // 검색으로 좁혀도 입력한 값은 그대로 둔다.
 // 일괄 입력은 붙여 넣은 글로 입력칸만 채우고, 저장은 저장하기로 한 번에 한다
 export function InventoryForm({
@@ -86,13 +87,15 @@ export function InventoryForm({
             description={query ? "검색한 재료가 없습니다." : "재료가 없습니다."}
           />
         ) : (
-          <Stack vertical>
+          <div css={styles.columns}>
             {groupMaterials(rows).map(({ label, items }) => (
-              <section key={label} aria-label={label}>
-                <Title level={5}>{label}</Title>
-                <ul css={styles.grid}>
+              <section key={label} aria-label={label} css={styles.column}>
+                <Title level={5} style={{ margin: 0 }}>
+                  {label}
+                </Title>
+                <ul css={styles.list}>
                   {items.map((market) => (
-                    <li key={market.id} css={styles.card}>
+                    <li key={market.id} css={cardStyles.card}>
                       <Text strong>{market.name}</Text>
                       <Field
                         label={`${market.name} 보유 개수`}
@@ -117,7 +120,7 @@ export function InventoryForm({
                 </ul>
               </section>
             ))}
-          </Stack>
+          </div>
         )}
       </form>
       {bulkOpen && (
