@@ -6,7 +6,7 @@ import {
 } from "@/domain/market";
 import { Market } from "@/types/market";
 import { Button, Empty, Field, NumberInput, Stack, Text, useForm } from "@/ui";
-import { styles } from "@/components/common/CardGrid.styles";
+import { MaterialGroups } from "@/components/common/MaterialGroups";
 
 // 비운 시세 칸은 null로 둔다
 type MarketRow = Omit<Market, "price"> & { price: number | null };
@@ -25,7 +25,8 @@ interface MarketPriceFormProps {
   onSubmit: (markets: Market[]) => void;
 }
 
-// 재료 시세 입력 카드 목록(자유 모드). 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
+// 재료 시세 입력 카드 목록(자유 모드). 얻는 곳별 묶음으로 나눠 보여 준다.
+// 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
 export function MarketPriceForm({
   serverMarkets,
   initialMarkets,
@@ -75,10 +76,11 @@ export function MarketPriceForm({
     if (added.length > 0) notifyAdded(added);
   }, [added]);
 
-  const setPrice = (index: number, price: number | null) =>
+  // 묶음으로 나눠 보여 순서가 바뀌므로 id로 찾는다
+  const setPrice = (id: number, price: number | null) =>
     setValues(({ markets }) => ({
-      markets: markets.map((market, i) =>
-        i === index ? { ...market, price } : market
+      markets: markets.map((market) =>
+        market.id === id ? { ...market, price } : market
       ),
     }));
 
@@ -117,9 +119,11 @@ export function MarketPriceForm({
       {values.markets.length === 0 ? (
         <Empty />
       ) : (
-        <ul css={styles.grid}>
-          {values.markets.map((market, index) => (
-            <li key={market.id} css={styles.card}>
+        <MaterialGroups
+          items={values.markets}
+          getKey={({ id }) => id}
+          renderItem={(market) => (
+            <>
               <Text strong>{market.name}</Text>
               <Field
                 label={`${market.name} 시세`}
@@ -130,12 +134,12 @@ export function MarketPriceForm({
                   style={{ width: "100%" }}
                   min={0}
                   value={market.price}
-                  onChange={(price) => setPrice(index, price)}
+                  onChange={(price) => setPrice(market.id, price)}
                 />
               </Field>
-            </li>
-          ))}
-        </ul>
+            </>
+          )}
+        />
       )}
     </form>
   );

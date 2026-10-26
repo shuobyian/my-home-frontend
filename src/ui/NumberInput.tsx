@@ -30,7 +30,7 @@ export type NumberInputProps = Omit<
   precision?: number;
   // 오른쪽에 붙이는 단위(골드, 개 등)
   suffix?: ReactNode;
-  align?: "start" | "center";
+  align?: "start" | "center" | "end";
   ref?: Ref<HTMLInputElement>;
 };
 
@@ -153,7 +153,11 @@ export function NumberInput({
           aria-valuemax={max}
           aria-valuenow={current ?? undefined}
           value={text}
-          css={[styles.input, align === "center" && styles.center]}
+          css={[
+            styles.input,
+            align === "center" && styles.center,
+            align === "end" && styles.end,
+          ]}
           onChange={(event) => handleChange(event.target.value)}
           onBlur={handleBlur}
           onKeyDown={handleKeyDown}
