@@ -4,7 +4,7 @@ import { CartButton } from "@/components/cart/CartButton";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { Panel } from "@/components/common/Panel";
 import { SearchBar } from "@/components/common/SearchBar";
-import { ResultTable } from "@/components/result/ResultTable";
+import { ResultCards } from "@/components/result/ResultCards";
 import { parseMarketList } from "@/domain/market";
 import { parseResultList } from "@/domain/result";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
@@ -96,10 +96,10 @@ export function FreeResultPage() {
           결과를 계산할 수 없습니다. {getErrorMessage(error)}
         </Text>
       ) : (
-        <ResultTable
+        <ResultCards
           loading={isLoading && !showSaved}
           contents={filtered}
-          onRowClick={addToCart}
+          onAdd={addToCart}
           owned={owned}
         />
       )}

@@ -1,7 +1,7 @@
 import { CartButton } from "@/components/cart/CartButton";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { ResultSearchForm } from "@/components/result/ResultSearchForm";
-import { ResultTable } from "@/components/result/ResultTable";
+import { ResultCards } from "@/components/result/ResultCards";
 import {
   parseResultSearch,
   ResultSearchState,
@@ -13,7 +13,8 @@ import { useEffect, useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { Stack, Text } from "@/ui";
 
-const PAGE_SIZE = 10;
+// 카드가 2·3·4열로 나누어떨어지는 개수
+const PAGE_SIZE = 12;
 
 // 홈: 결과 검색. 검색 조건과 페이지는 URL에 두어 뒤로 가기·새로고침·공유 시에도 유지한다.
 export function HomePage() {
@@ -75,8 +76,7 @@ export function HomePage() {
           </Text>
           <Text>빈칸 입력 시 모든 물품 확인이 가능합니다.</Text>
           <Text>
-            물품을 누르면 장바구니에 담깁니다. 펼치기(+)로 상세 정보를 볼 수
-            있습니다.
+            담기로 장바구니에 담고, 상세로 기초 재료를 볼 수 있습니다.
           </Text>
         </Stack>
       </Stack>
@@ -84,7 +84,7 @@ export function HomePage() {
         filter={search}
         onSearch={(filter) => navigateTo({ ...filter, page: 0 })}
       />
-      <ResultTable
+      <ResultCards
         loading={isFetching}
         pagination={{
           page: search.page,
@@ -93,7 +93,7 @@ export function HomePage() {
           onChange: (page) => navigateTo({ ...search, page: page - 1 }),
         }}
         contents={results?.content ?? []}
-        onRowClick={addToCart}
+        onAdd={addToCart}
         owned={owned}
       />
     </Stack>

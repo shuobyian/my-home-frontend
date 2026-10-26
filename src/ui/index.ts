@@ -11,6 +11,7 @@ export type { InputProps } from "./Input";
 export { Modal } from "./Modal";
 export { NumberInput } from "./NumberInput";
 export type { NumberInputProps } from "./NumberInput";
+export { Pager } from "./Pager";
 export { Segmented } from "./Segmented";
 export { Select } from "./Select";
 export type { SelectProps } from "./Select";

@@ -7,13 +7,8 @@ import {
   useState,
 } from "react";
 import { Empty } from "./Feedback";
-import {
-  ChevronLeftIcon,
-  ChevronRightIcon,
-  MinusIcon,
-  PlusIcon,
-} from "./icons";
-import { Select } from "./Select";
+import { MinusIcon, PlusIcon } from "./icons";
+import { Pager } from "./Pager";
 import { Spin } from "./Spin";
 import { styles } from "./Table.styles";
 
@@ -64,10 +59,6 @@ type SortOrder = "ascending" | "descending";
 
 const EXTRA_WIDTH = 48;
 const PAGE_SIZES = [10, 20, 50, 100];
-const SIZE_OPTIONS = PAGE_SIZES.map((size) => ({
-  value: String(size),
-  label: `${size}개씩`,
-}));
 // 여기서 시작한 클릭은 행 클릭으로 치지 않는다(체크박스·펼침 버튼·셀 안 입력)
 const INTERACTIVE = "button, input, select, textarea, a, label";
 
@@ -381,88 +372,10 @@ export function Table<T>({
             page={page}
             pageCount={pageCount}
             pageSize={pageSize}
-            showSizeChanger={options.showSizeChanger}
+            pageSizes={options.showSizeChanger ? PAGE_SIZES : undefined}
             onChange={changePage}
           />
         )}
     </Spin>
-  );
-}
-
-// 쪽이 7개를 넘으면 1 … 현재±2 … 마지막으로 줄인다
-function pageItems(page: number, count: number) {
-  const from = count > 7 ? Math.max(2, page - 2) : 2;
-  const to = count > 7 ? Math.min(count - 1, page + 2) : count - 1;
-  const items: (number | "startGap" | "endGap")[] = [1];
-  if (from > 2) items.push("startGap");
-  for (let item = from; item <= to; item++) items.push(item);
-  if (to < count - 1) items.push("endGap");
-  if (count > 1) items.push(count);
-  return items;
-}
-
-interface PagerProps {
-  page: number;
-  pageCount: number;
-  pageSize: number;
-  showSizeChanger?: boolean;
-  onChange: (page: number, pageSize: number) => void;
-}
-
-function Pager({
-  page,
-  pageCount,
-  pageSize,
-  showSizeChanger,
-  onChange,
-}: PagerProps) {
-  return (
-    <nav aria-label='페이지 이동' css={styles.pager}>
-      <button
-        type='button'
-        css={styles.pageButton}
-        aria-label='이전 페이지'
-        disabled={page <= 1}
-        onClick={() => onChange(page - 1, pageSize)}
-      >
-        <ChevronLeftIcon />
-      </button>
-      {pageItems(page, pageCount).map((item) =>
-        typeof item === "number" ? (
-          <button
-            key={item}
-            type='button'
-            css={styles.pageButton}
-            aria-label={`${item} 페이지`}
-            aria-current={item === page ? "page" : undefined}
-            onClick={() => onChange(item, pageSize)}
-          >
-            {item}
-          </button>
-        ) : (
-          <span key={item} css={styles.pageGap} aria-hidden='true'>
-            …
-          </span>
-        )
-      )}
-      <button
-        type='button'
-        css={styles.pageButton}
-        aria-label='다음 페이지'
-        disabled={page >= pageCount}
-        onClick={() => onChange(page + 1, pageSize)}
-      >
-        <ChevronRightIcon />
-      </button>
-      {showSizeChanger && (
-        <Select
-          css={styles.sizeSelect}
-          aria-label='페이지당 개수'
-          value={String(pageSize)}
-          onChange={(value) => onChange(page, Number(value))}
-          options={SIZE_OPTIONS}
-        />
-      )}
-    </nav>
   );
 }
