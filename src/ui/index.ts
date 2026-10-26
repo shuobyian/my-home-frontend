@@ -17,6 +17,8 @@ export type { SelectProps } from "./Select";
 export { Spin, Spinner } from "./Spin";
 export { Stack } from "./Stack";
 export { Table } from "./Table";
+export { TextArea } from "./TextArea";
+export type { TextAreaProps } from "./TextArea";
 export type {
   TableColumn,
   TablePagination,

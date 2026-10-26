@@ -122,6 +122,33 @@ describe("InventoryPage", () => {
     );
   });
 
+  it("일괄 입력은 붙여 넣은 재료명·개수로 입력칸을 채우고, 저장은 저장하기로 한다", async () => {
+    saveAuthSession(createSession({}, { isAdmin: false }));
+    api.updateInventory.mockResolvedValue([]);
+    renderPage();
+    await screen.findByLabelText("원목 보유 개수");
+
+    fireEvent.click(screen.getByRole("button", { name: "일괄 입력" }));
+    fireEvent.change(screen.getByLabelText("재료명과 보유 개수"), {
+      target: { value: "못\t120\n천 4개\n철 3" },
+    });
+    expect(screen.getByText(/읽지 못한 줄 1개/)).toHaveTextContent("철 3");
+    fireEvent.click(screen.getByRole("button", { name: "2개 입력" }));
+
+    expect(input("못")).toHaveValue("120");
+    expect(input("천")).toHaveValue("4");
+    expect(api.updateInventory).not.toHaveBeenCalled();
+
+    fireEvent.click(saveButton());
+
+    await waitFor(() =>
+      expect(api.updateInventory).toHaveBeenCalledWith([
+        { marketId: 2, count: 120 },
+        { marketId: 3, count: 4 },
+      ])
+    );
+  });
+
   it("저장하지 못하면 서버 메시지를 보여 주고 입력한 값은 그대로 둔다", async () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     api.updateInventory.mockRejectedValue(

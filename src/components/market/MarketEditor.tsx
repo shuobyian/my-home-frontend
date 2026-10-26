@@ -18,7 +18,7 @@ import {
   Text,
   useForm,
 } from "@/ui";
-import { styles } from "./MarketCards.styles";
+import { styles } from "@/components/common/CardGrid.styles";
 
 interface EditorRow {
   // 표의 행 key: 저장된 행은 id:<id>, 새 행은 new:<n>
