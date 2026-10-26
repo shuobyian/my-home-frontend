@@ -5,7 +5,8 @@ import {
   renameByServerId,
 } from "@/domain/market";
 import { Market } from "@/types/market";
-import { Button, Field, Input, NumberInput, Stack, Table, useForm } from "@/ui";
+import { Button, Empty, Field, NumberInput, Stack, Text, useForm } from "@/ui";
+import { styles } from "./MarketCards.styles";
 
 // 비운 시세 칸은 null로 둔다
 type MarketRow = Omit<Market, "price"> & { price: number | null };
@@ -24,7 +25,7 @@ interface MarketPriceFormProps {
   onSubmit: (markets: Market[]) => void;
 }
 
-// 재료 시세 입력 표(자유 모드). 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
+// 재료 시세 입력 카드 목록(자유 모드). 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
 export function MarketPriceForm({
   serverMarkets,
   initialMarkets,
@@ -97,51 +98,45 @@ export function MarketPriceForm({
       )}
     >
       <Stack justify='space-between' style={{ marginBottom: 10 }}>
-        <Button
-          onClick={() => {
-            if (serverMarkets) setValues({ markets: serverMarkets });
-          }}
-          disabled={!serverMarkets}
-        >
-          시세 불러오기
-        </Button>
+        <Stack>
+          <Button
+            onClick={() => {
+              if (serverMarkets) setValues({ markets: serverMarkets });
+            }}
+            disabled={!serverMarkets}
+          >
+            시세 불러오기
+          </Button>
+          {/* 카드마다 단위 상자를 붙이면 어수선해서 한 번만 적는다 */}
+          <Text tone='secondary'>단위: 골드</Text>
+        </Stack>
         <Button variant='primary' type='submit' loading={submitting}>
           {submitText}
         </Button>
       </Stack>
-      <Table
-        rowKey={(market) => market.id}
-        data={values.markets}
-        pagination={false}
-        columns={[
-          {
-            title: "물품명",
-            key: "name",
-            render: (market) => (
-              <Input aria-label='물품명' value={market.name} disabled />
-            ),
-          },
-          {
-            title: "시세",
-            key: "price",
-            render: (market, index) => (
+      {values.markets.length === 0 ? (
+        <Empty />
+      ) : (
+        <ul css={styles.grid}>
+          {values.markets.map((market, index) => (
+            <li key={market.id} css={styles.card}>
+              <Text strong>{market.name}</Text>
               <Field
                 label={`${market.name} 시세`}
                 hideLabel
                 style={{ marginBottom: 0 }}
               >
                 <NumberInput
-                  suffix='골드'
-                  style={{ width: 180 }}
+                  style={{ width: "100%" }}
                   min={0}
                   value={market.price}
                   onChange={(price) => setPrice(index, price)}
                 />
               </Field>
-            ),
-          },
-        ]}
-      />
+            </li>
+          ))}
+        </ul>
+      )}
     </form>
   );
 }
