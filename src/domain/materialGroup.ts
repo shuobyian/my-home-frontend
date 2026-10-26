@@ -21,9 +21,6 @@ export const MATERIAL_GROUPS: readonly {
       "바닐라",
       "콩",
       "아스파라거스",
-      "블루베리",
-      "노란장미",
-      "찻잎",
     ],
   },
   {
@@ -78,7 +75,6 @@ export const MATERIAL_GROUPS: readonly {
       "금",
       "알루미늄 원석",
       "백금 원석",
-      "자갈",
     ],
   },
   {
@@ -86,6 +82,7 @@ export const MATERIAL_GROUPS: readonly {
     names: ["자수정", "에메랄드", "루비", "사파이어", "다이아몬드"],
   },
   { label: "원예", names: ["씨앗", "묘목", "나무 넝쿨"] },
+  { label: "수풀", names: ["블루베리", "노란장미", "찻잎", "자갈"] },
   {
     label: "별 열매",
     names: ["빨간 별 열매", "노란 별 열매", "초록 별 열매", "파란 별 열매"],
