@@ -149,6 +149,37 @@ describe("InventoryPage", () => {
     );
   });
 
+  it("−/+는 1뭉(99개)씩 바꾸고 0 밑으로는 내려가지 않는다", async () => {
+    saveAuthSession(createSession({}, { isAdmin: false }));
+    api.updateInventory.mockResolvedValue([]);
+    renderPage();
+    await screen.findByLabelText("원목 보유 개수");
+    const button = (label: string) =>
+      screen.getByRole("button", { name: label });
+
+    // 비어 있으면 0개라 뺄 수 없다
+    expect(button("못 1뭉 빼기")).toBeDisabled();
+    fireEvent.click(button("못 1뭉 더하기"));
+    fireEvent.click(button("못 1뭉 더하기"));
+    expect(input("못")).toHaveValue("198");
+
+    fireEvent.click(button("원목 1뭉 더하기"));
+    expect(input("원목")).toHaveValue("102");
+    fireEvent.click(button("원목 1뭉 빼기"));
+    fireEvent.click(button("원목 1뭉 빼기"));
+    expect(input("원목")).toHaveValue("0");
+    expect(button("원목 1뭉 빼기")).toBeDisabled();
+
+    fireEvent.click(saveButton());
+
+    await waitFor(() =>
+      expect(api.updateInventory).toHaveBeenCalledWith([
+        { marketId: 1, count: 0 },
+        { marketId: 2, count: 198 },
+      ])
+    );
+  });
+
   it("재료 카드를 얻는 곳별로 묶어 보여 준다", async () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     api.fetchMarkets.mockResolvedValue([
