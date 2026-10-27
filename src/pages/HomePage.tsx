@@ -47,10 +47,8 @@ export function HomePage() {
         steps={
           <>
             <li>
-              물품 이름을 입력해 검색합니다.{" "}
-              <Text tone='secondary'>
-                빈칸으로 검색하면 모든 물품이 나옵니다.
-              </Text>
+              물품 이름을 입력하면 바로 검색합니다.{" "}
+              <Text tone='secondary'>빈칸이면 모든 물품이 나옵니다.</Text>
             </li>
             <li>
               <Text strong>담기</Text>를 누르면 장바구니에 담깁니다.

@@ -73,7 +73,7 @@ export function InventoryForm({
 
   return (
     <Stack vertical>
-      {/* 검색창은 따로 form이라 저장 form 밖에 두고, 저장 버튼은 form 속성으로 잇는다 */}
+      {/* 검색창에서 Enter를 눌러도 저장되지 않게 저장 form 밖에 두고, 저장 버튼은 form 속성으로 잇는다 */}
       <Stack justify='space-between' wrap>
         <Stack wrap>
           <SearchBar placeholder='재료명 입력' onSearch={setQuery} />

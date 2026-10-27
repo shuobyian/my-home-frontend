@@ -108,8 +108,10 @@ describe("InventoryPage", () => {
     fireEvent.change(screen.getByPlaceholderText("재료명 입력"), {
       target: { value: "못" },
     });
-    fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
-    expect(screen.queryByLabelText("원목 보유 개수")).not.toBeInTheDocument();
+    // 입력을 멈추면 검색한다
+    await waitFor(() =>
+      expect(screen.queryByLabelText("원목 보유 개수")).not.toBeInTheDocument()
+    );
     change("못", "9");
 
     fireEvent.click(saveButton());
