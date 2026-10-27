@@ -22,7 +22,7 @@ interface SpinProps {
   className?: string;
 }
 
-// 단독: 가운데에 큰 회전 표시. children과 함께: 불러오는 동안 내용을 흐리게 하고 위에 덮는다.
+// 단독: 가운데에 큰 회전 표시. children과 함께: 불러오는 동안 내용을 흐리게 하고 그 위에 회전 표시를 띄운다.
 export function Spin({ spinning = true, children, className }: SpinProps) {
   if (children === undefined) {
     return (
@@ -41,7 +41,9 @@ export function Spin({ spinning = true, children, className }: SpinProps) {
       <div css={spinning && styles.dimmed}>{children}</div>
       {spinning && (
         <div role='status' css={styles.overlay}>
-          <Indicator />
+          <span css={styles.floating}>
+            <Indicator />
+          </span>
         </div>
       )}
     </div>

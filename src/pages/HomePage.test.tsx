@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import {
+  act,
   fireEvent,
   render,
   screen,
@@ -11,6 +12,7 @@ import { HomePage } from "@/pages/HomePage";
 import { MemoryRouter, useLocation, useNavigate } from "react-router";
 import { CartProvider } from "@/state/cart";
 import { createResult, createSession } from "@/test/fixtures";
+import { ToolType } from "@/types/enums";
 import { ResultSearchParams } from "@/types/result";
 import { UIProvider } from "@/ui";
 
@@ -170,13 +172,13 @@ describe("HomePage", () => {
     expect(dialog).toHaveTextContent("전체 결과");
   });
 
-  it("검색하면 주소에 반영하고, 뒤로 가면 이전 조건과 입력창으로 돌아간다", async () => {
+  it("검색 버튼 없이 입력을 멈추면 주소에 반영하고, 뒤로 가면 이전 조건과 입력창으로 돌아간다", async () => {
     renderHome("/?name=나무");
     await screen.findByText("나무 결과");
+    expect(screen.queryByRole("button", { name: /검\s?색/ })).toBeNull();
 
     const input = screen.getByPlaceholderText("물품명 입력");
     fireEvent.change(input, { target: { value: "탁자" } });
-    fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
 
     expect(await screen.findByText("탁자 결과")).toBeInTheDocument();
     expect(screen.getByTestId("search")).toHaveTextContent("?name=탁자");
@@ -189,17 +191,34 @@ describe("HomePage", () => {
     );
   });
 
-  it("같은 조건으로 다시 검색하면 히스토리에 쌓지 않는다", async () => {
+  it("도구를 고르면 바로 검색한다", async () => {
+    renderHome("/?name=나무");
+    await screen.findByText("나무 결과");
+
+    fireEvent.change(screen.getByLabelText("도구"), {
+      target: { value: ToolType.WOOD },
+    });
+
+    await waitFor(() =>
+      expect(screen.getByTestId("search")).toHaveTextContent(
+        `?name=나무&tool=${ToolType.WOOD}`
+      )
+    );
+  });
+
+  it("주소는 공백을 지워도 입력한 공백은 남기고, 공백만 다른 이름은 히스토리에 쌓지 않는다", async () => {
     renderHome("/?name=나무");
     await screen.findByText("나무 결과");
 
     const input = screen.getByPlaceholderText("물품명 입력");
-    fireEvent.change(input, { target: { value: "탁자" } });
-    fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
+    fireEvent.change(input, { target: { value: "탁자 " } });
     expect(await screen.findByText("탁자 결과")).toBeInTheDocument();
+    expect(input).toHaveValue("탁자 ");
 
-    // 제출은 동기라 바로 같은 주소로 바꾼다(replace)
-    fireEvent.click(screen.getByRole("button", { name: /검\s?색/ }));
+    // 입력을 멈추면 공백을 지운 같은 주소로 바꾼다(replace)
+    fireEvent.change(input, { target: { value: "탁자" } });
+    await act(() => new Promise((resolve) => setTimeout(resolve, 600)));
+    expect(input).toHaveValue("탁자");
 
     fireEvent.click(screen.getByText("뒤로"));
     await waitFor(() =>

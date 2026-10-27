@@ -8,6 +8,7 @@ import {
 import { useFieldControl } from "./Field";
 import { styles } from "./Form.styles";
 import { CloseIcon, EyeIcon, EyeOffIcon } from "./icons";
+import { Spinner } from "./Spin";
 
 export type InputProps = Omit<
   InputHTMLAttributes<HTMLInputElement>,
@@ -17,6 +18,8 @@ export type InputProps = Omit<
   onChange?: (value: string) => void;
   // 값이 있을 때 지우기 버튼을 보인다
   allowClear?: boolean;
+  // 오른쪽 끝에 회전 표시를 보이고 input에 aria-busy를 단다(검색 중 등)
+  loading?: boolean;
   ref?: Ref<HTMLInputElement>;
 };
 
@@ -26,6 +29,7 @@ export function Input({
   value,
   onChange,
   allowClear,
+  loading,
   type,
   className,
   style,
@@ -56,6 +60,7 @@ export function Input({
         type={isPassword && revealed ? "text" : type}
         value={value}
         css={styles.input}
+        aria-busy={loading || undefined}
         onChange={(event) => onChange?.(event.target.value)}
       />
       {showClear && (
@@ -82,6 +87,7 @@ export function Input({
           {revealed ? <EyeOffIcon /> : <EyeIcon />}
         </button>
       )}
+      {loading && <Spinner css={styles.spinner} />}
     </span>
   );
 }

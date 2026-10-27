@@ -109,7 +109,13 @@ export function ProductTableView({
       </Stack>
       <hr />
       <Stack vertical gap={10}>
-        {onSearch && <SearchBar placeholder='물품 이름' onSearch={search} />}
+        {onSearch && (
+          <SearchBar
+            placeholder='물품 이름'
+            onSearch={search}
+            loading={loading}
+          />
+        )}
         <Stack justify='space-between'>
           <Text strong>선택된 물품 {formatNumber(selection.length)}개</Text>
           <Text strong>총 물품 {formatNumber(total)}개</Text>

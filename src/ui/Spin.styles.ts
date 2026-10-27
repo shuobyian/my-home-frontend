@@ -54,4 +54,17 @@ export const styles = {
     align-items: center;
     justify-content: center;
   `,
+
+  // 내용이 화면보다 길어도 보이는 곳의 세로 가운데에 머문다(내용 영역 밖으로는 나가지 않는다).
+  // 28px은 지름(회전 표시 32px + 안쪽 여백)의 절반
+  floating: css`
+    position: sticky;
+    top: calc(50% - 28px);
+    bottom: calc(50% - 28px);
+    display: flex;
+    padding: 12px;
+    background: var(--ui-color-bg-container);
+    border-radius: 50%;
+    box-shadow: var(--ui-shadow);
+  `,
 };

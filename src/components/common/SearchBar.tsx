@@ -1,64 +1,28 @@
-import { useState } from "react";
-import { Button, Input } from "@/ui";
+import { DebounceInput } from "@/components/common/DebounceInput";
 
 interface SearchBarProps {
   placeholder?: string;
-  // 앞뒤 공백을 지운 검색어로 호출된다. 입력창이 비면(지우기 버튼 포함) 빈 문자열(전체)로 호출된다.
+  // 입력을 멈추면 앞뒤 공백을 지운 검색어로 호출된다. 입력창을 비우면 빈 문자열(전체)로 호출된다.
   onSearch: (keyword: string) => void;
+  // 서버에서 검색 결과를 받는 중
+  loading?: boolean;
 }
 
-// 검색어 입력과 '검색' 버튼. Enter로도 검색한다.
+// 검색어 입력. 버튼 없이 입력을 멈추면 바로 검색한다.
 export function SearchBar({
   placeholder = "물품명 입력",
   onSearch,
+  loading,
 }: SearchBarProps) {
-  const [keyword, setKeyword] = useState("");
-  const search = () => onSearch(keyword.trim());
-
   return (
-    <form
-      role='search'
-      style={{ display: "flex" }}
-      onSubmit={(event) => {
-        event.preventDefault();
-        search();
-      }}
-    >
-      <Input
-        value={keyword}
+    <div role='search'>
+      <DebounceInput
         placeholder={placeholder}
         aria-label={placeholder}
         allowClear
-        // 버튼과 이어 붙인다
-        style={{ borderTopRightRadius: 0, borderBottomRightRadius: 0 }}
-        onChange={(value) => {
-          setKeyword(value);
-          if (value === "") onSearch("");
-        }}
-        onKeyDown={(event) => {
-          // 한글 조합을 끝내는 Enter는 건너뛴다. 기본 제출은 막고 버튼과 같은 검색을 부른다
-          if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
-          event.preventDefault();
-          search();
-        }}
+        loading={loading}
+        onChange={(keyword) => onSearch(keyword.trim())}
       />
-      <Button
-        type='submit'
-        variant='primary'
-        // 맞닿는 테두리를 1px 겹쳐 한 줄로 보이게 한다
-        style={{
-          marginLeft: -1,
-          borderTopLeftRadius: 0,
-          borderBottomLeftRadius: 0,
-        }}
-        // 검색창 안에 포커스가 있으면 마우스로 눌러도 그대로 둔다
-        onMouseDown={(event) => {
-          if (event.currentTarget.form?.contains(document.activeElement))
-            event.preventDefault();
-        }}
-      >
-        검색
-      </Button>
-    </form>
+    </div>
   );
 }
