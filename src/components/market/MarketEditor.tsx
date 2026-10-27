@@ -24,15 +24,14 @@ import {
 import { MaterialGroups } from "@/components/common/MaterialGroups";
 
 interface EditorRow {
-  // 표의 행 key: 저장된 행은 id:<id>, 새 행은 new:<n>
+  // 표의 행 key: id:<id>
   key: string;
-  id?: number;
-  // 칸의 접근 이름에 쓴다(저장된 행은 서버 이름, 새 행은 '새 재료 n'). 이름을 고쳐도 바뀌지 않는다
+  id: number;
+  // 칸의 접근 이름에 쓴다(채울 때의 서버 이름). 이름을 고쳐도 바뀌지 않는다
   label: string;
   name: string;
   // 비운 시세 칸은 null
   price: number | null;
-  // 고르지 않은 새 행은 없다(서버 기본값인 기타로 저장된다)
   group?: MarketGroup;
 }
 
@@ -82,9 +81,11 @@ interface MarketEditorProps {
   ) => void;
   // 저장된 시세의 삭제 요청. 쓰는 물품이 없는 시세만 부른다
   onDelete: (market: Market) => void;
+  // '재료 추가'를 눌렀을 때. 추가 모달은 호출부가 띄우고 바로 저장한다
+  onAdd: () => void;
 }
 
-// 관리자 시세 편집 카드 목록: 이름·시세·분류 수정, 새 재료 추가, 쓰지 않는 시세 삭제.
+// 관리자 시세 편집 카드 목록: 이름·시세·분류 수정, 재료 추가(onAdd), 쓰지 않는 시세 삭제.
 // 저장된 분류(얻는 곳)별 묶음으로 나눠 보여 준다
 export function MarketEditor({
   markets,
@@ -92,14 +93,15 @@ export function MarketEditor({
   submitting,
   onSubmit,
   onDelete,
+  onAdd,
 }: MarketEditorProps) {
   const { values, errors, setValues, handleSubmit } = useForm<{
     rows: EditorRow[];
   }>(() => ({ rows: toRows(markets ?? []) }), validate);
   const { rows } = values;
-  const [newCount, setNewCount] = useState(0);
 
-  // 서버 시세가 처음 도착하면 한 번만 채운다. 그 뒤로 서버에서 사라진 시세(삭제)는 표에서도 뺀다
+  // 서버 시세가 처음 도착하면 한 번만 채운다. 그 뒤로는 입력값을 두고,
+  // 서버에서 사라진 시세(삭제)는 빼고 새로 생긴 시세(재료 추가)는 뒤에 덧붙인다
   const [filled, setFilled] = useState(!!markets);
   const [prevMarkets, setPrevMarkets] = useState(markets);
   if (markets !== prevMarkets) {
@@ -109,9 +111,15 @@ export function MarketEditor({
       setValues({ rows: toRows(markets) });
     } else if (markets) {
       const ids = new Set(markets.map(({ id }) => id));
-      setValues((prev) => ({
-        rows: prev.rows.filter(({ id }) => id === undefined || ids.has(id)),
-      }));
+      setValues((prev) => {
+        const known = new Set(prev.rows.map(({ id }) => id));
+        return {
+          rows: [
+            ...prev.rows.filter(({ id }) => ids.has(id)),
+            ...toRows(markets.filter(({ id }) => !known.has(id))),
+          ],
+        };
+      });
     }
   }
 
@@ -125,20 +133,6 @@ export function MarketEditor({
       ),
     }));
 
-  const addRow = () => {
-    const n = newCount + 1;
-    setNewCount(n);
-    setValues((prev) => ({
-      rows: [
-        ...prev.rows,
-        { key: `new:${n}`, label: `새 재료 ${n}`, name: "", price: null },
-      ],
-    }));
-  };
-
-  const removeNewRow = (key: string) =>
-    setValues((prev) => ({ rows: prev.rows.filter((row) => row.key !== key) }));
-
   return (
     <form
       onSubmit={handleSubmit(({ rows }) => {
@@ -148,7 +142,9 @@ export function MarketEditor({
     >
       <Stack justify='space-between' wrap style={{ marginBottom: 10 }}>
         <Stack>
-          <Button onClick={addRow}>재료 추가</Button>
+          <Button onClick={onAdd} disabled={!markets}>
+            재료 추가
+          </Button>
           <Button
             onClick={() => {
               if (markets) setValues({ rows: toRows(markets) });
@@ -174,16 +170,16 @@ export function MarketEditor({
       ) : (
         <MaterialGroups
           // 분류를 고르는 중에 카드가 다른 묶음으로 옮겨 가지 않도록 서버에 저장된 분류로 묶는다(저장하면 다시 묶인다).
-          // 새 행은 기타로 간다. index는 오류 경로(rows.<index>.*)에 쓴다
+          // index는 오류 경로(rows.<index>.*)에 쓴다
           items={rows.map((row, index) => ({
-            group: row.id === undefined ? undefined : byId.get(row.id)?.group,
+            group: byId.get(row.id)?.group,
             row,
             index,
           }))}
           getKey={({ row }) => row.key}
           renderItem={({ row, index }) => {
-            const market = row.id === undefined ? undefined : byId.get(row.id);
-            // 저장된 행이 쓰는 물품. 새 행이거나 사용처를 모르면 undefined
+            const market = byId.get(row.id);
+            // 이 시세를 쓰는 물품. 사용처를 모르면 undefined
             const products = market && usage?.get(market.name);
             return (
               <>
@@ -226,15 +222,13 @@ export function MarketEditor({
                       {products ? `${formatNumber(products.length)}개` : "-"}
                     </span>
                   </Text>
-                  {/* 새 행은 바로 뺀다. 저장된 행은 쓰는 물품이 있거나 사용처를 모르면 지울 수 없다(서버도 거절한다) */}
+                  {/* 쓰는 물품이 있거나 사용처를 모르면 지울 수 없다(서버도 거절한다) */}
                   <Button
                     danger
                     icon={<DeleteIcon />}
                     aria-label={`${row.label} 삭제`}
-                    disabled={!!market && (!products || products.length > 0)}
-                    onClick={() =>
-                      market ? onDelete(market) : removeNewRow(row.key)
-                    }
+                    disabled={!products || products.length > 0}
+                    onClick={() => market && onDelete(market)}
                   />
                 </Stack>
               </>

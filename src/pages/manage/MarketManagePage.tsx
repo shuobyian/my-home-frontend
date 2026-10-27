@@ -1,5 +1,6 @@
 import { getErrorMessage } from "@/apis/errors";
 import { CatalogStatusBanner } from "@/components/catalog/CatalogStatusBanner";
+import { AddMarketModal } from "@/components/market/AddMarketModal";
 import { MarketEditor } from "@/components/market/MarketEditor";
 import { MarketRowDiff } from "@/domain/market";
 import { formatNumber } from "@/lib/format";
@@ -35,6 +36,7 @@ export function MarketManagePage() {
   // 저장이 끝나면 편집기를 다시 마운트해 서버 값으로 채운다
   const [editorKey, setEditorKey] = useState(0);
   const [saving, setSaving] = useState(false);
+  const [adding, setAdding] = useState(false);
 
   const save = async (changes: MarketUpdateItem[]) => {
     setSaving(true);
@@ -90,6 +92,22 @@ export function MarketManagePage() {
     });
   };
 
+  // 새 시세는 모달에서 바로 저장한다. 편집 중인 입력값은 그대로 두고 편집기가 새 시세를 덧붙인다
+  const addMarket = async (market: MarketUpdateItem) => {
+    try {
+      await updateMarkets.mutateAsync([market]);
+      toast.success("시세를 추가했습니다.");
+    } catch (error) {
+      dialogs.alert({
+        status: "error",
+        title: "시세를 추가하지 못했습니다",
+        content: getErrorMessage(error),
+      });
+      // 모달이 입력을 유지한 채 열려 있게 한다
+      throw error;
+    }
+  };
+
   const confirmDelete = (market: Market) => {
     dialogs.confirm({
       title: `'${market.name}' 시세를 삭제하시겠습니까?`,
@@ -133,7 +151,15 @@ export function MarketManagePage() {
         submitting={saving}
         onSubmit={submit}
         onDelete={confirmDelete}
+        onAdd={() => setAdding(true)}
       />
+      {adding && markets && (
+        <AddMarketModal
+          existingNames={new Set(markets.map(({ name }) => name))}
+          onSubmit={addMarket}
+          onClose={() => setAdding(false)}
+        />
+      )}
     </div>
   );
 }
