@@ -26,18 +26,22 @@ interface FieldProps {
   required?: boolean;
   // 라벨 줄(별표 포함)을 화면에서만 숨긴다. 접근 이름과 aria-required는 그대로 붙는다.
   hideLabel?: boolean;
+  // 라벨을 컨트롤 왼쪽에 둔다(좁은 카드 등 세로 공간을 아낄 때)
+  inline?: boolean;
   children: ReactNode;
   className?: string;
   style?: CSSProperties;
 }
 
 // 라벨(위)·컨트롤·오류·도움말 묶음. 안쪽 DS 컨트롤에 id와 aria 속성을 context로 넘긴다.
+// 바깥 여백은 없다: 세로로 쌓을 때는 Form, 한 줄에 놓을 때는 FieldRow로 간격을 준다.
 export function Field({
   label,
   help,
   error,
   required,
   hideLabel,
+  inline,
   children,
   className,
   style,
@@ -51,10 +55,16 @@ export function Field({
     undefined;
 
   return (
-    <div css={styles.field} className={className} style={style}>
+    <div
+      css={[styles.field, inline && styles.inlineField]}
+      className={className}
+      style={style}
+    >
       {/* 숨길 때는 전역 ui-sr-only만 붙인다(라벨 여백이 숨김 규칙의 padding: 0을 이기지 않게) */}
       <div
-        css={hideLabel ? undefined : styles.label}
+        css={
+          hideLabel ? undefined : [styles.label, inline && styles.inlineLabel]
+        }
         className={hideLabel ? "ui-sr-only" : undefined}
       >
         {/* 라벨 글자(접근 이름)에 섞이지 않도록 label 밖에 둔다 */}
@@ -79,12 +89,16 @@ export function Field({
         {children}
       </FieldContext>
       {error && (
-        <div id={errorId} role='alert' css={styles.error}>
+        <div
+          id={errorId}
+          role='alert'
+          css={[styles.error, inline && styles.inlineMessage]}
+        >
           {error}
         </div>
       )}
       {help && (
-        <div id={helpId} css={styles.help}>
+        <div id={helpId} css={[styles.help, inline && styles.inlineMessage]}>
           {help}
         </div>
       )}

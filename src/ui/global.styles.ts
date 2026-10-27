@@ -16,6 +16,7 @@ export const globalStyles = css`
 
     --ui-color-text: rgba(0, 0, 0, 0.88);
     --ui-color-text-secondary: rgba(0, 0, 0, 0.65);
+    --ui-color-text-placeholder: rgba(0, 0, 0, 0.4);
     --ui-color-text-disabled: rgba(0, 0, 0, 0.25);
     --ui-color-text-inverse: #fff;
 

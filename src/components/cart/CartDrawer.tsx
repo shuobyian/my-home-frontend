@@ -55,6 +55,7 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
                   <Button onClick={() => decrement(key)}>-</Button>
                   <NumberInput
                     aria-label={`${item.name} 수량`}
+                    style={{ width: 90 }}
                     align='center'
                     value={count}
                     min={1}

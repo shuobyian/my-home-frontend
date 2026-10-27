@@ -60,7 +60,13 @@ function validate({ rows }: { rows: EditorRow[] }): FormErrors {
   return errors;
 }
 
-const CARD_FIELD_STYLE = { marginBottom: 0 };
+// 카드 칸의 라벨. 화면에는 칸 이름만 보이고, 카드마다 겹치지 않도록 접근 이름 앞에는 재료 이름을 붙인다
+const cardLabel = (row: EditorRow, name: string) => (
+  <>
+    <span className='ui-sr-only'>{row.label} </span>
+    {name}
+  </>
+);
 
 interface MarketEditorProps {
   // 서버 시세. 도착하면 한 번만 표를 채운다(이후 재조회가 입력 중인 값을 덮어쓰지 않도록).
@@ -182,11 +188,10 @@ export function MarketEditor({
             return (
               <>
                 <Field
-                  label={`${row.label} 이름`}
-                  hideLabel
+                  label={cardLabel(row, "이름")}
+                  inline
                   required
                   error={errors[`rows.${index}.name`]}
-                  style={CARD_FIELD_STYLE}
                 >
                   <Input
                     value={row.name}
@@ -195,25 +200,19 @@ export function MarketEditor({
                   />
                 </Field>
                 <Field
-                  label={`${row.label} 시세`}
-                  hideLabel
+                  label={cardLabel(row, "시세")}
+                  inline
                   required
                   error={errors[`rows.${index}.price`]}
-                  style={CARD_FIELD_STYLE}
                 >
                   <NumberInput
-                    style={{ width: "100%" }}
                     min={0}
                     precision={0}
                     value={row.price}
                     onChange={(price) => setRow(row.key, { price })}
                   />
                 </Field>
-                <Field
-                  label={`${row.label} 분류`}
-                  hideLabel
-                  style={CARD_FIELD_STYLE}
-                >
+                <Field label={cardLabel(row, "분류")} inline>
                   <Select
                     value={row.group ?? MarketGroupType.ETC}
                     onChange={(group) => setRow(row.key, { group })}

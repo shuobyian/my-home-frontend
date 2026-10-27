@@ -111,11 +111,7 @@ export function InventoryForm({
             renderItem={(market) => (
               <>
                 <Text strong>{market.name}</Text>
-                <Field
-                  label={`${market.name} 보유 개수`}
-                  hideLabel
-                  style={{ marginBottom: 0 }}
-                >
+                <Field label={`${market.name} 보유 개수`} hideLabel>
                   <div css={styles.stepper}>
                     <Button
                       icon={<MinusIcon />}

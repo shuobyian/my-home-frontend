@@ -4,6 +4,8 @@ import { NewMarket } from "@/types/market";
 import {
   Button,
   Field,
+  FieldRow,
+  Form,
   FormErrors,
   Input,
   Modal,
@@ -20,8 +22,6 @@ interface NewMarketRow {
   name: string;
   price: number | null;
 }
-
-const CELL_FIELD_STYLE = { marginBottom: 0 };
 
 interface NewMarketsModalProps {
   // 추가할 재료 이름(미리 채우고 고칠 수 있다)
@@ -113,60 +113,55 @@ export function NewMarketsModal({
         </>
       }
     >
-      <form
+      <Form
         id={formId}
         onSubmit={handleSubmit(
           ({ rows }) => void submit(rows),
           () => toast.error("정보를 다시 확인해주세요")
         )}
       >
-        <Stack vertical gap={16}>
-          <Text tone='secondary'>
-            저장하면 이 재료를 쓰는 물품의 결과도 새 시세로 계산됩니다.
-          </Text>
-          {values.rows.map((row, index) => (
-            <Stack key={row.original} vertical gap={4}>
-              <Stack align='flex-start'>
-                <Field
-                  label={`${row.original} 이름`}
-                  hideLabel
-                  required
-                  error={errors[`rows.${index}.name`]}
-                  style={CELL_FIELD_STYLE}
-                >
-                  <Input
-                    value={row.name}
-                    onChange={(name) => setRow(index, { name })}
-                    placeholder='재료 이름'
-                  />
-                </Field>
-                <Field
-                  label={`${row.original} 시세`}
-                  hideLabel
-                  required
-                  error={errors[`rows.${index}.price`]}
-                  style={CELL_FIELD_STYLE}
-                >
-                  <NumberInput
-                    value={row.price}
-                    onChange={(price) => setRow(index, { price })}
-                    suffix='골드'
-                    style={{ width: 180 }}
-                    min={0}
-                    precision={0}
-                    placeholder='시세'
-                  />
-                </Field>
-              </Stack>
-              {!!usedBy?.[row.original]?.length && (
-                <Text tone='secondary'>
-                  쓰는 물품: {usedBy[row.original].join(", ")}
-                </Text>
-              )}
-            </Stack>
-          ))}
-        </Stack>
-      </form>
+        <Text tone='secondary'>
+          저장하면 이 재료를 쓰는 물품의 결과도 새 시세로 계산됩니다.
+        </Text>
+        {values.rows.map((row, index) => (
+          <Stack key={row.original} vertical gap={4}>
+            <FieldRow>
+              <Field
+                label={`${row.original} 이름`}
+                hideLabel
+                required
+                error={errors[`rows.${index}.name`]}
+              >
+                <Input
+                  value={row.name}
+                  onChange={(name) => setRow(index, { name })}
+                  placeholder='재료 이름'
+                />
+              </Field>
+              <Field
+                label={`${row.original} 시세`}
+                hideLabel
+                required
+                error={errors[`rows.${index}.price`]}
+              >
+                <NumberInput
+                  value={row.price}
+                  onChange={(price) => setRow(index, { price })}
+                  suffix='골드'
+                  min={0}
+                  precision={0}
+                  placeholder='시세'
+                />
+              </Field>
+            </FieldRow>
+            {!!usedBy?.[row.original]?.length && (
+              <Text tone='secondary'>
+                쓰는 물품: {usedBy[row.original].join(", ")}
+              </Text>
+            )}
+          </Stack>
+        ))}
+      </Form>
     </Modal>
   );
 }

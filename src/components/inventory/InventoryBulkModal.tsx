@@ -48,7 +48,6 @@ export function InventoryBulkModal({
       <Field
         label='재료명과 보유 개수'
         help='한 줄에 재료 하나씩 "재료명 개수"로 적어주세요. 엑셀에서 재료명·개수 두 칸을 복사해 붙여 넣어도 됩니다.'
-        style={{ marginBottom: 0 }}
       >
         <TextArea
           rows={10}

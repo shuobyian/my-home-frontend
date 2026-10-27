@@ -5,6 +5,7 @@ export type { ButtonProps } from "./Button";
 export { Drawer } from "./Drawer";
 export { Alert, Empty, Result } from "./Feedback";
 export { Field } from "./Field";
+export { FieldRow, Form } from "./Form";
 export * from "./icons";
 export { Input } from "./Input";
 export type { InputProps } from "./Input";

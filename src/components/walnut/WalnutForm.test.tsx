@@ -5,7 +5,7 @@ import { MAX_LEVEL, WALNUT_MIN_LEVEL } from "@/domain/experience";
 const submit = () =>
   fireEvent.click(screen.getByRole("button", { name: "계산하기" }));
 
-const presentLevel = () => screen.getByLabelText("현재 레벨 (필수)");
+const presentLevel = () => screen.getByLabelText("현재 레벨");
 const type = (input: HTMLElement, value: string) =>
   fireEvent.change(input, { target: { value } });
 
@@ -96,7 +96,7 @@ describe("WalnutForm", () => {
     submit();
     expect(screen.getByText("현재 레벨을 입력해주세요.")).toBeInTheDocument();
 
-    fireEvent.change(screen.getByLabelText("현재 레벨 (필수)"), {
+    fireEvent.change(screen.getByLabelText("현재 레벨"), {
       target: { value: "60" },
     });
     fireEvent.change(screen.getByLabelText("목표 레벨"), {
@@ -123,7 +123,7 @@ describe("WalnutForm", () => {
       />
     );
     expect(screen.getByLabelText("목표 레벨")).toHaveValue("70");
-    expect(screen.getByLabelText("현재 레벨 (필수)")).toHaveAttribute(
+    expect(screen.getByLabelText("현재 레벨")).toHaveAttribute(
       "aria-required",
       "true"
     );
