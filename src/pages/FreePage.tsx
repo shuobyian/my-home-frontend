@@ -28,30 +28,22 @@ export function FreePage() {
 
   return (
     <Stack vertical>
-      {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
-      <Stack
-        justify='space-between'
-        align='flex-start'
-        wrap
-        style={{ flexDirection: "row-reverse" }}
-      >
-        <CartButton />
-        <Guide
-          title='자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.'
-          steps={
-            <>
-              <li>
-                <Text strong>시세 불러오기</Text>를 누르면 기본 시세 데이터를
-                불러옵니다.
-              </li>
-              <li>
-                시세를 입력하고 <Text strong>결과 만들기</Text>를 누르면 계산된
-                결과를 확인할 수 있습니다.
-              </li>
-            </>
-          }
-        />
-      </Stack>
+      <Guide
+        title='자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.'
+        action={<CartButton />}
+        steps={
+          <>
+            <li>
+              <Text strong>시세 불러오기</Text>를 누르면 기본 시세 데이터를
+              불러옵니다.
+            </li>
+            <li>
+              시세를 입력하고 <Text strong>결과 만들기</Text>를 누르면 계산된
+              결과를 확인할 수 있습니다.
+            </li>
+          </>
+        }
+      />
       <MarketPriceForm
         serverMarkets={serverMarkets}
         initialMarkets={savedMarkets}

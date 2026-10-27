@@ -1,26 +1,42 @@
 import { css } from "@emotion/react";
 
 export const styles = {
-  // 연한 주 색 바탕의 카드. 버튼 옆에 서고, 둘이 한 줄에 들어가지 않으면 다음 줄에서 너비를 채운다.
+  // 연한 주 색 바탕의 카드. 첫 줄은 아이콘·제목(768px 이상은 버튼까지), 그 아래로 내용이 온다.
   // 한글이 낱말 중간에서 끊기지 않도록 띄어쓰기에서 줄을 바꾼다
   guide: css`
-    display: flex;
-    flex: 1 1 320px;
-    flex-direction: column;
-    gap: var(--ui-space-3);
-    min-width: 0;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: var(--ui-space-3) var(--ui-space-2);
+    align-items: start;
     padding: var(--ui-space-4);
     word-break: keep-all;
     overflow-wrap: anywhere;
     background: var(--ui-color-primary-bg);
     border: 1px solid rgba(92, 53, 114, 0.12);
     border-radius: var(--ui-radius-xl);
+
+    @media (min-width: 768px) {
+      grid-template-columns: auto minmax(0, 1fr) auto;
+    }
   `,
 
-  header: css`
+  // 768px 미만은 order로 내용 뒤(카드 맨 아래)에 놓는다
+  action: css`
+    grid-column: 1 / -1;
+    order: 1;
+    justify-self: end;
+
+    @media (min-width: 768px) {
+      grid-column: auto;
+      order: 0;
+    }
+  `,
+
+  body: css`
     display: flex;
-    gap: var(--ui-space-2);
-    align-items: flex-start;
+    grid-column: 1 / -1;
+    flex-direction: column;
+    gap: var(--ui-space-3);
   `,
 
   icon: css`

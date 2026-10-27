@@ -38,18 +38,13 @@ export function WalnutPage() {
 
   return (
     <Stack vertical gap={24}>
-      {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
-      <Stack
-        justify='space-between'
-        align='flex-start'
-        wrap
-        style={{ flexDirection: "row-reverse" }}
-      >
-        <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>
-          레벨별 필요한 경험치
-        </Button>
-        <WalnutGuide />
-      </Stack>
+      <WalnutGuide
+        action={
+          <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>
+            레벨별 필요한 경험치
+          </Button>
+        }
+      />
       <WalnutForm
         initialValues={params}
         loading={isFetching}

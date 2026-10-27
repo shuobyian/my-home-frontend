@@ -41,34 +41,26 @@ export function HomePage() {
 
   return (
     <Stack vertical>
-      {/* 버튼을 먼저 두고 순서를 뒤집어, 좁은 화면에서도 버튼이 맨 위 오른쪽에 오게 한다 */}
-      <Stack
-        justify='space-between'
-        align='flex-start'
-        wrap
-        style={{ flexDirection: "row-reverse" }}
-      >
-        <CartButton />
-        <Guide
-          title='물품 이름으로 기초 재료를 찾아볼 수 있습니다.'
-          steps={
-            <>
-              <li>
-                물품 이름을 입력해 검색합니다.{" "}
-                <Text tone='secondary'>
-                  빈칸으로 검색하면 모든 물품이 나옵니다.
-                </Text>
-              </li>
-              <li>
-                <Text strong>담기</Text>를 누르면 장바구니에 담깁니다.
-              </li>
-              <li>
-                <Text strong>상세</Text>를 누르면 기초 재료를 볼 수 있습니다.
-              </li>
-            </>
-          }
-        />
-      </Stack>
+      <Guide
+        title='물품 이름으로 기초 재료를 찾아볼 수 있습니다.'
+        action={<CartButton />}
+        steps={
+          <>
+            <li>
+              물품 이름을 입력해 검색합니다.{" "}
+              <Text tone='secondary'>
+                빈칸으로 검색하면 모든 물품이 나옵니다.
+              </Text>
+            </li>
+            <li>
+              <Text strong>담기</Text>를 누르면 장바구니에 담깁니다.
+            </li>
+            <li>
+              <Text strong>상세</Text>를 누르면 기초 재료를 볼 수 있습니다.
+            </li>
+          </>
+        }
+      />
       <ResultSearchForm filter={search} onSearch={navigateTo} />
       <ResultCards
         loading={isFetching}

@@ -1,5 +1,6 @@
 import { Guide } from "@/components/common/Guide";
 import { styles } from "@/components/walnut/WalnutGuide.styles";
+import { ReactNode } from "react";
 import { ExternalLinkIcon, Title } from "@/ui";
 
 interface Buff {
@@ -48,10 +49,13 @@ function BuffList({ title, buffs }: { title: string; buffs: Buff[] }) {
   );
 }
 
-// 호두작 안내문
-export function WalnutGuide() {
+// 호두작 안내문. action은 안내 카드의 버튼 자리에 둔다
+export function WalnutGuide({ action }: { action?: ReactNode }) {
   return (
-    <Guide title='입력한 정보로 남은 경험치와 필요한 앰플 개수·재료를 계산합니다.'>
+    <Guide
+      title='입력한 정보로 남은 경험치와 필요한 앰플 개수·재료를 계산합니다.'
+      action={action}
+    >
       <div css={styles.sections}>
         <BuffList title='필요 조건' buffs={CONDITIONS} />
         <BuffList title='최고 조합' buffs={BEST_COMBOS} />
