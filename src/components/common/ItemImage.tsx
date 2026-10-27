@@ -5,7 +5,7 @@ import { styles } from "./ItemImage.styles";
 
 interface ItemImageProps {
   name: string;
-  // avatar: 목록용 작은 원형, cover: 카드 위쪽을 꽉 채우는 정사각형, detail: 상세 화면용 큰 사진
+  // avatar: 목록용 작은 원형, cover: 카드 위쪽을 꽉 채우는 3:2 사진, detail: 상세 화면용 큰 사진
   variant?: "avatar" | "cover" | "detail";
 }
 
