@@ -5,8 +5,8 @@ import { styles } from "./ItemImage.styles";
 
 interface ItemImageProps {
   name: string;
-  // avatar: 목록용 작은 원형, detail: 상세 화면용 큰 사진
-  variant?: "avatar" | "detail";
+  // avatar: 목록용 작은 원형, cover: 카드 위쪽을 꽉 채우는 정사각형, detail: 상세 화면용 큰 사진
+  variant?: "avatar" | "cover" | "detail";
 }
 
 // 물품 사진. 사진을 불러오지 못하면 빈 칸 대신 대체 그림을 보여 준다.
@@ -17,6 +17,7 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
   const failed = failedSrc === src;
   const alt = `${name} 사진`;
   const handleError = () => setFailedSrc(src);
+  const frame = variant === "cover" ? styles.cover : styles.avatar;
 
   if (variant === "detail") {
     return (
@@ -32,14 +33,14 @@ export function ItemImage({ name, variant = "avatar" }: ItemImageProps) {
 
   if (failed) {
     return (
-      <span role='img' aria-label={alt} css={[styles.avatar, styles.fallback]}>
+      <span role='img' aria-label={alt} css={[frame, styles.fallback]}>
         <PictureIcon />
       </span>
     );
   }
 
   return (
-    <span css={styles.avatar}>
+    <span css={frame}>
       <img src={src} alt={alt} loading='lazy' onError={handleError} />
     </span>
   );

@@ -4,7 +4,7 @@ import { styles } from "@/components/result/ResultCards.styles";
 import { OwnedCounts, sumShortagePrice } from "@/domain/inventory";
 import { getToolLabel } from "@/domain/labels";
 import { getTotalCost, requiresAffinity } from "@/domain/result";
-import { formatGold, formatNumber } from "@/lib/format";
+import { formatGold } from "@/lib/format";
 import { useState } from "react";
 import { Result } from "@/types/result";
 import { Button, CartIcon, Empty, Modal, Spin, Text, Title } from "@/ui";
@@ -38,24 +38,27 @@ export function ResultCards({
         <ul aria-label='결과 목록' css={styles.grid}>
           {contents.map((result) => (
             <li key={result.id} css={styles.card}>
-              <ResultCardBody result={result} owned={owned} />
-              <div css={styles.actions}>
-                <Button
-                  aria-label={`${result.name} 상세`}
-                  aria-haspopup='dialog'
-                  onClick={() => setDetail(result)}
-                >
-                  상세
-                </Button>
-                {onAdd && (
+              <ItemImage name={result.name} variant='cover' />
+              <div css={styles.body}>
+                <ResultCardBody result={result} owned={owned} />
+                <div css={styles.actions}>
                   <Button
-                    icon={<CartIcon />}
-                    aria-label={`${result.name} 담기`}
-                    onClick={() => onAdd(result)}
+                    aria-label={`${result.name} 상세`}
+                    aria-haspopup='dialog'
+                    onClick={() => setDetail(result)}
                   >
-                    담기
+                    상세
                   </Button>
-                )}
+                  {onAdd && (
+                    <Button
+                      icon={<CartIcon />}
+                      aria-label={`${result.name} 담기`}
+                      onClick={() => onAdd(result)}
+                    >
+                      담기
+                    </Button>
+                  )}
+                </div>
               </div>
             </li>
           ))}
@@ -93,23 +96,20 @@ interface ResultCardBodyProps {
   owned?: OwnedCounts;
 }
 
-// 카드 내용: 사진·물품명·도구와 레벨, 필요 금액(로그인하면 부족 재료비), 직접 재료
+// 사진 아래 카드 내용: 물품명·도구와 레벨, 필요 금액(로그인하면 부족 재료비). 직접 재료는 상세에서 본다
 function ResultCardBody({ result, owned }: ResultCardBodyProps) {
   const lacking = owned ? sumShortagePrice(result.materials, owned) : 0;
 
   return (
     <>
-      <div css={styles.head}>
-        <ItemImage name={result.name} />
-        <div css={styles.headText}>
-          <Title level={5} style={{ margin: 0 }}>
-            {result.name}
-          </Title>
-          <Text tone='secondary'>
-            {getToolLabel(result.tool)} ·{" "}
-            {requiresAffinity(result) ? "호감도 " : ""}Lv.{result.level}
-          </Text>
-        </div>
+      <div>
+        <Title level={5} style={{ margin: 0 }}>
+          {result.name}
+        </Title>
+        <Text tone='secondary'>
+          {getToolLabel(result.tool)} ·{" "}
+          {requiresAffinity(result) ? "호감도 " : ""}Lv.{result.level}
+        </Text>
       </div>
       <dl css={styles.costs}>
         <dt>필요 금액</dt>
@@ -129,13 +129,6 @@ function ResultCardBody({ result, owned }: ResultCardBodyProps) {
           </>
         )}
       </dl>
-      <div css={styles.materials}>
-        {result.product.materials.map((material) => (
-          <span key={material.name} css={styles.material}>
-            {material.name} {formatNumber(material.count)}개
-          </span>
-        ))}
-      </div>
     </>
   );
 }
