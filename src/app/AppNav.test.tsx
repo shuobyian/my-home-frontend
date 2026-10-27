@@ -224,7 +224,11 @@ describe("AppNav 로그인 상태", () => {
     );
     renderNav();
 
-    expect(screen.getByText("늘흰")).toBeInTheDocument();
+    // 닉네임은 프로필(닉네임 수정)로 가는 링크다
+    expect(screen.getByRole("link", { name: "늘흰" })).toHaveAttribute(
+      "href",
+      "/profile"
+    );
     expect(screen.queryByText("member")).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "로그아웃" }));
 

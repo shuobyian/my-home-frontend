@@ -1,6 +1,7 @@
 import { styles } from "@/app/AppNav.styles";
 import { ADMIN_MENU, MEMBER_MENU, MenuItem, USER_MENU } from "@/app/menus";
 import { ROUTES } from "@/app/routes";
+import { Avatar } from "@/components/common/Avatar";
 import { useLogoutMutation } from "@/queries/auth";
 import { useCurrentUser } from "@/state/auth";
 import { LoginIcon, LogoutIcon } from "@/ui";
@@ -13,17 +14,24 @@ import {
   useNavigate,
 } from "react-router";
 
-// 아이콘과 이름. 이름은 좁은 화면에서 눈에만 보이지 않는다.
-function ItemContent({ icon, label }: { icon: ReactNode; label: string }) {
+interface ItemContentProps {
+  icon: ReactNode;
+  label: string;
+  // 넓은 화면에서도 이름을 눈에 보이지 않게 한다
+  iconOnly?: boolean;
+}
+
+// 아이콘과 이름. 이름은 좁은 화면(iconOnly면 언제나)에서 눈에만 보이지 않는다.
+function ItemContent({ icon, label, iconOnly }: ItemContentProps) {
   return (
     <>
       <span css={styles.icon}>{icon}</span>
-      <span css={styles.label}>{label}</span>
+      <span css={iconOnly ? styles.hiddenLabel : styles.label}>{label}</span>
     </>
   );
 }
 
-function MenuLink({ item }: { item: MenuItem }) {
+function MenuLink({ item, iconOnly }: { item: MenuItem; iconOnly?: boolean }) {
   const { pathname } = useLocation();
   // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴인지 본다.
   // NavLink는 /manage/를 /manage와 같은 주소로 보지 않아 쓰지 않는다.
@@ -39,15 +47,14 @@ function MenuLink({ item }: { item: MenuItem }) {
         title={item.label}
         css={styles.item}
       >
-        <ItemContent icon={item.icon} label={item.label} />
+        <ItemContent icon={item.icon} label={item.label} iconOnly={iconOnly} />
       </Link>
     </li>
   );
 }
 
-// 모든 화면 공통 메뉴. 인스타그램처럼 아이콘 중심이다: 넓은 화면은 왼쪽 사이드바(아이콘+이름),
-// 중간은 왼쪽 아이콘 줄, 좁은 화면은 아래 탭 막대.
-// 누구나 쓰는 메뉴(USER_MENU)와 관리자에게만 보이는 메뉴(ADMIN_MENU)를 구분선으로 나눈다.
+// 모든 화면 공통 메뉴. 화면 위 가운데에 떠 있는 둥근 막대다(모양은 AppNav.styles).
+// 누구나 쓰는 메뉴(USER_MENU), 관리자에게만 보이는 메뉴(ADMIN_MENU), 계정(프로필·로그인·로그아웃)을 구분선으로 나눈다.
 // 로그인한 회원의 메뉴(MEMBER_MENU)는 누구나 쓰는 메뉴에 이어 붙인다.
 export function AppNav() {
   const navigate = useNavigate();
@@ -73,16 +80,22 @@ export function AppNav() {
             <li aria-hidden='true' css={styles.divider} />
             <li css={styles.wideOnly}>관리자</li>
             {ADMIN_MENU.map((item) => (
-              <MenuLink key={item.to} item={item} />
+              <MenuLink key={item.to} item={item} iconOnly />
             ))}
           </>
         )}
 
-        <li aria-hidden='true' css={[styles.divider, styles.pushDown]} />
+        <li aria-hidden='true' css={styles.divider} />
         {user ? (
           <>
-            {/* 로그인한 회원은 게임 닉네임으로 보여 준다 */}
-            <li css={styles.wideOnly}>{user.nickname}</li>
+            {/* 로그인한 회원은 게임 닉네임으로 보여 주고, 누르면 프로필(닉네임 수정)로 간다 */}
+            <MenuLink
+              item={{
+                label: user.nickname,
+                to: ROUTES.PROFILE,
+                icon: <Avatar name={user.nickname} size={24} />,
+              }}
+            />
             <li css={styles.entry}>
               <button
                 type='button'
@@ -93,7 +106,7 @@ export function AppNav() {
                   if (!logout.isPending) logout.mutate();
                 }}
               >
-                <ItemContent icon={<LogoutIcon />} label='로그아웃' />
+                <ItemContent icon={<LogoutIcon />} label='로그아웃' iconOnly />
               </button>
             </li>
           </>

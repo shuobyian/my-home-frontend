@@ -24,3 +24,6 @@ export interface Credentials {
 export interface SignupInput extends Credentials {
   nickname: string;
 }
+
+// 프로필 수정 입력. 아이디는 바꿀 수 없다.
+export type ProfileInput = Pick<User, "nickname">;
