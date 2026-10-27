@@ -13,11 +13,12 @@ interface ResultDetailProps {
   owned?: OwnedCounts;
 }
 
-// 왼쪽에 물품 정보·사진·직접 재료, 오른쪽에 기초 재료 표. 좁으면 표가 아래로 내려간다
+// 왼쪽에 물품 정보·사진·직접 재료, 오른쪽에 기초 재료 표를 1:1 폭으로 둔다.
+// 두 칸이 320px씩 들어가지 않으면 표가 아래로 내려간다
 export function ResultDetail({ result, owned }: ResultDetailProps) {
   return (
     <Stack gap={24} align='flex-start' wrap>
-      <Stack vertical gap={15} align='flex-start' style={{ flex: "0 1 300px" }}>
+      <Stack vertical gap={15} align='flex-start' style={{ flex: "1 1 320px" }}>
         <InfoRow title='물품명' value={result.name} />
         <InfoRow
           title={requiresAffinity(result) ? "필요 미미 호감도" : "필요 레벨"}
@@ -42,8 +43,8 @@ export function ResultDetail({ result, owned }: ResultDetailProps) {
           </Text>
         ))}
       </Stack>
-      {/* 표가 남은 폭을 채우고, 400px보다 좁아지면 줄을 바꿔 아래로 간다 */}
-      <Stack vertical style={{ flex: "1 1 400px", minWidth: 0 }}>
+      {/* 표가 넓으면 칸을 넓히지 않고 표 안에서 가로로 스크롤한다 */}
+      <Stack vertical style={{ flex: "1 1 320px", minWidth: 0 }}>
         <Text strong>기초 재료</Text>
         <MaterialTable materials={result.materials} owned={owned} />
       </Stack>
