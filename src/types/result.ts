@@ -36,9 +36,8 @@ export interface ResultRow {
   totalPrice: number;
 }
 
+// page·size를 보내지 않으므로 서버는 조건에 맞는 결과를 모두 돌려준다
 export interface ResultSearchParams {
-  page: number;
-  size: number;
   name?: string;
   tool?: Tool;
   category?: Category;

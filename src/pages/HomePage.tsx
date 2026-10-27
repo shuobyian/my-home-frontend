@@ -13,10 +13,6 @@ import { useMemo } from "react";
 import { useSearchParams } from "react-router";
 import { Stack, Text } from "@/ui";
 
-// 쪽을 나누지 않고 한 번에 받는다. 전체 결과 수보다 넉넉한 크기
-// ponytail: 결과가 이 개수를 넘으면 뒤쪽이 잘린다. 그때는 무한 스크롤로 나눠 받는다
-const ALL_RESULTS = 2000;
-
 // 홈: 결과 검색. 검색 조건은 URL에 두어 뒤로 가기·새로고침·공유 시에도 유지한다.
 export function HomePage() {
   const addToCart = useAddToCart("server");
@@ -29,9 +25,8 @@ export function HomePage() {
     [queryString]
   );
 
+  // 쪽을 나누지 않고 검색 조건의 결과를 한 번에 모두 받는다
   const { data: results, isFetching } = useResultsQuery({
-    page: 0,
-    size: ALL_RESULTS,
     name: search.name || undefined,
     tool: search.tool,
     category: search.category,
