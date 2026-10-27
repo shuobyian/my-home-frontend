@@ -4,8 +4,9 @@ import { ROUTES } from "@/app/routes";
 import { Avatar } from "@/components/common/Avatar";
 import { useLogoutMutation } from "@/queries/auth";
 import { useCurrentUser } from "@/state/auth";
-import { LoginIcon, LogoutIcon } from "@/ui";
-import { ReactNode } from "react";
+import { CloseIcon, LoginIcon, LogoutIcon, WrenchIcon } from "@/ui";
+import type { SerializedStyles } from "@emotion/react";
+import { ReactNode, useEffect, useId, useRef, useState } from "react";
 import {
   createPath,
   Link,
@@ -17,21 +18,31 @@ import {
 interface ItemContentProps {
   icon: ReactNode;
   label: string;
-  // 넓은 화면에서도 이름을 눈에 보이지 않게 한다
-  iconOnly?: boolean;
+  // 이름이 보이는 너비. 기본은 1024px 이상(styles.label)
+  labelCss?: SerializedStyles;
 }
 
-// 아이콘과 이름. 이름은 좁은 화면(iconOnly면 언제나)에서 눈에만 보이지 않는다.
-function ItemContent({ icon, label, iconOnly }: ItemContentProps) {
+// 아이콘과 이름. 이름은 보이지 않는 너비에서도 스크린 리더에는 읽힌다.
+function ItemContent({
+  icon,
+  label,
+  labelCss = styles.label,
+}: ItemContentProps) {
   return (
     <>
       <span css={styles.icon}>{icon}</span>
-      <span css={iconOnly ? styles.hiddenLabel : styles.label}>{label}</span>
+      <span css={labelCss}>{label}</span>
     </>
   );
 }
 
-function MenuLink({ item, iconOnly }: { item: MenuItem; iconOnly?: boolean }) {
+interface MenuLinkProps {
+  item: MenuItem;
+  labelCss?: SerializedStyles;
+  onClick?: () => void;
+}
+
+function MenuLink({ item, labelCss, onClick }: MenuLinkProps) {
   const { pathname } = useLocation();
   // 라우터와 같은 규칙(끝 슬래시 허용, 대소문자 무시)으로 현재 메뉴인지 본다.
   // NavLink는 /manage/를 /manage와 같은 주소로 보지 않아 쓰지 않는다.
@@ -46,17 +57,82 @@ function MenuLink({ item, iconOnly }: { item: MenuItem; iconOnly?: boolean }) {
         // 아이콘만 보이는 너비에서 이름을 알려 준다
         title={item.label}
         css={styles.item}
+        onClick={onClick}
       >
-        <ItemContent icon={item.icon} label={item.label} iconOnly={iconOnly} />
+        <ItemContent icon={item.icon} label={item.label} labelCss={labelCss} />
       </Link>
     </li>
   );
 }
 
-// 모든 화면 공통 메뉴. 화면 위 가운데에 떠 있는 둥근 막대다(모양은 AppNav.styles).
+// 관리자에게만 보이는 메뉴(ADMIN_MENU). 자리와 모양은 AppNav.styles의 adminNav.
+// 768px 미만에서는 버튼으로 연다. 메뉴를 고르거나, 바깥을 누르거나, Esc를 누르면 닫힌다.
+// 768px 이상에서는 버튼이 숨고 메뉴가 늘 보인다.
+function AdminNav() {
+  const [open, setOpen] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+  const listId = useId();
+
+  useEffect(() => {
+    if (!open) return;
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target;
+      if (target instanceof Node && navRef.current?.contains(target)) return;
+      setOpen(false);
+    };
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setOpen(false);
+      toggleRef.current?.focus();
+    };
+    document.addEventListener("pointerdown", handlePointerDown);
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [open]);
+
+  return (
+    <nav ref={navRef} aria-label='관리자 메뉴' css={styles.adminNav}>
+      <button
+        ref={toggleRef}
+        type='button'
+        aria-expanded={open}
+        aria-controls={listId}
+        title='관리자 메뉴'
+        css={styles.adminToggle}
+        onClick={() => setOpen(!open)}
+      >
+        <ItemContent
+          icon={open ? <CloseIcon /> : <WrenchIcon />}
+          label='관리자 메뉴'
+          labelCss={styles.hiddenLabel}
+        />
+      </button>
+      <ul
+        id={listId}
+        data-open={open || undefined}
+        css={[styles.list, styles.adminList]}
+      >
+        {ADMIN_MENU.map((item) => (
+          <MenuLink
+            key={item.to}
+            item={item}
+            labelCss={styles.adminLabel}
+            onClick={() => setOpen(false)}
+          />
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+// 모든 화면 공통 메뉴. 둥근 막대로, 768px 미만은 화면 아래, 이상은 위 가운데에 뜬다(모양은 AppNav.styles).
 // 누구나 쓰는 메뉴(USER_MENU)와 계정(프로필·로그인·로그아웃)을 구분선으로 나눈다.
 // 로그인한 회원의 메뉴(MEMBER_MENU)는 누구나 쓰는 메뉴에 이어 붙인다.
-// 관리자에게만 보이는 메뉴(ADMIN_MENU)는 오른쪽 가운데에 따로 떠 있는 세로 막대로, 스크롤해도 따라온다.
+// 관리자에게만 보이는 메뉴는 따로 떠 있는 AdminNav가 맡는다.
 export function AppNav() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -69,7 +145,10 @@ export function AppNav() {
 
   return (
     <>
-      <nav aria-label='주 메뉴' css={styles.nav}>
+      <nav
+        aria-label='주 메뉴'
+        css={[styles.nav, user?.isAdmin && styles.navBesideAdmin]}
+      >
         <ul css={styles.list}>
           {USER_MENU.map((item) => (
             <MenuLink key={item.to} item={item} />
@@ -101,7 +180,7 @@ export function AppNav() {
                   <ItemContent
                     icon={<LogoutIcon />}
                     label='로그아웃'
-                    iconOnly
+                    labelCss={styles.hiddenLabel}
                   />
                 </button>
               </li>
@@ -133,15 +212,7 @@ export function AppNav() {
         </ul>
       </nav>
 
-      {user?.isAdmin && (
-        <nav aria-label='관리자 메뉴' css={styles.adminNav}>
-          <ul css={[styles.list, styles.adminList]}>
-            {ADMIN_MENU.map((item) => (
-              <MenuLink key={item.to} item={item} iconOnly />
-            ))}
-          </ul>
-        </nav>
-      )}
+      {user?.isAdmin && <AdminNav />}
     </>
   );
 }
