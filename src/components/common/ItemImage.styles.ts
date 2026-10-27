@@ -23,7 +23,8 @@ export const styles = {
     }
   `,
 
-  // 카드 위쪽을 꽉 채우는 사진. 세로는 가로의 2/3이고, 넘치는 위아래는 잘린다.
+  // 카드 위쪽을 꽉 채우는 사진. 세로는 가로의 2/3이고, 넘치는 아래쪽은 잘린다.
+  // 사진은 제작 화면 캡처라 위쪽에 물품·재료가, 아래쪽에 수량 막대·만들기 버튼이 있어 위를 기준으로 자른다.
   // overflow를 숨겨야 사진 원래 높이에 칸이 늘어나지 않는다. 모서리는 카드가 잘라 준다
   cover: css`
     display: flex;
@@ -40,6 +41,7 @@ export const styles = {
       width: 100%;
       height: 100%;
       object-fit: cover;
+      object-position: top;
     }
   `,
 
