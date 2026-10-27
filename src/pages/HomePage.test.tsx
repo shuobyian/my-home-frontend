@@ -71,11 +71,6 @@ function renderHome(entries: string | string[]) {
   );
 }
 
-const requestedPages = () =>
-  mockedFetchResults.mock.calls.map(
-    ([params]) => (params as ResultSearchParams).page
-  );
-
 beforeEach(() => {
   mockedFetchResults.mockImplementation(
     async ({ name }: ResultSearchParams) => ({
@@ -92,7 +87,7 @@ afterEach(() => {
 });
 
 describe("HomePage", () => {
-  it("로그인하면 펼친 결과의 기초 재료에 보유 개수와 부족 개수를 함께 보여 준다", async () => {
+  it("로그인하면 카드에 부족 재료비를, 상세의 기초 재료에 보유 개수와 부족 개수를 보여 준다", async () => {
     saveAuthSession(createSession({}, { isAdmin: false }));
     mockedFetchInventory.mockResolvedValue([
       { marketId: 1, name: "원목", count: 100 },
@@ -108,7 +103,16 @@ describe("HomePage", () => {
     });
     renderHome("/");
 
-    fireEvent.click(await screen.findByRole("button", { name: "행 펼치기" }));
+    const card = within(
+      await screen.findByRole("list", { name: "결과 목록" })
+    ).getByRole("listitem");
+    await waitFor(() =>
+      expect(card).toHaveTextContent("부족 재료비25,000골드")
+    );
+
+    fireEvent.click(
+      within(card).getByRole("button", { name: "나무 의자 상세" })
+    );
 
     await waitFor(() =>
       expect(cellsOf("원목")).toEqual([
@@ -124,10 +128,15 @@ describe("HomePage", () => {
   it("로그인하지 않았으면 보유 재료를 받지 않고 기초 재료만 보여 준다", async () => {
     renderHome("/");
 
-    fireEvent.click(await screen.findByRole("button", { name: "행 펼치기" }));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "전체 결과 상세" })
+    );
 
     expect(
-      screen.getByRole("columnheader", { name: "골드" })
+      within(screen.getByRole("dialog", { name: "전체 결과" })).getByRole(
+        "columnheader",
+        { name: "골드" }
+      )
     ).toBeInTheDocument();
     expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
@@ -139,13 +148,19 @@ describe("HomePage", () => {
     expect(await screen.findByText("나무 결과")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("물품명 입력")).toHaveValue("나무");
     expect(mockedFetchResults).toHaveBeenCalledWith(
-      expect.objectContaining({ page: 0, size: 10, name: "나무" })
+      expect.objectContaining({ page: 0, size: 2000, name: "나무" })
     );
   });
 
-  it("장바구니 버튼으로 담은 물품을 확인한다(메뉴가 아니라 화면에 둔다)", async () => {
+  it("담기로 담은 물품을 장바구니 버튼으로 확인한다(메뉴가 아니라 화면에 둔다)", async () => {
     renderHome("/");
+    // 카드 자체를 누르면 담기지 않는다
     fireEvent.click(await screen.findByText("전체 결과"));
+    expect(
+      screen.getByRole("button", { name: "장바구니" })
+    ).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: "전체 결과 담기" }));
 
     // 담으면 버튼에 수량이 보이고, 누르면 담긴 물품이 서랍에 나온다
     fireEvent.click(screen.getByRole("button", { name: "장바구니 1개" }));
@@ -170,22 +185,6 @@ describe("HomePage", () => {
     expect(await screen.findByText("나무 결과")).toBeInTheDocument();
     await waitFor(() =>
       expect(screen.getByPlaceholderText("물품명 입력")).toHaveValue("나무")
-    );
-  });
-
-  it("주소의 페이지가 결과 범위를 넘으면 마지막 페이지로 바로잡는다(히스토리에 쌓지 않음)", async () => {
-    renderHome(["/?name=이전", "/?page=9"]);
-
-    await waitFor(() =>
-      expect(screen.getByTestId("search")).toHaveTextContent("?page=2")
-    );
-    // 15개(2쪽)이므로 9쪽(인덱스 8)을 확인한 뒤 2쪽(인덱스 1)을 조회한다
-    await waitFor(() => expect(requestedPages()).toEqual([8, 1]));
-
-    // 보정은 replace라서 뒤로 가면 잘못된 주소(?page=9)가 아니라 그 전 화면으로 간다
-    fireEvent.click(screen.getByText("뒤로"));
-    await waitFor(() =>
-      expect(screen.getByTestId("search")).toHaveTextContent("?name=이전")
     );
   });
 

@@ -18,13 +18,19 @@ const mungText = (count: number) => {
 
 const goldText = (price: number) => `${formatNumber(price)}골드`;
 
+// 한글은 글자 사이 어디서나 줄이 바뀌어, 칸이 좁으면 '99개'가 '99 / 개'로 갈린다.
+// 값은 한 줄로 두고, 모자라면 표가 가로로 스크롤된다
+const noWrap = (text: string) => (
+  <span style={{ whiteSpace: "nowrap" }}>{text}</span>
+);
+
 // 원래 값 왼쪽에 작은 회색 글씨로 '(N 부족)'을 붙인다(오른쪽 정렬된 원래 값이 줄을 맞추도록).
-// 부족하지 않으면 원래 값만
+// 칸이 좁으면 둘 사이에서만 줄을 바꾼다. 부족하지 않으면 원래 값만
 function withShortage(value: string, lacking: string | null) {
-  if (!lacking) return value;
+  if (!lacking) return noWrap(value);
   return (
     <>
-      <ShortageText>{lacking}</ShortageText> {value}
+      <ShortageText>{lacking}</ShortageText> {noWrap(value)}
     </>
   );
 }
@@ -41,7 +47,7 @@ function materialColumns(owned?: OwnedCounts): TableColumn<MaterialCost>[] {
   const ownedColumn: TableColumn<MaterialCost> = {
     title: "보유",
     key: "owned",
-    render: ({ name }) => countText(ownedOf(name)),
+    render: ({ name }) => noWrap(countText(ownedOf(name))),
     align: "right",
   };
 
@@ -49,7 +55,7 @@ function materialColumns(owned?: OwnedCounts): TableColumn<MaterialCost>[] {
     {
       title: "재료",
       key: "name",
-      render: ({ name }) => name,
+      render: ({ name }) => noWrap(name),
     },
     {
       title: "개수",

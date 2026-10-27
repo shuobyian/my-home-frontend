@@ -79,15 +79,19 @@ describe("WalnutPage", () => {
     await waitFor(() => expect(mockedCalculate).toHaveBeenCalledTimes(2));
     expect(screen.getByText("남은 경험치: 1,000")).toBeInTheDocument();
 
-    fireEvent.click(screen.getByText("앰플 재료"));
+    expect(
+      screen.queryByRole("button", { name: "앰플 재료 담기" })
+    ).not.toBeInTheDocument();
     expect(screen.getByText("담긴 개수: 0")).toBeInTheDocument();
   });
 
-  it("계산이 끝난 결과는 앰플 재료를 눌러 장바구니에 담는다", async () => {
+  it("계산이 끝난 결과는 앰플 재료의 담기를 눌러 장바구니에 담는다", async () => {
     mockedCalculate.mockResolvedValueOnce(response(1000));
     renderWalnut();
 
-    fireEvent.click(await screen.findByText("앰플 재료"));
+    fireEvent.click(
+      await screen.findByRole("button", { name: "앰플 재료 담기" })
+    );
 
     expect(screen.getByText("담긴 개수: 1")).toBeInTheDocument();
   });
