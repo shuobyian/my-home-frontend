@@ -1,5 +1,8 @@
 import { css } from "@emotion/react";
 
+// 관리자 메뉴 막대(오른쪽 12px + 너비 56px)와 본문 사이를 띄우는 오른쪽 여백
+export const ADMIN_NAV_SPACE = "76px";
+
 // 화면에서만 숨긴다. 스크린 리더에는 그대로 읽힌다
 const visuallyHidden = css`
   position: absolute;
@@ -14,8 +17,9 @@ const visuallyHidden = css`
 `;
 
 // 화면 위 가운데에 떠 있는 둥근 메뉴 막대. 스크롤해도 위에 붙어 있다.
-// - 1024px 미만: 아이콘만 보인다. 칸이 모자라면(좁은 화면의 관리자) 막대 안에서 옆으로 민다.
-// - 1024px 이상: 아이콘과 이름이 함께 보인다. 관리자 메뉴와 로그아웃은 자리가 모자라 늘 아이콘만 보인다.
+// - 1024px 미만: 아이콘만 보인다. 칸이 모자라면 막대 안에서 옆으로 민다.
+// - 1024px 이상: 아이콘과 이름이 함께 보인다. 로그아웃은 늘 아이콘만 보인다.
+// 관리자 메뉴는 오른쪽 가운데에 떠 있는 세로 막대(adminNav)이고, 늘 아이콘만 보인다.
 // 이름은 화면에서만 숨겨 스크린 리더에는 항상 읽히고, 아이콘만 보일 때는 title로 알려 준다.
 export const styles = {
   nav: css`
@@ -130,16 +134,19 @@ export const styles = {
     background: var(--ui-color-border);
   `,
 
-  // 1024px 이상에서만 보이는 묶음 이름(관리자)
-  wideOnly: css`
-    display: none;
-    padding: 0 var(--ui-space-1);
-    font-size: var(--ui-font-size-sm);
-    color: var(--ui-color-text-secondary);
-    white-space: nowrap;
+  // 관리자 메뉴 막대의 자리. 화면 오른쪽 세로 가운데에 고정해 스크롤해도 따라온다.
+  // 본문이 가리지 않도록 AppLayout이 ADMIN_NAV_SPACE만큼 오른쪽 여백을 둔다.
+  adminNav: css`
+    position: fixed;
+    top: 50%;
+    right: 12px;
+    z-index: 10;
+    transform: translateY(-50%);
+  `,
 
-    @media (min-width: 1024px) {
-      display: block;
-    }
+  // 막대 모양(list)은 같고 세로로 쌓는다
+  adminList: css`
+    flex-direction: column;
+    overflow: visible;
   `,
 };

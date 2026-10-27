@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { ADMIN_NAV_SPACE } from "./AppNav.styles";
 
 export const styles = {
   // 메뉴(위 가운데에 떠 있는 막대) 아래에 본문이 온다.
@@ -25,6 +26,15 @@ export const styles = {
 
     @media (min-width: 1280px) {
       padding: 10px 64px;
+    }
+  `,
+
+  // 관리자는 오른쪽에 떠 있는 관리자 메뉴에 본문(입력칸·버튼)이 가리지 않게 한다.
+  // 좁은 화면에서도 비워 둔다. 겹치면 그 아래 칸을 누를 수 없다.
+  // content의 화면 크기별 padding이 덮지 않도록 선택자를 두 번 써(&&) 우선순위를 높인다.
+  adminSpace: css`
+    && {
+      padding-right: ${ADMIN_NAV_SPACE};
     }
   `,
 };

@@ -100,16 +100,22 @@ describe("AppNav 메뉴 구분", () => {
     for (const name of ADMIN_LABELS) {
       expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
     }
-    expect(screen.queryByText("관리자")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: "관리자 메뉴" })
+    ).not.toBeInTheDocument();
   });
 
-  it("관리자에게는 관리자 메뉴를 구분해 보여 준다", () => {
+  it("관리자에게는 관리자 메뉴를 주 메뉴와 따로 보여 준다", () => {
     saveAuthSession(createSession({}, { nickname: "운영자" }));
     renderNav();
 
-    expect(screen.getByText("관리자")).toBeInTheDocument();
+    const adminNav = screen.getByRole("navigation", { name: "관리자 메뉴" });
+    const mainNav = screen.getByRole("navigation", { name: "주 메뉴" });
     for (const name of ADMIN_LABELS) {
-      expect(screen.getByRole("link", { name })).toBeInTheDocument();
+      expect(within(adminNav).getByRole("link", { name })).toBeInTheDocument();
+      expect(
+        within(mainNav).queryByRole("link", { name })
+      ).not.toBeInTheDocument();
     }
   });
 

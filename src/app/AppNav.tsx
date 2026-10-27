@@ -54,8 +54,9 @@ function MenuLink({ item, iconOnly }: { item: MenuItem; iconOnly?: boolean }) {
 }
 
 // 모든 화면 공통 메뉴. 화면 위 가운데에 떠 있는 둥근 막대다(모양은 AppNav.styles).
-// 누구나 쓰는 메뉴(USER_MENU), 관리자에게만 보이는 메뉴(ADMIN_MENU), 계정(프로필·로그인·로그아웃)을 구분선으로 나눈다.
+// 누구나 쓰는 메뉴(USER_MENU)와 계정(프로필·로그인·로그아웃)을 구분선으로 나눈다.
 // 로그인한 회원의 메뉴(MEMBER_MENU)는 누구나 쓰는 메뉴에 이어 붙인다.
+// 관리자에게만 보이는 메뉴(ADMIN_MENU)는 오른쪽 가운데에 따로 떠 있는 세로 막대로, 스크롤해도 따라온다.
 export function AppNav() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -67,74 +68,80 @@ export function AppNav() {
   );
 
   return (
-    <nav aria-label='주 메뉴' css={styles.nav}>
-      <ul css={styles.list}>
-        {USER_MENU.map((item) => (
-          <MenuLink key={item.to} item={item} />
-        ))}
-        {user &&
-          MEMBER_MENU.map((item) => <MenuLink key={item.to} item={item} />)}
+    <>
+      <nav aria-label='주 메뉴' css={styles.nav}>
+        <ul css={styles.list}>
+          {USER_MENU.map((item) => (
+            <MenuLink key={item.to} item={item} />
+          ))}
+          {user &&
+            MEMBER_MENU.map((item) => <MenuLink key={item.to} item={item} />)}
 
-        {user?.isAdmin && (
-          <>
-            <li aria-hidden='true' css={styles.divider} />
-            <li css={styles.wideOnly}>관리자</li>
+          <li aria-hidden='true' css={styles.divider} />
+          {user ? (
+            <>
+              {/* 로그인한 회원은 게임 닉네임으로 보여 주고, 누르면 프로필(닉네임 수정)로 간다 */}
+              <MenuLink
+                item={{
+                  label: user.nickname,
+                  to: ROUTES.PROFILE,
+                  icon: <Avatar name={user.nickname} size={24} />,
+                }}
+              />
+              <li css={styles.entry}>
+                <button
+                  type='button'
+                  aria-busy={logout.isPending || undefined}
+                  title={`${user.nickname} 로그아웃`}
+                  css={styles.item}
+                  onClick={() => {
+                    if (!logout.isPending) logout.mutate();
+                  }}
+                >
+                  <ItemContent
+                    icon={<LogoutIcon />}
+                    label='로그아웃'
+                    iconOnly
+                  />
+                </button>
+              </li>
+            </>
+          ) : (
+            !onAuthPage && (
+              <li css={styles.entry}>
+                <button
+                  type='button'
+                  title='로그인'
+                  css={styles.item}
+                  // 로그인하면 지금 화면으로 돌아온다(화면의 state도 함께. 예: 자유 모드 결과).
+                  // ponytail: 히스토리에는 지금 화면이 한 번 더 쌓인다(로그인 화면 자리를 지금 화면으로 바꾸므로).
+                  // 뒤로 가기 한 번이 헛도는 게 문제가 되면 로그인 뒤 navigate(-1)로 돌아가게 바꾼다.
+                  onClick={() =>
+                    navigate(ROUTES.LOGIN, {
+                      state: {
+                        from: createPath(location),
+                        fromState: location.state,
+                      },
+                    })
+                  }
+                >
+                  <ItemContent icon={<LoginIcon />} label='로그인' />
+                </button>
+              </li>
+            )
+          )}
+        </ul>
+      </nav>
+
+      {user?.isAdmin && (
+        <nav aria-label='관리자 메뉴' css={styles.adminNav}>
+          <ul css={[styles.list, styles.adminList]}>
             {ADMIN_MENU.map((item) => (
               <MenuLink key={item.to} item={item} iconOnly />
             ))}
-          </>
-        )}
-
-        <li aria-hidden='true' css={styles.divider} />
-        {user ? (
-          <>
-            {/* 로그인한 회원은 게임 닉네임으로 보여 주고, 누르면 프로필(닉네임 수정)로 간다 */}
-            <MenuLink
-              item={{
-                label: user.nickname,
-                to: ROUTES.PROFILE,
-                icon: <Avatar name={user.nickname} size={24} />,
-              }}
-            />
-            <li css={styles.entry}>
-              <button
-                type='button'
-                aria-busy={logout.isPending || undefined}
-                title={`${user.nickname} 로그아웃`}
-                css={styles.item}
-                onClick={() => {
-                  if (!logout.isPending) logout.mutate();
-                }}
-              >
-                <ItemContent icon={<LogoutIcon />} label='로그아웃' iconOnly />
-              </button>
-            </li>
-          </>
-        ) : (
-          !onAuthPage && (
-            <li css={styles.entry}>
-              <button
-                type='button'
-                title='로그인'
-                css={styles.item}
-                // 로그인하면 지금 화면으로 돌아온다(화면의 state도 함께. 예: 자유 모드 결과).
-                // ponytail: 히스토리에는 지금 화면이 한 번 더 쌓인다(로그인 화면 자리를 지금 화면으로 바꾸므로).
-                // 뒤로 가기 한 번이 헛도는 게 문제가 되면 로그인 뒤 navigate(-1)로 돌아가게 바꾼다.
-                onClick={() =>
-                  navigate(ROUTES.LOGIN, {
-                    state: {
-                      from: createPath(location),
-                      fromState: location.state,
-                    },
-                  })
-                }
-              >
-                <ItemContent icon={<LoginIcon />} label='로그인' />
-              </button>
-            </li>
-          )
-        )}
-      </ul>
-    </nav>
+          </ul>
+        </nav>
+      )}
+    </>
   );
 }
