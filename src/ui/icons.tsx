@@ -187,3 +187,9 @@ export const TrendingUpIcon = () => (
     <path d='m22 7-8.5 8.5-5-5L2 17' />
   </Icon>
 );
+
+export const ArrowUpIcon = () => (
+  <Icon>
+    <path d='M12 19V5M5 12l7-7 7 7' />
+  </Icon>
+);
