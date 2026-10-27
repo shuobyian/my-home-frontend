@@ -96,7 +96,7 @@ interface ResultCardBodyProps {
   owned?: OwnedCounts;
 }
 
-// 사진 아래 카드 내용: 물품명·도구와 레벨, 필요 금액(로그인하면 부족 재료비). 직접 재료는 상세에서 본다
+// 사진 아래 카드 내용: 물품명·도구와 레벨, 필요 금액(로그인하면 부족 재료비). 필요 재료는 상세에서 본다
 function ResultCardBody({ result, owned }: ResultCardBodyProps) {
   const lacking = owned ? sumShortagePrice(result.materials, owned) : 0;
 

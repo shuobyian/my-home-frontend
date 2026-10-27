@@ -23,7 +23,7 @@ export const styles = {
     color: var(--ui-color-text-secondary);
   `,
 
-  // 직접 재료 태그
+  // 필요 재료 태그
   materials: css`
     display: flex;
     flex-wrap: wrap;

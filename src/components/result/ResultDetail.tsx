@@ -13,7 +13,7 @@ interface ResultDetailProps {
   owned?: OwnedCounts;
 }
 
-// 왼쪽에 사진·물품 정보·직접 재료 태그, 오른쪽에 기초 재료 표를 1:1 폭으로 둔다.
+// 왼쪽에 사진·물품 정보·필요 재료 태그, 오른쪽에 기초 재료 표를 1:1 폭으로 둔다.
 // 물품명은 창 제목에 있어 따로 적지 않는다.
 // 두 칸이 320px씩 들어가지 않으면 표가 아래로 내려간다
 export function ResultDetail({ result, owned }: ResultDetailProps) {
@@ -47,7 +47,7 @@ export function ResultDetail({ result, owned }: ResultDetailProps) {
             </>
           )}
         </dl>
-        <Text strong>직접 재료</Text>
+        <Text strong>필요 재료</Text>
         <div css={styles.materials}>
           {result.product.materials.map((material) => (
             <span key={material.name} css={styles.material}>
