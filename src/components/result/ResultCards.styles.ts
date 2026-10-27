@@ -1,11 +1,13 @@
 import { css } from "@emotion/react";
 
 // 결과 카드 그리드. 카드 폭은 220px 이상으로, 한 줄에 놓을 장 수는 화면 너비에 맞춘다(좁으면 화면 폭 한 장).
+// 모든 줄을 1fr로 두어 카드 높이를 목록에서 가장 큰 카드에 맞춘다(이름·재료 길이와 상관없이 같은 크기).
 // 입력칸이 없어 카드마다 흰 바탕과 테두리로 나눈다
 export const styles = {
   grid: css`
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr));
+    grid-auto-rows: 1fr;
     gap: var(--ui-space-3);
     padding: 0;
     margin: 0;
