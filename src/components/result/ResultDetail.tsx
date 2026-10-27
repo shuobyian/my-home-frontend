@@ -47,13 +47,15 @@ export function ResultDetail({ result, owned }: ResultDetailProps) {
             </>
           )}
         </dl>
-        <Text strong>필요 재료</Text>
-        <div css={styles.materials}>
-          {result.product.materials.map((material) => (
-            <span key={material.name} css={styles.material}>
-              {material.name} {formatNumber(material.count)}개
-            </span>
-          ))}
+        <div css={styles.section}>
+          <Text strong>필요 재료</Text>
+          <div css={styles.materials}>
+            {result.product.materials.map((material) => (
+              <span key={material.name} css={styles.material}>
+                {material.name} {formatNumber(material.count)}개
+              </span>
+            ))}
+          </div>
         </div>
       </Stack>
       {/* 표가 넓으면 칸을 넓히지 않고 표 안에서 가로로 스크롤한다 */}

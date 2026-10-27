@@ -23,6 +23,15 @@ export const styles = {
     color: var(--ui-color-text-secondary);
   `,
 
+  // 필요 재료 묶음. 위의 정보 목록과 선으로 나눈다
+  section: css`
+    display: flex;
+    flex-direction: column;
+    gap: var(--ui-space-2);
+    padding-top: var(--ui-space-4);
+    border-top: 1px solid var(--ui-color-border);
+  `,
+
   // 필요 재료 태그
   materials: css`
     display: flex;
