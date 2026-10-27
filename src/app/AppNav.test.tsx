@@ -54,6 +54,11 @@ const ADMIN_LABELS = [
   "데이터 점검",
 ];
 
+// jsdom은 미디어 쿼리를 적용하지 않아 768px 미만처럼 관리자 메뉴가 접혀 있다. 버튼을 눌러 연다
+function openAdminMenu() {
+  fireEvent.click(screen.getByRole("button", { name: "관리자 메뉴" }));
+}
+
 beforeEach(() => {
   clearAuthSession();
 });
@@ -100,22 +105,30 @@ describe("AppNav 메뉴 구분", () => {
     for (const name of ADMIN_LABELS) {
       expect(screen.queryByRole("link", { name })).not.toBeInTheDocument();
     }
-    expect(screen.queryByText("관리자")).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: "관리자 메뉴" })
+    ).not.toBeInTheDocument();
   });
 
-  it("관리자에게는 관리자 메뉴를 구분해 보여 준다", () => {
+  it("관리자에게는 관리자 메뉴를 주 메뉴와 따로 보여 준다", () => {
     saveAuthSession(createSession({}, { nickname: "운영자" }));
     renderNav();
+    openAdminMenu();
 
-    expect(screen.getByText("관리자")).toBeInTheDocument();
+    const adminNav = screen.getByRole("navigation", { name: "관리자 메뉴" });
+    const mainNav = screen.getByRole("navigation", { name: "주 메뉴" });
     for (const name of ADMIN_LABELS) {
-      expect(screen.getByRole("link", { name })).toBeInTheDocument();
+      expect(within(adminNav).getByRole("link", { name })).toBeInTheDocument();
+      expect(
+        within(mainNav).queryByRole("link", { name })
+      ).not.toBeInTheDocument();
     }
   });
 
   it("관리자의 로그인이 풀리면 관리자 메뉴가 사라진다", async () => {
     saveAuthSession(createSession());
     renderNav();
+    openAdminMenu();
     expect(
       screen.getByRole("link", { name: "물품 리스트" })
     ).toBeInTheDocument();
@@ -128,6 +141,32 @@ describe("AppNav 메뉴 구분", () => {
     expect(
       screen.queryByRole("link", { name: "물품 리스트" })
     ).not.toBeInTheDocument();
+  });
+
+  it("관리자 메뉴는 버튼으로 열고, 메뉴를 고르거나 바깥을 누르거나 Esc를 누르면 닫힌다", () => {
+    saveAuthSession(createSession());
+    renderNav();
+    const toggle = screen.getByRole("button", { name: "관리자 메뉴" });
+
+    // 접혀 있으면 관리자 링크가 보이지 않는다
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(
+      screen.queryByRole("link", { name: "물품 리스트" })
+    ).not.toBeInTheDocument();
+
+    fireEvent.click(toggle);
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(screen.getByRole("link", { name: "물품 리스트" }));
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(toggle);
+    fireEvent.pointerDown(document.body);
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+
+    fireEvent.click(toggle);
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(toggle).toHaveAttribute("aria-expanded", "false");
+    expect(toggle).toHaveFocus();
   });
 });
 
@@ -151,6 +190,7 @@ describe("AppNav 현재 화면 표시", () => {
   it("관리 메뉴는 끝 슬래시가 있어도 정확히 그 화면만 표시한다", () => {
     saveAuthSession(createSession());
     const { unmount } = renderNav("/manage/");
+    openAdminMenu();
 
     expect(
       screen.getByRole("link", { name: "Raw 엑셀 데이터" })
@@ -161,6 +201,7 @@ describe("AppNav 현재 화면 표시", () => {
     unmount();
 
     renderNav("/manage/product");
+    openAdminMenu();
 
     // /manage/product에서는 상위 /manage 메뉴를 표시하지 않는다
     expect(
@@ -175,6 +216,7 @@ describe("AppNav 현재 화면 표시", () => {
   it("링크는 각 화면 주소로 이어진다", () => {
     saveAuthSession(createSession());
     renderNav();
+    openAdminMenu();
 
     expect(screen.getByRole("link", { name: "홈" })).toHaveAttribute(
       "href",
