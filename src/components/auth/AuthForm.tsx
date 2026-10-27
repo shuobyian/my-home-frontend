@@ -1,6 +1,6 @@
 import { getErrorMessage } from "@/apis/errors";
 import { Credentials, SignupInput } from "@/types/auth";
-import { Alert, Button, Field, Input, useForm } from "@/ui";
+import { Alert, Button, Field, Form, Input, useForm } from "@/ui";
 
 export type AuthMode = "login" | "signup";
 
@@ -43,7 +43,7 @@ export function AuthForm(props: AuthFormProps) {
   );
 
   return (
-    <form
+    <Form
       onSubmit={form.handleSubmit(({ username, password, nickname }) => {
         if (props.mode === "signup")
           props.onSubmit({ username, password, nickname });
@@ -112,10 +112,7 @@ export function AuthForm(props: AuthFormProps) {
         </Field>
       )}
       {error != null && (
-        <Alert
-          title={withoutFieldNames(getErrorMessage(error))}
-          style={{ marginBottom: "var(--ui-space-4)" }}
-        />
+        <Alert title={withoutFieldNames(getErrorMessage(error))} />
       )}
       <Button
         type='submit'
@@ -125,6 +122,6 @@ export function AuthForm(props: AuthFormProps) {
       >
         {signup ? "가입하기" : "로그인"}
       </Button>
-    </form>
+    </Form>
   );
 }

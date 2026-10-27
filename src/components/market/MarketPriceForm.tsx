@@ -137,13 +137,8 @@ export function MarketPriceForm({
           renderItem={(market) => (
             <>
               <Text strong>{market.name}</Text>
-              <Field
-                label={`${market.name} 시세`}
-                hideLabel
-                style={{ marginBottom: 0 }}
-              >
+              <Field label={`${market.name} 시세`} hideLabel>
                 <NumberInput
-                  style={{ width: "100%" }}
                   min={0}
                   value={market.price}
                   onChange={(price) => setPrice(market.id, price)}

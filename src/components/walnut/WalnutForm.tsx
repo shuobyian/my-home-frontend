@@ -5,7 +5,7 @@ import {
 } from "@/domain/experience";
 import { useState } from "react";
 import { WalnutParams } from "@/types/experience";
-import { Button, Field, FormErrors, NumberInput, useForm } from "@/ui";
+import { Button, Field, Form, FormErrors, NumberInput, useForm } from "@/ui";
 
 interface WalnutFormProps {
   // 마지막으로 계산한 조건(URL). 바뀌면 입력창도 맞춘다
@@ -94,10 +94,9 @@ export function WalnutForm({
   };
 
   return (
-    <form onSubmit={handleSubmit(submit)} style={{ maxWidth: 420 }}>
-      <Field label='현재 레벨 (필수)' required error={errors.presentLevel}>
+    <Form onSubmit={handleSubmit(submit)} style={{ maxWidth: 420 }}>
+      <Field label='현재 레벨' required error={errors.presentLevel}>
         <NumberInput
-          style={{ width: "100%" }}
           precision={0}
           placeholder='현재 레벨'
           value={values.presentLevel}
@@ -110,7 +109,6 @@ export function WalnutForm({
         error={errors.presentExperience}
       >
         <NumberInput
-          style={{ width: "100%" }}
           precision={0}
           placeholder='기본값 = 0'
           value={values.presentExperience}
@@ -123,7 +121,6 @@ export function WalnutForm({
         error={errors.objectiveLevel}
       >
         <NumberInput
-          style={{ width: "100%" }}
           precision={0}
           placeholder={`기본값 = ${
             values.presentLevel !== null
@@ -140,7 +137,6 @@ export function WalnutForm({
         error={errors.productionPercent}
       >
         <NumberInput
-          style={{ width: "100%" }}
           placeholder={`기본값 = ${DEFAULT_PRODUCTION_PERCENT}`}
           value={values.productionPercent}
           onChange={(value) => set("productionPercent", value)}
@@ -149,6 +145,6 @@ export function WalnutForm({
       <Button type='submit' variant='primary' loading={loading}>
         계산하기
       </Button>
-    </form>
+    </Form>
   );
 }

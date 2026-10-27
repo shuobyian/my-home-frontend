@@ -8,13 +8,16 @@ import {
 } from "@/domain/catalog";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
 import { MAX_MATERIAL_SLOTS } from "@/domain/productExcel";
-import { useId, useState } from "react";
+import { styles } from "@/components/product/ProductModal.styles";
+import { Fragment, useId, useState } from "react";
 import { Category, Tool } from "@/types/enums";
 import { NewMarket } from "@/types/market";
 import { Product, ProductCreateRequest } from "@/types/product";
 import {
   Button,
   Field,
+  FieldRow,
+  Form,
   FormErrors,
   Input,
   Modal,
@@ -119,9 +122,6 @@ function validate(
   }
   return errors;
 }
-
-// 재료 한 줄의 칸은 아래 여백 없이 붙여 놓는다(줄 사이는 Stack 간격)
-const ROW_FIELD_STYLE = { marginBottom: 0 };
 
 interface ProductModalProps {
   // 수정할 물품. 없으면 추가 모드
@@ -265,85 +265,89 @@ export function ProductModal({
         </>
       }
     >
-      <form
+      <Form
         id={formId}
-        style={{ margin: "30px 0" }}
+        style={{ margin: "var(--ui-space-4) 0" }}
         onSubmit={handleSubmit(
           (value) => void submit(value),
           () => toast.error("정보를 다시 확인해주세요")
         )}
       >
-        {/* 칸 이름은 접근 이름으로만 쓰고(hideLabel) 화면에는 placeholder만 보인다 */}
-        <Field label='물품명' hideLabel required error={errors.name}>
+        <Field label='물품명' required error={errors.name}>
           <Input
             value={values.name ?? ""}
             onChange={(name) => set("name", name)}
-            placeholder='물품명'
             // 열리면 바로 입력할 수 있게 첫 입력에 포커스를 둔다
             // eslint-disable-next-line jsx-a11y-x/no-autofocus
             autoFocus
           />
         </Field>
-        <Field label='레벨' hideLabel required error={errors.level}>
-          <NumberInput
-            value={values.level ?? null}
-            onChange={(level) => set("level", level)}
-            style={{ width: 120 }}
-            min={0}
-            max={200}
-            placeholder='레벨'
-          />
-        </Field>
-        <Field
-          label='크래프팅 가격'
-          hideLabel
-          required
-          error={errors.craftingPrice}
-        >
-          <NumberInput
-            value={values.craftingPrice ?? null}
-            onChange={(craftingPrice) => set("craftingPrice", craftingPrice)}
-            suffix='골드'
-            style={{ width: 180 }}
-            min={0}
-            placeholder='크래프팅 가격'
-          />
-        </Field>
-        <Field label='도구' hideLabel required error={errors.tool}>
-          <Select
-            value={values.tool}
-            onChange={(tool) => set("tool", tool)}
-            options={TOOL_OPTIONS}
-            placeholder='도구'
-          />
-        </Field>
-        <Field label='카테고리' hideLabel required error={errors.category}>
-          <Select
-            value={values.category}
-            onChange={(category) => set("category", category)}
-            options={CATEGORY_OPTIONS}
-            placeholder='카테고리'
-          />
-        </Field>
-        <Stack vertical>
-          <Text>필요 재료 (최대 {MAX_MATERIAL_SLOTS}개)</Text>
-          {materials.map((material, index) => {
-            const ref = refs[index];
-            const nameFieldError = errors[`materials.${index}.name`];
-            return (
-              <Stack key={material.key} vertical gap={4}>
-                <Stack>
+        <FieldRow>
+          <Field label='레벨' required error={errors.level}>
+            <NumberInput
+              value={values.level ?? null}
+              onChange={(level) => set("level", level)}
+              min={0}
+              max={200}
+            />
+          </Field>
+          <Field label='크래프팅 가격' required error={errors.craftingPrice}>
+            <NumberInput
+              value={values.craftingPrice ?? null}
+              onChange={(craftingPrice) => set("craftingPrice", craftingPrice)}
+              suffix='골드'
+              min={0}
+            />
+          </Field>
+        </FieldRow>
+        <FieldRow>
+          <Field label='도구' required error={errors.tool}>
+            <Select
+              value={values.tool}
+              onChange={(tool) => set("tool", tool)}
+              options={TOOL_OPTIONS}
+              placeholder='선택'
+            />
+          </Field>
+          <Field label='카테고리' required error={errors.category}>
+            <Select
+              value={values.category}
+              onChange={(category) => set("category", category)}
+              options={CATEGORY_OPTIONS}
+              placeholder='선택'
+            />
+          </Field>
+        </FieldRow>
+        <div>
+          <div css={styles.sectionLabel}>
+            필요 재료 (최대 {MAX_MATERIAL_SLOTS}개)
+          </div>
+          {/* 열 제목은 화면용이고, 칸마다의 접근 이름은 숨긴 라벨(hideLabel)이 맡는다 */}
+          <div css={styles.materials}>
+            <div css={styles.columnTitle} aria-hidden='true'>
+              물품명
+            </div>
+            <div css={styles.columnTitle} aria-hidden='true'>
+              하위재료 여부
+            </div>
+            <div css={styles.columnTitle} aria-hidden='true'>
+              개수
+            </div>
+            <div />
+            {materials.map((material, index) => {
+              const ref = refs[index];
+              const nameFieldError = errors[`materials.${index}.name`];
+              return (
+                <Fragment key={material.key}>
                   <Field
                     label='물품명'
                     hideLabel
                     required
-                    style={ROW_FIELD_STYLE}
                     error={nameFieldError}
                   >
                     <Input
                       value={material.name ?? ""}
                       onChange={(name) => setMaterialName(index, name)}
-                      placeholder='물품명'
                       list={catalogNames ? datalistId : undefined}
                       autoComplete={catalogNames ? "off" : undefined}
                     />
@@ -352,7 +356,6 @@ export function ProductModal({
                     label='하위재료 여부'
                     hideLabel
                     required
-                    style={ROW_FIELD_STYLE}
                     error={errors[`materials.${index}.basic`]}
                   >
                     <Segmented
@@ -367,7 +370,6 @@ export function ProductModal({
                     label='개수'
                     hideLabel
                     required
-                    style={ROW_FIELD_STYLE}
                     error={errors[`materials.${index}.count`]}
                   >
                     <NumberInput
@@ -376,54 +378,58 @@ export function ProductModal({
                       suffix='개'
                       min={0}
                       max={100}
-                      placeholder='개수'
                     />
                   </Field>
-                  {index > 0 && (
-                    <Button
-                      onClick={() =>
-                        setMaterials((prev) =>
-                          prev.filter((_, i) => i !== index)
-                        )
-                      }
-                    >
-                      -
-                    </Button>
-                  )}
-                  {index === materials.length - 1 &&
-                    materials.length < MAX_MATERIAL_SLOTS && (
+                  <div css={styles.actions}>
+                    {index > 0 && (
                       <Button
                         onClick={() =>
-                          setMaterials((prev) => [
-                            ...prev,
-                            {
-                              key: Math.max(...prev.map(({ key }) => key)) + 1,
-                            },
-                          ])
+                          setMaterials((prev) =>
+                            prev.filter((_, i) => i !== index)
+                          )
                         }
                       >
-                        +
+                        -
                       </Button>
                     )}
-                </Stack>
-                {/* 제출을 막는 참조는 이름 칸 오류로 보여 주므로 그때는 한 번만 보인다 */}
-                {ref && ref !== "ok" && !nameFieldError && (
-                  <Text
-                    tone={
-                      requireNewMarketPrices && isBlockingRef(ref)
-                        ? "danger"
-                        : "warning"
-                    }
-                  >
-                    {MATERIAL_REF_TEXT[ref]}
-                  </Text>
-                )}
-              </Stack>
-            );
-          })}
-        </Stack>
+                    {index === materials.length - 1 &&
+                      materials.length < MAX_MATERIAL_SLOTS && (
+                        <Button
+                          onClick={() =>
+                            setMaterials((prev) => [
+                              ...prev,
+                              {
+                                key:
+                                  Math.max(...prev.map(({ key }) => key)) + 1,
+                              },
+                            ])
+                          }
+                        >
+                          +
+                        </Button>
+                      )}
+                  </div>
+                  {/* 제출을 막는 참조는 이름 칸 오류로 보여 주므로 그때는 한 번만 보인다 */}
+                  {ref && ref !== "ok" && !nameFieldError && (
+                    <div css={styles.fullRow}>
+                      <Text
+                        tone={
+                          requireNewMarketPrices && isBlockingRef(ref)
+                            ? "danger"
+                            : "warning"
+                        }
+                      >
+                        {MATERIAL_REF_TEXT[ref]}
+                      </Text>
+                    </div>
+                  )}
+                </Fragment>
+              );
+            })}
+          </div>
+        </div>
         {newMarketNames.length > 0 && (
-          <Stack vertical gap={4} style={{ marginTop: 20 }}>
+          <Stack vertical gap={4}>
             <Text strong>시세에 없는 새 재료</Text>
             <Text tone='secondary'>
               오타가 아니라 새 재료라면 시세를 입력하세요. 저장할 때 시세에 함께
@@ -434,7 +440,6 @@ export function ProductModal({
                 key={name}
                 label={`새 시세: ${name}`}
                 required
-                style={ROW_FIELD_STYLE}
                 error={errors[`newMarkets.${name}`]}
               >
                 <NumberInput
@@ -459,7 +464,7 @@ export function ProductModal({
             ))}
           </datalist>
         )}
-      </form>
+      </Form>
     </Modal>
   );
 }

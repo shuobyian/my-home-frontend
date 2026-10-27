@@ -1,13 +1,49 @@
 import { css } from "@emotion/react";
 
 export const styles = {
-  // Field: 라벨은 위, 컨트롤은 아래
+  // Form: 바로 아래 자식(Field·FieldRow·버튼 등) 사이 간격
+  form: css`
+    & > * + * {
+      margin-top: var(--ui-space-4);
+    }
+  `,
+
+  // FieldRow: Field를 같은 폭으로 한 줄에 놓고, 좁으면 다음 줄로 넘긴다
+  fieldRow: css`
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: var(--ui-space-3);
+    align-items: start;
+  `,
+
+  // Field: 라벨은 위, 컨트롤은 아래. 바깥 여백은 두지 않는다(간격은 Form·FieldRow·Stack이 정한다)
   field: css`
-    margin-bottom: var(--ui-space-5);
+    min-width: 0;
+  `,
+
+  // inline: 라벨은 왼쪽, 컨트롤·오류·도움말은 오른쪽 칸(좁은 카드용)
+  inlineField: css`
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--ui-space-2);
+    align-items: center;
+  `,
+
+  // inlineField의 오류·도움말을 컨트롤 아래(오른쪽 칸)에 둔다
+  inlineMessage: css`
+    grid-column: 2;
   `,
 
   label: css`
-    padding-bottom: var(--ui-space-2);
+    padding-bottom: 6px;
+    font-weight: 500;
+  `,
+
+  // inlineField 안에서 label 뒤에 둔다. 짧은 라벨(별표 포함 두세 글자)끼리는 컨트롤 왼쪽 끝이 맞도록 최소 폭을 준다
+  inlineLabel: css`
+    min-width: 3em;
+    padding-bottom: 0;
+    white-space: nowrap;
   `,
 
   required: css`
@@ -16,10 +52,14 @@ export const styles = {
   `,
 
   error: css`
+    margin-top: var(--ui-space-1);
+    font-size: var(--ui-font-size-sm);
     color: var(--ui-color-danger);
   `,
 
   help: css`
+    margin-top: var(--ui-space-1);
+    font-size: var(--ui-font-size-sm);
     color: var(--ui-color-text-secondary);
   `,
 
@@ -63,7 +103,7 @@ export const styles = {
     }
 
     &::placeholder {
-      color: var(--ui-color-text-secondary);
+      color: var(--ui-color-text-placeholder);
       opacity: 1;
     }
 
@@ -92,7 +132,7 @@ export const styles = {
     }
 
     &::placeholder {
-      color: var(--ui-color-text-secondary);
+      color: var(--ui-color-text-placeholder);
       opacity: 1;
     }
   `,
@@ -145,17 +185,15 @@ export const styles = {
     }
   `,
 
-  // NumberInput: 기본 폭 90px + 단위
+  // NumberInput: Input·Select처럼 부모 폭을 채운다(좁게 쓰려면 style로 width를 준다) + 단위
   number: css`
-    display: inline-flex;
-    max-width: 100%;
-    vertical-align: top;
+    display: flex;
+    width: 100%;
   `,
 
   // NumberInput 안의 테두리 상자
   numberControl: css`
     flex: 1 1 auto;
-    width: 90px;
     min-width: 0;
   `,
 
@@ -225,7 +263,7 @@ export const styles = {
 
   // select 뒤에 둔다
   placeholder: css`
-    color: var(--ui-color-text-secondary);
+    color: var(--ui-color-text-placeholder);
   `,
 
   // Segmented: 회색 바탕에 고른 칸만 흰색

@@ -10,6 +10,7 @@ import {
   Alert,
   Button,
   Field,
+  Form,
   Input,
   Stack,
   Text,
@@ -66,7 +67,7 @@ function ProfileForm({ user }: { user: User }) {
           </Text>
         </Stack>
       </Stack>
-      <form
+      <Form
         onSubmit={form.handleSubmit(({ nickname }) =>
           save.mutate(
             { nickname },
@@ -96,7 +97,6 @@ function ProfileForm({ user }: { user: User }) {
           <Alert
             // 서버 검증 메시지 앞의 필드 이름("nickname: ...")은 화면에서 뺀다
             title={getErrorMessage(save.error).replace(/^nickname: /, "")}
-            style={{ marginBottom: "var(--ui-space-4)" }}
           />
         )}
         <Button
@@ -107,7 +107,7 @@ function ProfileForm({ user }: { user: User }) {
         >
           저장하기
         </Button>
-      </form>
+      </Form>
     </Panel>
   );
 }

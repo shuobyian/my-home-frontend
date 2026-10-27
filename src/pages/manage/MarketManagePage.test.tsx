@@ -77,28 +77,61 @@ describe("MarketManagePage", () => {
     ).toBeInTheDocument();
   });
 
-  it("새 행은 id 없이 저장하고, 저장 뒤 서버 값으로 다시 채운다", async () => {
+  it("재료 추가 모달에서 바로 저장하고, 편집 중인 입력값은 둔 채 새 시세를 덧붙인다", async () => {
     renderPage();
     expect(await screen.findByLabelText("원목 시세")).toHaveValue("500");
+    change("원목 시세", "700");
 
     fireEvent.click(screen.getByRole("button", { name: "재료 추가" }));
-    change("새 재료 1 이름", "은");
-    change("새 재료 1 시세", "50");
+    const dialog = await screen.findByRole("dialog", { name: "재료 추가" });
+    fireEvent.change(within(dialog).getByLabelText("이름"), {
+      target: { value: "은" },
+    });
+    fireEvent.change(within(dialog).getByLabelText("시세"), {
+      target: { value: "50" },
+    });
     api.fetchMarkets.mockResolvedValue([
       wood,
       gold,
-      { id: 4, name: "은", price: 50 },
+      { id: 4, name: "은", price: 50, group: "ETC" },
     ]);
-    clickSave();
+    fireEvent.click(within(dialog).getByRole("button", { name: "추가" }));
 
-    expect(
-      await screen.findByText("저장했습니다. 결과도 다시 계산했습니다.")
-    ).toBeInTheDocument();
-    expect(api.updateMarkets).toHaveBeenCalledWith([{ name: "은", price: 50 }]);
-    // 새로 받은 서버 시세로 다시 채워 새 행이 저장된 행(id 있음)이 된다
+    expect(await screen.findByText("시세를 추가했습니다.")).toBeInTheDocument();
+    expect(api.updateMarkets).toHaveBeenCalledWith([
+      { name: "은", price: 50, group: "ETC" },
+    ]);
+    await waitFor(() =>
+      expect(
+        screen.queryByRole("dialog", { name: "재료 추가" })
+      ).not.toBeInTheDocument()
+    );
     expect(await screen.findByLabelText("은 시세")).toHaveValue("50");
-    expect(screen.queryByLabelText("새 재료 1 이름")).not.toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "저장" })).toBeDisabled();
+    expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
+  });
+
+  it("재료 추가에 실패하면 서버 메시지를 보여 주고 모달을 입력과 함께 열어 둔다", async () => {
+    api.updateMarkets.mockRejectedValue(
+      new MyHomeError({ message: "이미 있는 시세입니다." })
+    );
+    renderPage();
+    await screen.findByText("2개");
+
+    fireEvent.click(screen.getByRole("button", { name: "재료 추가" }));
+    const dialog = await screen.findByRole("dialog", { name: "재료 추가" });
+    fireEvent.change(within(dialog).getByLabelText("이름"), {
+      target: { value: "은" },
+    });
+    fireEvent.change(within(dialog).getByLabelText("시세"), {
+      target: { value: "50" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: "추가" }));
+
+    const alert = await screen.findByRole("dialog", {
+      name: "시세를 추가하지 못했습니다",
+    });
+    expect(alert).toHaveTextContent("이미 있는 시세입니다.");
+    expect(within(dialog).getByLabelText("이름")).toHaveValue("은");
   });
 
   it("쓰는 물품이 있는 시세의 이름을 바꾸면 확인을 받고 저장한다", async () => {
