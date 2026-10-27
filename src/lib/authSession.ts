@@ -1,5 +1,5 @@
 import { readJSON, removeItem, STORAGE_KEY, writeJSON } from "@/lib/storage";
-import { AuthSession } from "@/types/auth";
+import { AuthSession, User } from "@/types/auth";
 
 // 로그인 세션(토큰과 회원 정보). localStorage에 두어 새로고침·다른 탭에서도 로그인이 유지된다.
 // React 밖(apis/client의 요청 가로채기)에서도 읽으므로 여기 두고, 화면은 state/auth의 훅으로 구독한다.
@@ -44,6 +44,11 @@ export const getAuthSession = () => current;
 export function saveAuthSession(session: AuthSession) {
   writeJSON(STORAGE_KEY.AUTH, session);
   set(session);
+}
+
+// 토큰은 두고 회원 정보만 바꾼다(프로필 수정). 그새 로그아웃했거나 다른 계정으로 바꿨으면 두지 않는다.
+export function saveSessionUser(user: User) {
+  if (current?.user.id === user.id) saveAuthSession({ ...current, user });
 }
 
 export function clearAuthSession() {

@@ -7,6 +7,7 @@ export const ROUTES = {
   FREE_RESULT: "/free/result",
   CALCULATION: "/calculation",
   INVENTORY: "/inventory",
+  PROFILE: "/profile",
   LOGIN: "/login",
   SIGNUP: "/signup",
   MANAGE: "/manage",

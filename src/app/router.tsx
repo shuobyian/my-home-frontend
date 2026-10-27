@@ -15,6 +15,7 @@ import { FreeResultPage } from "@/pages/FreeResultPage";
 import { HomePage } from "@/pages/HomePage";
 import { InventoryPage } from "@/pages/InventoryPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
+import { ProfilePage } from "@/pages/ProfilePage";
 import { WalnutPage } from "@/pages/WalnutPage";
 import { Route, Routes } from "react-router";
 
@@ -29,6 +30,7 @@ export function AppRoutes() {
         <Route path={ROUTES.FREE_RESULT} element={<FreeResultPage />} />
         <Route path={ROUTES.CALCULATION} element={<CalculationPage />} />
         <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
+        <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.LOGIN} element={<AuthPage mode='login' />} />
         <Route path={ROUTES.SIGNUP} element={<AuthPage mode='signup' />} />
         <Route element={<RequireAdmin />}>
