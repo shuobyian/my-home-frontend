@@ -1,4 +1,5 @@
 import { CartButton } from "@/components/cart/CartButton";
+import { Guide } from "@/components/common/Guide";
 import { useAddToCart } from "@/components/cart/useAddToCart";
 import { ResultSearchForm } from "@/components/result/ResultSearchForm";
 import { ResultCards } from "@/components/result/ResultCards";
@@ -48,15 +49,25 @@ export function HomePage() {
         style={{ flexDirection: "row-reverse" }}
       >
         <CartButton />
-        <Stack vertical gap={0}>
-          <Text>
-            물품 이름을 입력해주세요. 기초 재료를 확인하실 수 있습니다.
-          </Text>
-          <Text>빈칸 입력 시 모든 물품 확인이 가능합니다.</Text>
-          <Text>
-            담기로 장바구니에 담고, 상세로 기초 재료를 볼 수 있습니다.
-          </Text>
-        </Stack>
+        <Guide
+          title='물품 이름으로 기초 재료를 찾아볼 수 있습니다.'
+          steps={
+            <>
+              <li>
+                물품 이름을 입력해 검색합니다.{" "}
+                <Text tone='secondary'>
+                  빈칸으로 검색하면 모든 물품이 나옵니다.
+                </Text>
+              </li>
+              <li>
+                <Text strong>담기</Text>를 누르면 장바구니에 담깁니다.
+              </li>
+              <li>
+                <Text strong>상세</Text>를 누르면 기초 재료를 볼 수 있습니다.
+              </li>
+            </>
+          }
+        />
       </Stack>
       <ResultSearchForm filter={search} onSearch={navigateTo} />
       <ResultCards
