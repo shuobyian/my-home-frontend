@@ -31,7 +31,7 @@ export const useResultsQuery = (params: ResultSearchParams) =>
     queryKey: resultKeys.list(params),
     queryFn: () => fetchResults(params),
     select: selectSortedPage,
-    // 페이지·검색 조건이 바뀌는 동안 이전 목록을 유지해 깜빡임을 없앤다
+    // 검색 조건이 바뀌는 동안 이전 목록을 유지해 깜빡임을 없앤다
     placeholderData: keepPreviousData,
   });
 

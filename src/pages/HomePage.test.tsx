@@ -148,7 +148,8 @@ describe("HomePage", () => {
     expect(await screen.findByText("나무 결과")).toBeInTheDocument();
     expect(screen.getByPlaceholderText("물품명 입력")).toHaveValue("나무");
     expect(mockedFetchResults).toHaveBeenCalledWith(
-      expect.objectContaining({ page: 0, size: 2000, name: "나무" })
+      // page·size 없이 보내 전체를 받는다
+      { name: "나무" }
     );
   });
 
