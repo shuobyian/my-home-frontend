@@ -36,13 +36,7 @@ export const styles = {
     position: relative;
   `,
 
-  dimmed: css`
-    opacity: 0.5;
-    pointer-events: none;
-    user-select: none;
-    transition: opacity var(--ui-motion);
-  `,
-
+  // 내용 위에 겹치되 누르기는 막지 않는다(불러오는 동안에도 보이는 내용은 그대로 쓸 수 있다)
   overlay: css`
     position: absolute;
     top: 0;
@@ -53,5 +47,19 @@ export const styles = {
     display: flex;
     align-items: center;
     justify-content: center;
+    pointer-events: none;
+  `,
+
+  // 내용이 화면보다 길어도 보이는 곳의 세로 가운데에 머문다(내용 영역 밖으로는 나가지 않는다).
+  // 28px은 지름(회전 표시 32px + 안쪽 여백)의 절반
+  floating: css`
+    position: sticky;
+    top: calc(50% - 28px);
+    bottom: calc(50% - 28px);
+    display: flex;
+    padding: 12px;
+    background: var(--ui-color-bg-container);
+    border-radius: 50%;
+    box-shadow: var(--ui-shadow);
   `,
 };
