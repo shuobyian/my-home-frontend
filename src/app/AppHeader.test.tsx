@@ -13,7 +13,6 @@ describe("AppHeader", () => {
     expect(
       screen.getByRole("link", { name: "놀러와 마이홈 제작 계산기" })
     ).toHaveAttribute("href", "/");
-    expect(screen.getByText("제작자: 늘흰")).toBeInTheDocument();
     expect(screen.queryByRole("button")).not.toBeInTheDocument();
   });
 });

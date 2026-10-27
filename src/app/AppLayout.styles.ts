@@ -37,4 +37,12 @@ export const styles = {
       padding-right: ${ADMIN_NAV_SPACE};
     }
   `,
+
+  // 제작자 표시. 본문이 짧아도 맨 아래에 붙는다
+  footer: css`
+    margin-top: auto;
+    padding-top: var(--ui-space-4);
+    font-size: var(--ui-font-size-sm);
+    text-align: center;
+  `,
 };

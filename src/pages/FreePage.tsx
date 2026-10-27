@@ -1,5 +1,6 @@
 import { ROUTES } from "@/app/routes";
 import { CartButton } from "@/components/cart/CartButton";
+import { Guide } from "@/components/common/Guide";
 import { MarketPriceForm } from "@/components/market/MarketPriceForm";
 import { parseMarketList } from "@/domain/market";
 import { readJSON, STORAGE_KEY, writeJSON } from "@/lib/storage";
@@ -7,7 +8,7 @@ import { useMarketsQuery } from "@/queries/market";
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { Market } from "@/types/market";
-import { Stack, Text, Title, useToast } from "@/ui";
+import { Stack, Text, useToast } from "@/ui";
 
 export function FreePage() {
   const navigate = useNavigate();
@@ -35,21 +36,21 @@ export function FreePage() {
         style={{ flexDirection: "row-reverse" }}
       >
         <CartButton />
-        <Stack vertical gap={0}>
-          <Title level={4}>
-            자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.
-          </Title>
-          <Title level={5}>
-            입력한 시세에 따라 계산된 결과를 확인할 수 있습니다.
-          </Title>
-          <Text>
-            1. '시세 불러오기' 버튼을 클릭하면 기본 시세 데이터를 불러올 수
-            있습니다.
-          </Text>
-          <Text>
-            2. 시세 입력 후 '결과 만들기' 클릭하면 결과를 확인할 수 있습니다.
-          </Text>
-        </Stack>
+        <Guide
+          title='자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.'
+          steps={
+            <>
+              <li>
+                <Text strong>시세 불러오기</Text>를 누르면 기본 시세 데이터를
+                불러옵니다.
+              </li>
+              <li>
+                시세를 입력하고 <Text strong>결과 만들기</Text>를 누르면 계산된
+                결과를 확인할 수 있습니다.
+              </li>
+            </>
+          }
+        />
       </Stack>
       <MarketPriceForm
         serverMarkets={serverMarkets}

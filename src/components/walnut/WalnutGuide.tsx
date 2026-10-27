@@ -1,36 +1,70 @@
-import { Stack, Text, Title } from "@/ui";
+import { Guide } from "@/components/common/Guide";
+import { styles } from "@/components/walnut/WalnutGuide.styles";
+import { ExternalLinkIcon, Title } from "@/ui";
+
+interface Buff {
+  name: string;
+  effects: string[];
+}
+
+const CONDITIONS: Buff[] = [
+  { name: "생단펫 5강", effects: ["생단 30%"] },
+  {
+    name: "레트로슈가 하트 포션 (5시간)",
+    effects: ["생단 10%", "생경 20%", "의뢰 보상 100%"],
+  },
+  { name: "로빈샵 하급 생단 향수 (30분)", effects: ["생단 10%"] },
+  { name: "최소 생단", effects: ["84%"] },
+];
+
+const BEST_COMBOS: Buff[] = [
+  {
+    name: "레트로 향수 + 하급생단 향수",
+    effects: ["생산 경험치 증가 60%", "생산 단축 85%"],
+  },
+];
+
+function BuffList({ title, buffs }: { title: string; buffs: Buff[] }) {
+  return (
+    <section css={styles.section}>
+      <Title level={5} css={styles.sectionTitle}>
+        {title}
+      </Title>
+      <ul css={styles.list}>
+        {buffs.map((buff) => (
+          <li key={buff.name} css={styles.row}>
+            <span>{buff.name}</span>
+            <span css={styles.chips}>
+              {buff.effects.map((effect) => (
+                <span key={effect} css={styles.chip}>
+                  {effect}
+                </span>
+              ))}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
 
 // 호두작 안내문
 export function WalnutGuide() {
   return (
-    <Stack vertical gap={0}>
-      <Title level={4}>
-        자세한 설명은{" "}
-        <a
-          href='https://cafe.naver.com/myhomeforkakao/3318785'
-          target='_blank'
-          rel='noreferrer'
-        >
-          해당 링크
-        </a>{" "}
-        참고해주세요.
-      </Title>
-      <Title level={5}>필요 조건</Title>
-      <Text>- 생단펫 5강 생단 30%</Text>
-      <Text>
-        - 레트로슈가 하트 포션 (5시간) 생단 10%, 생경 20%, 의뢰 보상 100%
-      </Text>
-      <Text>- 로빈샵 하급 생단 향수 (30분) 생단 10%</Text>
-      <Text>- 최소 생단 84%</Text>
-      <Title level={5}>최고 조합</Title>
-      <Text>- 레트로 향수 + 하급생단 향수</Text>
-      <Text>- 생산 경험치 증가 60% + 생산 단축 85%</Text>
-      <Title level={5}>
-        입력한 정보에 따라 계산된 결과를 확인할 수 있습니다.
-      </Title>
-      <Text>1. 남은 경험치</Text>
-      <Text>2. 필요한 앰플 개수</Text>
-      <Text>3. 필요한 앰플 재료</Text>
-    </Stack>
+    <Guide title='입력한 정보로 남은 경험치와 필요한 앰플 개수·재료를 계산합니다.'>
+      <div css={styles.sections}>
+        <BuffList title='필요 조건' buffs={CONDITIONS} />
+        <BuffList title='최고 조합' buffs={BEST_COMBOS} />
+      </div>
+      <a
+        href='https://cafe.naver.com/myhomeforkakao/3318785'
+        target='_blank'
+        rel='noreferrer'
+        css={styles.link}
+      >
+        자세한 설명 보기(네이버 카페)
+        <ExternalLinkIcon />
+      </a>
+    </Guide>
   );
 }
