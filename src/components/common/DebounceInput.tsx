@@ -8,10 +8,12 @@ type DebounceInputProps = InputProps & {
 
 // 입력을 멈추고 delay가 지나면 onChange를 부르는 Input. 지우기 버튼도 같은 규칙을 따른다.
 // value를 넘기면 바깥에서 값이 바뀔 때(뒤로 가기 등) 입력창을 맞추고, 넘기지 않으면 스스로 값을 갖는다.
+// 알리기를 기다리는 동안과 loading(조회 중)인 동안 오른쪽에 로딩 표시를 보인다.
 export function DebounceInput({
   value,
   onChange,
   delay = 500,
+  loading,
   ...rest
 }: DebounceInputProps) {
   const [text, setText] = useState(value ?? "");
@@ -37,5 +39,12 @@ export function DebounceInput({
     return () => clearTimeout(timer);
   }, [text, synced, delay]);
 
-  return <Input {...rest} value={text} onChange={setText} />;
+  return (
+    <Input
+      {...rest}
+      value={text}
+      onChange={setText}
+      loading={loading || text !== synced}
+    />
+  );
 }

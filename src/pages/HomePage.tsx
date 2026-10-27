@@ -59,7 +59,11 @@ export function HomePage() {
           </>
         }
       />
-      <ResultSearchForm filter={search} onSearch={navigateTo} />
+      <ResultSearchForm
+        filter={search}
+        onSearch={navigateTo}
+        loading={isFetching}
+      />
       <ResultCards
         loading={isFetching}
         contents={results?.content ?? []}

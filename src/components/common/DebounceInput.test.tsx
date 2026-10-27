@@ -40,10 +40,13 @@ describe("DebounceInput", () => {
     act(() => vi.advanceTimersByTime(499));
     expect(input).toHaveValue("나무");
     expect(onChange).not.toHaveBeenCalled();
+    // 알리기를 기다리는 동안 로딩 표시를 보인다
+    expect(input).toHaveAttribute("aria-busy", "true");
 
     act(() => vi.advanceTimersByTime(1));
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(onChange).toHaveBeenCalledWith("나무");
+    expect(input).not.toHaveAttribute("aria-busy");
 
     fireEvent.click(screen.getByRole("button", { name: "지우기" }));
     expect(input).toHaveValue("");

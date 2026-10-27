@@ -97,6 +97,12 @@ export const styles = {
     }
   `,
 
+  // 입력창 오른쪽 끝 로딩 표시
+  spinner: css`
+    margin-left: var(--ui-space-1);
+    color: var(--ui-color-text-secondary);
+  `,
+
   // 지우기·비밀번호 보기 버튼
   affix: css`
     display: inline-flex;
