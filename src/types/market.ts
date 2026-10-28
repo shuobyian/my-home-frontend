@@ -5,7 +5,7 @@ export interface Market {
   id: number;
   name: string;
   price: number;
-  // 서버는 늘 보낸다. 분류가 생기기 전에 브라우저에 저장해 둔 시세(자유 모드)에는 없다
+  // 서버는 늘 보낸다. 분류가 생기기 전에 브라우저에 저장해 둔 시세(시세 조작 모드)에는 없다
   group?: MarketGroup;
 }
 

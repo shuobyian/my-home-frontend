@@ -48,13 +48,13 @@ describe("FreePage", () => {
 
     expect(
       screen.getByText(
-        "자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다."
+        "시세 조작 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다."
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "장바구니" }));
 
     expect(
-      await screen.findByRole("dialog", { name: "자유 모드 장바구니" })
+      await screen.findByRole("dialog", { name: "시세 조작 모드 장바구니" })
     ).toBeInTheDocument();
   });
 

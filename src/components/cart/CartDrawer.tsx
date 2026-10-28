@@ -21,7 +21,7 @@ export function CartDrawer({ scope, open, onClose }: CartDrawerProps) {
     <Drawer
       open={open}
       onClose={onClose}
-      title={scope === "free" ? "자유 모드 장바구니" : "장바구니"}
+      title={scope === "free" ? "시세 조작 모드 장바구니" : "장바구니"}
       extra={
         <Button
           danger

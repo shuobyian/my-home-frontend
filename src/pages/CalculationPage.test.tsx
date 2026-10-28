@@ -115,7 +115,7 @@ describe("CalculationPage", () => {
     expect(mockedFetchInventory).not.toHaveBeenCalled();
   });
 
-  it("자유 모드 합산은 자유 모드에서 담은 물품만 합산한다", () => {
+  it("시세 조작 모드 합산은 시세 조작 모드에서 담은 물품만 합산한다", () => {
     const stool = createResult({
       id: 3,
       name: "나무 걸상",
@@ -131,7 +131,9 @@ describe("CalculationPage", () => {
     );
     renderPage("free");
 
-    expect(screen.getByText("자유 모드 물품 합산 결과")).toBeInTheDocument();
+    expect(
+      screen.getByText("시세 조작 모드 물품 합산 결과")
+    ).toBeInTheDocument();
     expect(cellsOf("원목")).toEqual(["원목", "10개", "-", "2,000골드"]);
     expect(cellsOf("못")).toBeUndefined();
     expect(screen.getByText("총 2,000골드")).toBeInTheDocument();

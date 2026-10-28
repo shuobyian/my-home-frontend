@@ -81,7 +81,7 @@ describe("CartButton", () => {
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 
-  it("화면의 장바구니만 센다(홈은 기본 시세·호두작, 자유 모드는 자유 모드)", async () => {
+  it("화면의 장바구니만 센다(홈은 기본 시세·호두작, 시세 조작 모드는 시세 조작 모드)", async () => {
     const item = createResult({ id: 1, name: "물품 1" });
     localStorage.setItem(
       STORAGE_KEY.CART,
@@ -99,7 +99,7 @@ describe("CartButton", () => {
     renderButton("free");
     fireEvent.click(screen.getByRole("button", { name: "장바구니 3개" }));
     const dialog = await screen.findByRole("dialog", {
-      name: "자유 모드 장바구니",
+      name: "시세 조작 모드 장바구니",
     });
     expect(dialog).toHaveTextContent("물품 1");
   });

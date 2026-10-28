@@ -29,7 +29,7 @@ export function FreePage() {
   return (
     <Stack vertical>
       <Guide
-        title='자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.'
+        title='시세 조작 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다.'
         action={<CartButton scope='free' />}
         steps={
           <>

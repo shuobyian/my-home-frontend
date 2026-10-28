@@ -142,7 +142,7 @@ describe("cartReducer", () => {
     expect(cart["server:1"].count).toBe(2);
   });
 
-  it("add: 호두작·자유 모드는 같은 id라도 스냅샷(재료·가격)이 다르면 따로 담는다", () => {
+  it("add: 호두작·시세 조작 모드는 같은 id라도 스냅샷(재료·가격)이 다르면 따로 담는다", () => {
     // 호두작 결과는 필요한 앰플 개수만큼 곱해져 온다(Lv60→61은 7개분, Lv60→70은 57개분)
     const ampleFor7 = createResult({
       id: 50,
@@ -226,7 +226,7 @@ describe("cartReducer", () => {
     expect(cartReducer(cart, { type: "clear" })).toEqual({});
   });
 
-  it("clear: scope가 있으면 그 구분(홈·자유 모드)에 담긴 항목만 비운다", () => {
+  it("clear: scope가 있으면 그 구분(홈·시세 조작 모드)에 담긴 항목만 비운다", () => {
     const cart = cartOf(
       ["server", chair, 1],
       ["walnut", vase, 2],
@@ -261,7 +261,7 @@ describe("cartReducer", () => {
 });
 
 describe("cartOfScope", () => {
-  it("기본 시세·호두작은 홈, 자유 모드는 자유 모드 장바구니로 나눈다", () => {
+  it("기본 시세·호두작은 홈, 시세 조작 모드는 시세 조작 모드 장바구니로 나눈다", () => {
     const cart = cartOf(
       ["server", chair, 1],
       ["free", chair, 2],

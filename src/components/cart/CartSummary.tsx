@@ -11,7 +11,7 @@ import { Button, Empty, Stack, Text, Title } from "@/ui";
 import { styles } from "./CartSummary.styles";
 
 interface CartSummaryProps {
-  // 합산할 장바구니(홈·자유 모드)
+  // 합산할 장바구니(홈·시세 조작 모드)
   scope: CartScope;
   // 로그인한 회원의 보유 재료. 있으면 합산한 기초 재료 표에 부족 개수를, 총 가격 왼쪽에 부족한 만큼의 가격을 함께 보여 준다
   owned?: OwnedCounts;
@@ -26,7 +26,7 @@ export function CartSummary({ scope, owned }: CartSummaryProps) {
   return (
     <div style={{ width: "100%" }}>
       <Title level={3}>
-        {scope === "free" ? "자유 모드 물품 합산 결과" : "물품 합산 결과"}
+        {scope === "free" ? "시세 조작 모드 물품 합산 결과" : "물품 합산 결과"}
       </Title>
       <Title level={5}>담긴 물품은 삭제하기 전까지 유지됩니다.</Title>
       {entries.length === 0 ? (

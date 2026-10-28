@@ -25,7 +25,7 @@ interface MarketPriceFormProps {
   onSubmit: (markets: Market[]) => void;
 }
 
-// 재료 시세 입력 카드 목록(자유 모드). 얻는 곳별 묶음으로 나눠 보여 준다.
+// 재료 시세 입력 카드 목록(시세 조작 모드). 얻는 곳별 묶음으로 나눠 보여 준다.
 // 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
 export function MarketPriceForm({
   serverMarkets,

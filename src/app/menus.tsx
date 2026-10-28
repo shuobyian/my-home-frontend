@@ -20,11 +20,11 @@ export interface MenuItem {
   end?: boolean;
 }
 
-// 누구나 쓰는 메뉴. 장바구니는 메뉴가 아니라 홈·자유 모드 화면의 버튼(CartButton)으로 연다.
+// 누구나 쓰는 메뉴. 장바구니는 메뉴가 아니라 홈·시세 조작 모드 화면의 버튼(CartButton)으로 연다.
 export const USER_MENU: readonly MenuItem[] = [
   { label: "홈", to: ROUTES.HOME, icon: <HomeIcon />, end: true },
   { label: "호두작", to: ROUTES.WALNUT, icon: <WalnutIcon /> },
-  { label: "자유 모드", to: ROUTES.FREE, icon: <SlidersIcon /> },
+  { label: "시세 조작 모드", to: ROUTES.FREE, icon: <SlidersIcon /> },
 ];
 
 // 로그인한 회원에게만 보이는 메뉴(누구나 쓰는 메뉴 바로 아래). 화면은 로그인하지 않았으면 로그인으로 보낸다.

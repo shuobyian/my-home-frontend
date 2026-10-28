@@ -63,7 +63,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
   return <CartContext value={value}>{children}</CartContext>;
 }
 
-// scope를 주면 그 구분(홈·자유 모드)에 담긴 항목만 보여 주고 비운다. 없으면 장바구니 전체다
+// scope를 주면 그 구분(홈·시세 조작 모드)에 담긴 항목만 보여 주고 비운다. 없으면 장바구니 전체다
 export function useCart(scope?: CartScope) {
   const context = use(CartContext);
   const value = useMemo<CartContextValue | null>(() => {
