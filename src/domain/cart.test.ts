@@ -2,6 +2,7 @@ import {
   aggregateMaterials,
   Cart,
   cartKey,
+  cartOfScope,
   cartReducer,
   CartSource,
   migrateLegacyCart,
@@ -225,6 +226,21 @@ describe("cartReducer", () => {
     expect(cartReducer(cart, { type: "clear" })).toEqual({});
   });
 
+  it("clear: scope가 있으면 그 구분(홈·자유 모드)에 담긴 항목만 비운다", () => {
+    const cart = cartOf(
+      ["server", chair, 1],
+      ["walnut", vase, 2],
+      ["free", table, 3]
+    );
+
+    expect(cartReducer(cart, { type: "clear", scope: "home" })).toEqual(
+      cartOf(["free", table, 3])
+    );
+    expect(cartReducer(cart, { type: "clear", scope: "free" })).toEqual(
+      cartOf(["server", chair, 1], ["walnut", vase, 2])
+    );
+  });
+
   it("없는 키에 대한 동작은 상태를 바꾸지 않는다", () => {
     const cart = cartOf(["server", chair, 1]);
     expect(cartReducer(cart, { type: "increment", key: "server:999" })).toBe(
@@ -241,6 +257,21 @@ describe("cartReducer", () => {
     cartReducer(cart, { type: "setCount", key: "server:1", count: 5 });
 
     expect(cart).toEqual(snapshot);
+  });
+});
+
+describe("cartOfScope", () => {
+  it("기본 시세·호두작은 홈, 자유 모드는 자유 모드 장바구니로 나눈다", () => {
+    const cart = cartOf(
+      ["server", chair, 1],
+      ["free", chair, 2],
+      ["walnut", vase, 3]
+    );
+
+    expect(cartOfScope(cart, "home")).toEqual(
+      cartOf(["server", chair, 1], ["walnut", vase, 3])
+    );
+    expect(cartOfScope(cart, "free")).toEqual(cartOf(["free", chair, 2]));
   });
 });
 

@@ -1,17 +1,18 @@
 import { fireEvent, render, screen } from "@testing-library/react";
 import { CartButton } from "@/components/cart/CartButton";
+import { CartScope } from "@/domain/cart";
 import { STORAGE_KEY } from "@/lib/storage";
 import { MemoryRouter } from "react-router";
 import { CartProvider } from "@/state/cart";
 import { createResult } from "@/test/fixtures";
 import { UIProvider } from "@/ui";
 
-function renderButton() {
+function renderButton(scope: CartScope = "home") {
   return render(
     <UIProvider>
       <CartProvider>
         <MemoryRouter>
-          <CartButton />
+          <CartButton scope={scope} />
         </MemoryRouter>
       </CartProvider>
     </UIProvider>
@@ -78,5 +79,28 @@ describe("CartButton", () => {
 
     fireEvent.keyDown(dialog, { key: "Escape" });
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+
+  it("화면의 장바구니만 센다(홈은 기본 시세·호두작, 자유 모드는 자유 모드)", async () => {
+    const item = createResult({ id: 1, name: "물품 1" });
+    localStorage.setItem(
+      STORAGE_KEY.CART,
+      JSON.stringify({
+        "free:1": { key: "free:1", source: "free", item, count: 3 },
+      })
+    );
+
+    const { unmount } = renderButton("home");
+    expect(
+      screen.getByRole("button", { name: "장바구니" })
+    ).toBeInTheDocument();
+    unmount();
+
+    renderButton("free");
+    fireEvent.click(screen.getByRole("button", { name: "장바구니 3개" }));
+    const dialog = await screen.findByRole("dialog", {
+      name: "자유 모드 장바구니",
+    });
+    expect(dialog).toHaveTextContent("물품 1");
   });
 });

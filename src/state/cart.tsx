@@ -1,8 +1,11 @@
 import {
   aggregateMaterials,
   Cart,
+  CartAction,
   CartEntry,
+  cartOfScope,
   cartReducer,
+  CartScope,
   CartSource,
   migrateLegacyCart,
   parseCart,
@@ -11,6 +14,7 @@ import {
 import { readJSON, removeItem, STORAGE_KEY, writeJSON } from "@/lib/storage";
 import {
   createContext,
+  Dispatch,
   ReactNode,
   use,
   useEffect,
@@ -31,7 +35,10 @@ interface CartContextValue {
   clear: () => void;
 }
 
-const CartContext = createContext<CartContextValue | null>(null);
+const CartContext = createContext<{
+  cart: Cart;
+  dispatch: Dispatch<CartAction>;
+} | null>(null);
 
 // 저장된 장바구니를 읽는다. 새 형식이 없으면 이전 형식을 변환한다.
 function loadCart(): Cart {
@@ -51,8 +58,19 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [cart]);
 
-  const value = useMemo<CartContextValue>(
-    () => ({
+  const value = useMemo(() => ({ cart, dispatch }), [cart]);
+
+  return <CartContext value={value}>{children}</CartContext>;
+}
+
+// scope를 주면 그 구분(홈·자유 모드)에 담긴 항목만 보여 주고 비운다. 없으면 장바구니 전체다
+export function useCart(scope?: CartScope) {
+  const context = use(CartContext);
+  const value = useMemo<CartContextValue | null>(() => {
+    if (!context) return null;
+    const { dispatch } = context;
+    const cart = scope ? cartOfScope(context.cart, scope) : context.cart;
+    return {
       entries: Object.values(cart),
       totalCount: totalCount(cart),
       materials: aggregateMaterials(cart),
@@ -61,18 +79,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
       decrement: (key) => dispatch({ type: "decrement", key }),
       setCount: (key, count) => dispatch({ type: "setCount", key, count }),
       remove: (key) => dispatch({ type: "remove", key }),
-      clear: () => dispatch({ type: "clear" }),
-    }),
-    [cart]
-  );
-
-  return <CartContext value={value}>{children}</CartContext>;
-}
-
-export function useCart() {
-  const context = use(CartContext);
-  if (!context) {
+      clear: () => dispatch({ type: "clear", scope }),
+    };
+  }, [context, scope]);
+  if (!value) {
     throw new Error("useCart는 CartProvider 안에서만 사용할 수 있습니다.");
   }
-  return context;
+  return value;
 }

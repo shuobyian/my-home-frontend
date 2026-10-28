@@ -1,4 +1,5 @@
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { CartScope } from "@/domain/cart";
 import { CSSProperties, useState } from "react";
 import { useCart } from "@/state/cart";
 import { Button, CartIcon } from "@/ui";
@@ -14,9 +15,9 @@ const countStyle: CSSProperties = {
 };
 
 // 장바구니 버튼. 담긴 수량을 버튼 안에 보여 주고 누르면 장바구니(서랍)를 연다.
-// 물품을 담는 화면(홈·자유 모드)에 놓는다.
-export function CartButton() {
-  const { totalCount } = useCart();
+// 물품을 담는 화면(홈·자유 모드)에 놓고, 그 화면의 장바구니(scope)만 보여 준다.
+export function CartButton({ scope }: { scope: CartScope }) {
+  const { totalCount } = useCart(scope);
   const [open, setOpen] = useState(false);
 
   return (
@@ -35,7 +36,7 @@ export function CartButton() {
           </span>
         )}
       </Button>
-      <CartDrawer open={open} onClose={() => setOpen(false)} />
+      <CartDrawer scope={scope} open={open} onClose={() => setOpen(false)} />
     </>
   );
 }

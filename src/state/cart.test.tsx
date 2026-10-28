@@ -108,6 +108,31 @@ describe("CartProvider / useCart", () => {
     ]);
   });
 
+  it("scope를 주면 그 장바구니에 담긴 항목만 보여 주고 비운다", () => {
+    const { result } = renderHook(
+      () => ({ home: useCart("home"), free: useCart("free") }),
+      { wrapper }
+    );
+
+    act(() => result.current.home.add(chair, "server"));
+    act(() => result.current.free.add(table, "free"));
+    act(() => result.current.free.add(table, "free"));
+
+    expect(result.current.home.totalCount).toBe(1);
+    expect(result.current.home.materials).toEqual([
+      { name: "원목", count: 10, price: 5000 },
+    ]);
+    expect(result.current.free.totalCount).toBe(2);
+    expect(result.current.free.materials).toEqual([
+      { name: "원목", count: 8, price: 4000 },
+    ]);
+
+    act(() => result.current.free.clear());
+
+    expect(result.current.free.entries).toEqual([]);
+    expect(result.current.home.totalCount).toBe(1);
+  });
+
   it("CartProvider 밖에서 쓰면 오류를 던진다", () => {
     silenceExpectedErrors();
     expect(() => renderHook(() => useCart())).toThrow(

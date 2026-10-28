@@ -1,25 +1,27 @@
 import { ROUTES } from "@/app/routes";
 import { CartEntryList } from "@/components/cart/CartEntryList";
-import { CART_SOURCE_LABEL } from "@/domain/cart";
+import { CART_SOURCE_LABEL, CartScope } from "@/domain/cart";
 import { formatGold } from "@/lib/format";
 import { useNavigate } from "react-router";
 import { useCart } from "@/state/cart";
 import { Button, DeleteIcon, Drawer, NumberInput, Stack, Text } from "@/ui";
 
 interface CartDrawerProps {
+  scope: CartScope;
   open: boolean;
   onClose: () => void;
 }
 
-export function CartDrawer({ open, onClose }: CartDrawerProps) {
+export function CartDrawer({ scope, open, onClose }: CartDrawerProps) {
   const navigate = useNavigate();
-  const { entries, increment, decrement, setCount, remove, clear } = useCart();
+  const { entries, increment, decrement, setCount, remove, clear } =
+    useCart(scope);
 
   return (
     <Drawer
       open={open}
       onClose={onClose}
-      title='장바구니'
+      title={scope === "free" ? "자유 모드 장바구니" : "장바구니"}
       extra={
         <Button
           danger
@@ -81,7 +83,9 @@ export function CartDrawer({ open, onClose }: CartDrawerProps) {
           disabled={entries.length === 0}
           onClick={() => {
             onClose();
-            navigate(ROUTES.CALCULATION);
+            navigate(
+              scope === "free" ? ROUTES.FREE_CALCULATION : ROUTES.CALCULATION
+            );
           }}
         >
           합산

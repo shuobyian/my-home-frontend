@@ -54,7 +54,7 @@ describe("FreePage", () => {
     fireEvent.click(screen.getByRole("button", { name: "장바구니" }));
 
     expect(
-      await screen.findByRole("dialog", { name: "장바구니" })
+      await screen.findByRole("dialog", { name: "자유 모드 장바구니" })
     ).toBeInTheDocument();
   });
 

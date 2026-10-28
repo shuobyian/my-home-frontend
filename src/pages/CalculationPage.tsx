@@ -1,7 +1,8 @@
 import { CartSummary } from "@/components/cart/CartSummary";
+import { CartScope } from "@/domain/cart";
 import { useOwnedCounts } from "@/pages/useOwnedCounts";
 
-export function CalculationPage() {
+export function CalculationPage({ scope }: { scope: CartScope }) {
   const owned = useOwnedCounts();
-  return <CartSummary owned={owned} />;
+  return <CartSummary scope={scope} owned={owned} />;
 }

@@ -65,7 +65,7 @@ export function FreeResultPage() {
           {showSaved ? "저장된 결과" : "입력한 시세로 계산한 결과"}
         </Title>
         <Stack wrap>
-          <CartButton />
+          <CartButton scope='free' />
           {showSaved ? (
             <Button onClick={() => setShowSaved(false)}>
               새 계산 결과 보기

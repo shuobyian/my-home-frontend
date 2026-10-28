@@ -10,6 +10,14 @@ export const CART_SOURCE_LABEL: Record<CartSource, string> = {
   walnut: "호두작",
 };
 
+// 장바구니 구분. 기본 시세·호두작 결과는 홈 장바구니, 자유 모드 결과는 자유 모드 장바구니에 담는다.
+// 입력한 시세로 계산한 결과가 기본 시세 합산에 섞이지 않도록 따로 보여 주고 따로 합산한다.
+export type CartScope = "home" | "free";
+
+export function cartScope(source: CartSource): CartScope {
+  return source === "free" ? "free" : "home";
+}
+
 // 장바구니 항목: 담은 시점의 결과 스냅샷(가격 포함)과 수량
 export interface CartEntry {
   key: string;
@@ -27,7 +35,8 @@ export type CartAction =
   | { type: "decrement"; key: string }
   | { type: "setCount"; key: string; count: number }
   | { type: "remove"; key: string }
-  | { type: "clear" };
+  // scope가 있으면 그 구분에 담긴 항목만 비운다
+  | { type: "clear"; scope?: CartScope };
 
 // 계산할 때마다 시세나 수량이 달라지는 출처. 같은 결과 id라도 스냅샷이 다르면 따로 담는다.
 // (호두작 결과는 필요한 앰플 개수만큼 곱해진 값이고, 자유 모드는 입력한 시세로 계산된 값이다)
@@ -57,9 +66,25 @@ function withoutKey(cart: Cart, key: string): Cart {
   return next;
 }
 
+function filterCart(cart: Cart, keep: (entry: CartEntry) => boolean): Cart {
+  return Object.fromEntries(
+    Object.entries(cart).filter(([, entry]) => keep(entry))
+  );
+}
+
+// 한 구분(홈·자유 모드)에 담긴 항목만 남긴다
+export function cartOfScope(cart: Cart, scope: CartScope): Cart {
+  return filterCart(cart, ({ source }) => cartScope(source) === scope);
+}
+
 // 상태를 직접 바꾸지 않고 항상 새 객체를 반환한다
 export function cartReducer(cart: Cart, action: CartAction): Cart {
-  if (action.type === "clear") return {};
+  if (action.type === "clear") {
+    const { scope } = action;
+    return scope
+      ? filterCart(cart, ({ source }) => cartScope(source) !== scope)
+      : {};
+  }
 
   if (action.type === "add") {
     const key = cartKey(action.source, action.item);

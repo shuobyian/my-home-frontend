@@ -28,7 +28,14 @@ export function AppRoutes() {
         <Route path={ROUTES.EXPERIENCE} element={<ExperiencePage />} />
         <Route path={ROUTES.FREE} element={<FreePage />} />
         <Route path={ROUTES.FREE_RESULT} element={<FreeResultPage />} />
-        <Route path={ROUTES.CALCULATION} element={<CalculationPage />} />
+        <Route
+          path={ROUTES.CALCULATION}
+          element={<CalculationPage scope='home' />}
+        />
+        <Route
+          path={ROUTES.FREE_CALCULATION}
+          element={<CalculationPage scope='free' />}
+        />
         <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
         <Route path={ROUTES.LOGIN} element={<AuthPage mode='login' />} />
