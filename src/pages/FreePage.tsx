@@ -34,7 +34,7 @@ export function FreePage() {
         steps={
           <>
             <li>
-              <Text strong>시세 불러오기</Text>를 누르면 기본 시세 데이터를
+              <Text strong>서버 시세 불러오기</Text>를 누르면 기본 시세 데이터를
               불러옵니다.
             </li>
             <li>

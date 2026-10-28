@@ -235,7 +235,7 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
     ]);
   });
 
-  it("'시세 불러오기'는 지금처럼 서버 시세 전체로 바꾼다", () => {
+  it("'서버 시세 불러오기'는 지금처럼 서버 시세 전체로 바꾼다", () => {
     render(
       <MarketPriceForm
         {...props}
@@ -245,7 +245,7 @@ describe("MarketPriceForm 저장해 둔 시세로 시작", () => {
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "시세 불러오기" }));
+    fireEvent.click(screen.getByRole("button", { name: "서버 시세 불러오기" }));
 
     expect(screen.getByLabelText("원목 시세")).toHaveValue("500");
   });

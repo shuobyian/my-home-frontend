@@ -83,10 +83,10 @@ describe("FreePage", () => {
     mockedFetchMarkets.mockResolvedValue([wood]);
     renderFree();
 
-    // 서버 시세가 도착하면 '시세 불러오기'가 켜진다
+    // 서버 시세가 도착하면 '서버 시세 불러오기'가 켜진다
     await waitFor(() =>
       expect(
-        screen.getByRole("button", { name: "시세 불러오기" })
+        screen.getByRole("button", { name: "서버 시세 불러오기" })
       ).toBeEnabled()
     );
     expect(screen.getByLabelText("원목 시세")).toHaveValue("700");
