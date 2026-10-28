@@ -48,13 +48,13 @@ describe("FreePage", () => {
 
     expect(
       screen.getByText(
-        "자유 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다."
+        "시세 조작 모드는 직접 재료의 시세를 입력할 수 있는 모드입니다."
       )
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "장바구니" }));
 
     expect(
-      await screen.findByRole("dialog", { name: "장바구니" })
+      await screen.findByRole("dialog", { name: "시세 조작 모드 장바구니" })
     ).toBeInTheDocument();
   });
 
@@ -83,10 +83,10 @@ describe("FreePage", () => {
     mockedFetchMarkets.mockResolvedValue([wood]);
     renderFree();
 
-    // 서버 시세가 도착하면 '시세 불러오기'가 켜진다
+    // 서버 시세가 도착하면 '서버 시세 불러오기'가 켜진다
     await waitFor(() =>
       expect(
-        screen.getByRole("button", { name: "시세 불러오기" })
+        screen.getByRole("button", { name: "서버 시세 불러오기" })
       ).toBeEnabled()
     );
     expect(screen.getByLabelText("원목 시세")).toHaveValue("700");

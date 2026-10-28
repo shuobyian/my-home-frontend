@@ -11,7 +11,7 @@ import { createPath, Navigate, useLocation } from "react-router";
 import { Spin, Stack, Text, Title, useDialogs, useToast } from "@/ui";
 
 // 보유 재료: 로그인한 회원이 가진 기초 재료 개수를 저장한다.
-// 결과·장바구니 합산·자유 모드 결과의 기초 재료 표가 이 값으로 부족 개수를 보여 준다.
+// 결과·장바구니 합산·시세 조작 모드 결과의 기초 재료 표가 이 값으로 부족 개수를 보여 준다.
 export function InventoryPage() {
   const user = useCurrentUser();
   const location = useLocation();
@@ -38,8 +38,8 @@ export function InventoryPage() {
         <Title level={4}>보유 재료</Title>
         <Text>가지고 있는 기초 재료의 개수를 입력해 저장해주세요.</Text>
         <Text>
-          결과, 장바구니 합산, 자유 모드 결과에서 필요한 개수에서 보유 개수를 뺀
-          부족 개수를 함께 보여 줍니다.
+          결과, 장바구니 합산, 시세 조작 모드 결과에서 필요한 개수에서 보유
+          개수를 뺀 부족 개수를 함께 보여 줍니다.
         </Text>
       </Stack>
       {markets.data && inventory.data ? (

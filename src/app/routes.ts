@@ -5,6 +5,7 @@ export const ROUTES = {
   EXPERIENCE: "/experience",
   FREE: "/free",
   FREE_RESULT: "/free/result",
+  FREE_CALCULATION: "/free/calculation",
   CALCULATION: "/calculation",
   INVENTORY: "/inventory",
   PROFILE: "/profile",

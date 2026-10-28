@@ -12,7 +12,7 @@ import { MaterialGroups } from "@/components/common/MaterialGroups";
 type MarketRow = Omit<Market, "price"> & { price: number | null };
 
 interface MarketPriceFormProps {
-  // 서버 시세. '시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다.
+  // 서버 시세. '서버 시세 불러오기'와, 초기값이 없을 때 처음 채우는 데 쓴다.
   // 캐시에 남은 오래된 값으로 채우지 않도록 마운트 후 새로 받은 값만 넘긴다(isFetchedAfterMount)
   serverMarkets?: Market[];
   // 처음 채울 값(예: 브라우저에 저장해 둔 시세). 있으면 서버 시세보다 우선한다.
@@ -25,7 +25,7 @@ interface MarketPriceFormProps {
   onSubmit: (markets: Market[]) => void;
 }
 
-// 재료 시세 입력 카드 목록(자유 모드). 얻는 곳별 묶음으로 나눠 보여 준다.
+// 재료 시세 입력 카드 목록(시세 조작 모드). 얻는 곳별 묶음으로 나눠 보여 준다.
 // 서버 시세를 고치는 관리 화면은 MarketEditor를 쓴다
 export function MarketPriceForm({
   serverMarkets,
@@ -119,7 +119,7 @@ export function MarketPriceForm({
             }}
             disabled={!serverMarkets}
           >
-            시세 불러오기
+            서버 시세 불러오기
           </Button>
           {/* 카드마다 단위 상자를 붙이면 어수선해서 한 번만 적는다 */}
           <Text tone='secondary'>단위: 골드</Text>

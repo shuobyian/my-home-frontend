@@ -1,6 +1,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { render, screen, waitFor, within } from "@testing-library/react";
 import { clearAuthSession, saveAuthSession } from "@/lib/authSession";
+import { CartScope } from "@/domain/cart";
 import { STORAGE_KEY } from "@/lib/storage";
 import { CalculationPage } from "@/pages/CalculationPage";
 import { CartProvider } from "@/state/cart";
@@ -38,7 +39,7 @@ function fillCart() {
   );
 }
 
-function renderPage() {
+function renderPage(scope: CartScope = "home") {
   return render(
     <QueryClientProvider
       client={new QueryClient({ defaultOptions: { queries: { retry: 0 } } })}
@@ -46,7 +47,7 @@ function renderPage() {
       <UIProvider>
         <CartProvider>
           <MemoryRouter>
-            <CalculationPage />
+            <CalculationPage scope={scope} />
           </MemoryRouter>
         </CartProvider>
       </UIProvider>
@@ -112,5 +113,29 @@ describe("CalculationPage", () => {
     expect(screen.getByText("총 40,050골드")).toBeInTheDocument();
     expect(screen.queryByText(/부족/)).not.toBeInTheDocument();
     expect(mockedFetchInventory).not.toHaveBeenCalled();
+  });
+
+  it("시세 조작 모드 합산은 시세 조작 모드에서 담은 물품만 합산한다", () => {
+    const stool = createResult({
+      id: 3,
+      name: "나무 걸상",
+      materials: [{ name: "원목", count: 5, price: 1000 }],
+    });
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY.CART) ?? "{}");
+    localStorage.setItem(
+      STORAGE_KEY.CART,
+      JSON.stringify({
+        ...saved,
+        "free:3": { key: "free:3", source: "free", item: stool, count: 2 },
+      })
+    );
+    renderPage("free");
+
+    expect(
+      screen.getByText("시세 조작 모드 물품 합산 결과")
+    ).toBeInTheDocument();
+    expect(cellsOf("원목")).toEqual(["원목", "10개", "-", "2,000골드"]);
+    expect(cellsOf("못")).toBeUndefined();
+    expect(screen.getByText("총 2,000골드")).toBeInTheDocument();
   });
 });

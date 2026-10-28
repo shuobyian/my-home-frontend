@@ -23,7 +23,7 @@ export async function syncResults() {
   return data;
 }
 
-// 사용자가 입력한 시세로 결과를 계산한다 (자유 모드, 서버에 저장하지 않음)
+// 사용자가 입력한 시세로 결과를 계산한다 (시세 조작 모드, 서버에 저장하지 않음)
 export async function calculateResults(body: CalculatorRequest) {
   const { data } = await client.post<CalculatorResponse>(
     ENDPOINTS.CALCULATOR,

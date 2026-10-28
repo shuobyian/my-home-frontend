@@ -43,7 +43,7 @@ export function HomePage() {
     <Stack vertical>
       <Guide
         title='물품 이름으로 기초 재료를 찾아볼 수 있습니다.'
-        action={<CartButton />}
+        action={<CartButton scope='home' />}
         steps={
           <>
             <li>

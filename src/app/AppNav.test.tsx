@@ -68,7 +68,7 @@ describe("AppNav 메뉴 구분", () => {
     renderNav();
 
     const nav = screen.getByRole("navigation", { name: "주 메뉴" });
-    for (const name of ["홈", "호두작", "자유 모드"]) {
+    for (const name of ["홈", "호두작", "시세 조작 모드"]) {
       expect(within(nav).getByRole("link", { name })).toBeInTheDocument();
     }
     expect(
@@ -171,13 +171,12 @@ describe("AppNav 메뉴 구분", () => {
 });
 
 describe("AppNav 현재 화면 표시", () => {
-  it("현재 메뉴만 표시하고, 하위 화면(자유 모드 결과)에서도 그 메뉴를 표시한다", () => {
+  it("현재 메뉴만 표시하고, 하위 화면(시세 조작 모드 결과)에서도 그 메뉴를 표시한다", () => {
     renderNav("/free/result");
 
-    expect(screen.getByRole("link", { name: "자유 모드" })).toHaveAttribute(
-      "aria-current",
-      "page"
-    );
+    expect(
+      screen.getByRole("link", { name: "시세 조작 모드" })
+    ).toHaveAttribute("aria-current", "page");
     // 홈은 끝까지 맞을 때만 표시한다
     expect(screen.getByRole("link", { name: "홈" })).not.toHaveAttribute(
       "aria-current"
