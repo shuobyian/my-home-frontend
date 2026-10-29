@@ -35,7 +35,10 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["src/setupTests.ts"],
-    include: ["src/**/*.{test,spec}.{ts,tsx}"],
+    include: [
+      "src/**/*.{test,spec}.{ts,tsx}",
+      "tests/**/*.{test,spec}.{ts,tsx}",
+    ],
     // 테스트마다 spy를 원래대로 되돌리고(restoreMocks) 모의 함수의 구현·대기열을 지운다(mockReset).
     // CRA의 resetMocks와 같은 효과로, 앞 테스트의 설정이 다음 테스트로 새지 않게 한다.
     restoreMocks: true,

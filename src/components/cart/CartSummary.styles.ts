@@ -6,6 +6,7 @@ export const styles = {
     overflow: hidden;
     border: 1px solid var(--ui-color-border);
     border-radius: var(--ui-radius-lg);
+    background: var(--ui-color-bg-container);
   `,
 
   // 상자가 바깥을 자르므로 포커스 외곽선을 안쪽에 그린다. 외곽선이 자르는 곡선을 따라가도록
@@ -18,7 +19,7 @@ export const styles = {
     background: var(--ui-color-fill-alter);
 
     &:focus {
-      outline-offset: -2px;
+      outline-offset: calc(-1 * var(--ui-space-0-5));
       border-radius: calc(var(--ui-radius-lg) - 1px);
     }
 
@@ -32,6 +33,6 @@ export const styles = {
     max-height: 300px;
     padding: 0 var(--ui-space-4);
     overflow: auto;
-    border-top: 1px solid var(--ui-color-border);
+    border-top: 1px solid var(--ui-color-border-secondary);
   `,
 };

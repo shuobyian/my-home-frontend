@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { breakpoints } from "@/ui";
 
 export const styles = {
   // 연한 주 색 바탕의 카드. 첫 줄은 아이콘·제목(768px 이상은 버튼까지), 그 아래로 내용이 온다.
@@ -6,17 +7,18 @@ export const styles = {
   guide: css`
     display: grid;
     grid-template-columns: auto minmax(0, 1fr);
-    gap: var(--ui-space-3) var(--ui-space-2);
+    gap: var(--ui-space-4) var(--ui-space-3);
     align-items: start;
     padding: var(--ui-space-4);
     word-break: keep-all;
     overflow-wrap: anywhere;
     background: var(--ui-color-primary-bg);
-    border: 1px solid rgba(92, 53, 114, 0.12);
-    border-radius: var(--ui-radius-xl);
+    border: var(--ui-border-width) solid var(--ui-color-primary-border);
+    border-radius: var(--ui-radius-lg);
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       grid-template-columns: auto minmax(0, 1fr) auto;
+      padding: var(--ui-space-5);
     }
   `,
 
@@ -26,7 +28,7 @@ export const styles = {
     order: 1;
     justify-self: end;
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       grid-column: auto;
       order: 0;
     }
@@ -44,32 +46,37 @@ export const styles = {
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 28px;
-    height: 28px;
-    font-size: 16px;
+    width: var(--ui-space-6);
+    height: var(--ui-space-6);
+    font-size: var(--ui-icon-size-sm);
     color: var(--ui-color-primary);
     background: var(--ui-color-bg-container);
     border-radius: 50%;
   `,
 
-  // 28px 아이콘과 첫 줄의 가운데를 맞춘다(줄 높이 16px × 1.4)
+  // 제목과 아이콘의 세로 가운데를 맞춘다
   title: css`
-    margin: 3px 0 0;
-    font-size: 16px;
+    align-self: center;
+    margin: 0;
+    font-size: var(--ui-font-size-md);
   `,
 
-  // 번호 원은 제목 아이콘과 가운데를 맞추고(왼쪽 4px), 글은 번호 오른쪽에서 줄바꿈한다
+  // 글이 번호 오른쪽에서 줄바꿈되도록 왼쪽 공간을 비운다
   steps: css`
     display: grid;
-    gap: var(--ui-space-2);
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, var(--ui-card-min-width)), 1fr)
+    );
+    gap: var(--ui-space-3) var(--ui-space-5);
     margin: 0;
-    padding: 0 0 0 4px;
+    padding: 0;
     list-style: none;
     counter-reset: step;
 
     & > li {
       position: relative;
-      padding-left: 28px;
+      padding-left: var(--ui-space-6);
       counter-increment: step;
     }
 
@@ -77,15 +84,15 @@ export const styles = {
       position: absolute;
       top: 1px;
       left: 0;
-      width: 20px;
-      height: 20px;
+      width: var(--ui-badge-size);
+      height: var(--ui-badge-size);
       font-size: var(--ui-font-size-sm);
-      font-weight: 600;
-      line-height: 20px;
-      color: var(--ui-color-text-inverse);
+      font-weight: var(--ui-font-weight-semibold);
+      line-height: var(--ui-badge-size);
+      color: var(--ui-color-primary);
       text-align: center;
       content: counter(step);
-      background: var(--ui-color-primary);
+      background: var(--ui-color-bg-container);
       border-radius: 50%;
     }
   `,

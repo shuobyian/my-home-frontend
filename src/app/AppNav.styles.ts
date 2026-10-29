@@ -1,14 +1,10 @@
 import { css } from "@emotion/react";
+import { breakpoints } from "@/ui";
 
-// 768px 미만에서 화면 아래에 뜨는 메뉴 막대의 높이(버튼 40px + 안쪽 여백 6px×2 + 테두리 1px×2).
-// 관리자 메뉴 버튼도 같은 크기라 막대와 나란히 선다.
-const BAR_HEIGHT = "54px";
-
-// 768px 미만에서 본문과 '맨 위로' 버튼이 아래 메뉴 막대(바닥에서 10px)에 가리지 않도록 비우는 아래 여백
-export const NAV_BAR_SPACE = `calc(${BAR_HEIGHT} + 20px)`;
-
-// 768px 이상에서 관리자 메뉴 막대(오른쪽 12px + 너비 56px)와 본문 사이를 띄우는 오른쪽 여백
-export const ADMIN_NAV_SPACE = "76px";
+// 메뉴 높이·안전 여백은 본문과 스크롤 버튼에서도 같은 토큰을 쓴다.
+const BAR_HEIGHT = "var(--ui-nav-height)";
+export const NAV_BAR_SPACE = "var(--ui-nav-space)";
+export const ADMIN_NAV_SPACE = "var(--ui-nav-admin-space)";
 
 // 화면에서만 숨긴다. 스크린 리더에는 그대로 읽힌다
 const visuallyHidden = css`
@@ -25,10 +21,10 @@ const visuallyHidden = css`
 
 // 막대 겉모양(메뉴 막대, 관리자 메뉴 버튼). 뒤 내용이 살짝 비치도록 반투명 배경을 흐리게 깐다
 const surface = css`
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(12px);
-  border: 1px solid var(--ui-color-border-secondary);
-  box-shadow: var(--ui-shadow);
+  background: var(--ui-nav-bg);
+  backdrop-filter: blur(var(--ui-nav-blur));
+  border: var(--ui-border-width) solid var(--ui-color-border-secondary);
+  box-shadow: var(--ui-shadow-md);
 `;
 
 // 둥근 메뉴 막대. 스크롤해도 같은 자리에 있다.
@@ -43,16 +39,16 @@ export const styles = {
   // fit-content는 내용의 최소 너비보다 줄지 않으므로 max-width로 자리 안에 묶는다(넘치면 막대 안에서 민다)
   nav: css`
     position: fixed;
-    right: 10px;
-    bottom: calc(env(safe-area-inset-bottom) + 10px);
-    left: 10px;
-    z-index: 10;
+    right: var(--ui-nav-offset);
+    bottom: calc(env(safe-area-inset-bottom) + var(--ui-nav-offset));
+    left: var(--ui-nav-offset);
+    z-index: var(--ui-z-nav);
     display: flex;
     width: fit-content;
-    max-width: calc(100% - 20px);
+    max-width: calc(100% - 2 * var(--ui-nav-offset));
     margin: 0 auto;
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       position: sticky;
       top: 0;
       right: auto;
@@ -62,14 +58,14 @@ export const styles = {
       width: auto;
       max-width: none;
       margin: 0;
-      padding: var(--ui-space-3) 10px var(--ui-space-2);
+      padding: var(--ui-space-4) var(--ui-page-gutter) var(--ui-space-2);
     }
   `,
 
   // 768px 미만: 관리자 메뉴 버튼(오른쪽 10px + 너비 54px)과 10px 띄운다
   navBesideAdmin: css`
-    right: calc(${BAR_HEIGHT} + 20px);
-    max-width: calc(100% - ${BAR_HEIGHT} - 30px);
+    right: calc(${BAR_HEIGHT} + 2 * var(--ui-nav-offset));
+    max-width: calc(100% - ${BAR_HEIGHT} - 3 * var(--ui-nav-offset));
   `,
 
   list: css`
@@ -79,10 +75,10 @@ export const styles = {
     align-items: center;
     max-width: 100%;
     margin: 0;
-    padding: 6px;
+    padding: var(--ui-nav-padding);
     overflow-x: auto;
     list-style: none;
-    border-radius: 999px;
+    border-radius: var(--ui-radius-full);
     scrollbar-width: none;
 
     &::-webkit-scrollbar {
@@ -100,11 +96,11 @@ export const styles = {
   item: css`
     position: relative;
     display: flex;
-    gap: 6px;
+    gap: var(--ui-space-2);
     align-items: center;
     justify-content: center;
-    min-width: 40px;
-    height: 40px;
+    min-width: var(--ui-nav-item-size);
+    height: var(--ui-nav-item-size);
     padding: 0;
     font: inherit;
     color: var(--ui-color-text-secondary);
@@ -112,14 +108,14 @@ export const styles = {
     cursor: pointer;
     background: transparent;
     border: 0;
-    border-radius: 999px;
+    border-radius: var(--ui-radius-full);
     transition:
       color var(--ui-motion),
       background-color var(--ui-motion);
 
     &:hover {
       color: var(--ui-color-text);
-      background: var(--ui-color-bg-disabled);
+      background: var(--ui-color-bg-hover);
     }
 
     &:focus-visible {
@@ -128,16 +124,16 @@ export const styles = {
 
     &[aria-busy="true"] {
       cursor: progress;
-      opacity: 0.65;
+      opacity: var(--ui-opacity-busy);
     }
 
     &[aria-current="page"] {
-      font-weight: 600;
+      font-weight: var(--ui-font-weight-semibold);
       color: var(--ui-color-primary);
       background: var(--ui-color-primary-bg);
     }
 
-    @media (min-width: 1024px) {
+    @media (min-width: ${breakpoints.desktop}) {
       padding: 0 var(--ui-space-3);
     }
   `,
@@ -145,14 +141,14 @@ export const styles = {
   icon: css`
     display: inline-flex;
     flex: none;
-    font-size: 18px;
+    font-size: var(--ui-icon-size);
   `,
 
   // 1024px 이상에서만 보이는 이름. 긴 닉네임은 말줄임한다
   label: css`
     ${visuallyHidden}
 
-    @media (min-width: 1024px) {
+    @media (min-width: ${breakpoints.desktop}) {
       position: static;
       width: auto;
       max-width: 10em;
@@ -170,7 +166,7 @@ export const styles = {
   divider: css`
     flex: none;
     width: 1px;
-    height: 20px;
+    height: var(--ui-icon-size);
     margin: 0 var(--ui-space-1);
     background: var(--ui-color-border);
   `,
@@ -180,17 +176,17 @@ export const styles = {
   // - 768px 이상: 오른쪽 세로 가운데의 막대. 본문이 가리지 않도록 AppLayout이 ADMIN_NAV_SPACE만큼 오른쪽 여백을 둔다.
   adminNav: css`
     position: fixed;
-    right: 10px;
-    bottom: calc(env(safe-area-inset-bottom) + 10px);
-    z-index: 11;
+    right: var(--ui-nav-offset);
+    bottom: calc(env(safe-area-inset-bottom) + var(--ui-nav-offset));
+    z-index: var(--ui-z-nav-admin);
     display: flex;
     flex-direction: column-reverse;
     gap: var(--ui-space-2);
     align-items: flex-end;
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       top: 50%;
-      right: 12px;
+      right: var(--ui-nav-offset);
       bottom: auto;
       transform: translateY(-50%);
     }
@@ -214,7 +210,7 @@ export const styles = {
       color: var(--ui-color-primary);
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       display: none;
     }
   `,
@@ -224,7 +220,7 @@ export const styles = {
     flex-direction: column;
     align-items: stretch;
     overflow: visible;
-    border-radius: 27px;
+    border-radius: calc(var(--ui-nav-height) / 2);
 
     &:not([data-open]) {
       display: none;
@@ -236,7 +232,7 @@ export const styles = {
       padding: 0 var(--ui-space-3);
     }
 
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       &:not([data-open]) {
         display: flex;
       }
@@ -245,7 +241,7 @@ export const styles = {
 
   // 관리자 메뉴의 이름. 768px 미만(열린 메뉴)에서만 보인다
   adminLabel: css`
-    @media (min-width: 768px) {
+    @media (min-width: ${breakpoints.tablet}) {
       ${visuallyHidden}
     }
   `,

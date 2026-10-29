@@ -21,7 +21,7 @@ export function ExperiencePage() {
   const { data, isLoading } = useExperienceQuery();
 
   return (
-    <Stack vertical gap={10}>
+    <Stack vertical gap='var(--ui-space-3)'>
       <Title level={5}>레벨 별 경험치 입니다.</Title>
       <Text>현재 {WALNUT_MIN_LEVEL}렙 이상만 볼 수 있습니다.</Text>
       <Table

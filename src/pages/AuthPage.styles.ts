@@ -6,12 +6,10 @@ export const styles = {
   // 화면이 상자보다 낮으면 상자 높이만큼 늘어나 스크롤된다.
   // 입력·버튼은 다른 화면보다 크게 그린다.
   screen: css`
-    --ui-control-height: 40px;
-
     display: flex;
     flex: 1;
     align-items: center;
     justify-content: center;
-    padding-bottom: 64px;
+    padding: var(--ui-space-5) 0 var(--ui-space-9);
   `,
 };

@@ -2,8 +2,9 @@ import { DebounceInput } from "@/components/common/DebounceInput";
 import { Panel } from "@/components/common/Panel";
 import { CATEGORY_OPTIONS, TOOL_OPTIONS } from "@/domain/labels";
 import { ResultSearchState } from "@/domain/resultSearch";
+import { styles } from "./ResultSearchForm.styles";
 import { useState } from "react";
-import { Select, Stack } from "@/ui";
+import { Field, Select } from "@/ui";
 
 const ALL = "ALL";
 
@@ -27,44 +28,49 @@ export function ResultSearchForm({
 
   return (
     <Panel>
-      <Stack role='search' wrap gap={16} style={{ rowGap: 10 }}>
-        <DebounceInput
-          aria-label='물품명'
-          placeholder='물품명 입력'
-          allowClear
-          style={{ width: 200 }}
-          loading={loading}
-          value={name}
-          onChange={(value) => {
-            setTyped(value);
-            onSearch({ ...filter, name: value });
-          }}
-        />
-        <Select
-          aria-label='도구'
-          style={{ width: "120px" }}
-          value={filter.tool ?? ALL}
-          onChange={(value) =>
-            onSearch({ ...filter, tool: value === ALL ? undefined : value })
-          }
-          options={[{ value: ALL, label: "도구-전체" }, ...TOOL_OPTIONS]}
-        />
-        <Select
-          aria-label='카테고리'
-          style={{ width: "130px" }}
-          value={filter.category ?? ALL}
-          onChange={(value) =>
-            onSearch({
-              ...filter,
-              category: value === ALL ? undefined : value,
-            })
-          }
-          options={[
-            { value: ALL, label: "카테고리-전체" },
-            ...CATEGORY_OPTIONS,
-          ]}
-        />
-      </Stack>
+      <div role='search' css={styles.search}>
+        <div css={styles.name}>
+          <Field label='물품명'>
+            <DebounceInput
+              aria-label='물품명'
+              placeholder='물품명 입력'
+              allowClear
+              loading={loading}
+              value={name}
+              onChange={(value) => {
+                setTyped(value);
+                onSearch({ ...filter, name: value });
+              }}
+            />
+          </Field>
+        </div>
+        <Field label='도구'>
+          <Select
+            aria-label='도구'
+            value={filter.tool ?? ALL}
+            onChange={(value) =>
+              onSearch({ ...filter, tool: value === ALL ? undefined : value })
+            }
+            options={[{ value: ALL, label: "도구-전체" }, ...TOOL_OPTIONS]}
+          />
+        </Field>
+        <Field label='카테고리'>
+          <Select
+            aria-label='카테고리'
+            value={filter.category ?? ALL}
+            onChange={(value) =>
+              onSearch({
+                ...filter,
+                category: value === ALL ? undefined : value,
+              })
+            }
+            options={[
+              { value: ALL, label: "카테고리-전체" },
+              ...CATEGORY_OPTIONS,
+            ]}
+          />
+        </Field>
+      </div>
     </Panel>
   );
 }

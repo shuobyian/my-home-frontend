@@ -36,9 +36,13 @@ export function CartEntryList({
                 : undefined,
           }}
         >
-          <Stack gap={16} align='flex-start'>
+          <Stack gap='var(--ui-space-4)' align='flex-start'>
             <ItemImage name={entry.item.name} />
-            <Stack vertical gap={4} style={{ flex: 1, minWidth: 0 }}>
+            <Stack
+              vertical
+              gap='var(--ui-space-1)'
+              style={{ flex: 1, minWidth: 0 }}
+            >
               <Text strong>{entry.item.name}</Text>
               {renderDescription(entry)}
             </Stack>

@@ -1,22 +1,15 @@
 import { CSSProperties, ReactNode } from "react";
+import { styles } from "./Panel.styles";
 
 interface PanelProps {
   children: ReactNode;
   style?: CSSProperties;
 }
 
-// 검색창·결과 묶음 등에 쓰는 테두리 상자(여러 화면에 같은 인라인 스타일이 반복되던 것을 통일)
+// 검색창·결과 묶음 등에 쓰는 공통 패널
 export function Panel({ children, style }: PanelProps) {
   return (
-    <div
-      style={{
-        padding: 10,
-        border: "1px solid var(--ui-color-border-secondary)",
-        borderRadius: "var(--ui-radius-xl)",
-        background: "var(--ui-color-bg-container)",
-        ...style,
-      }}
-    >
+    <div css={styles.panel} style={style}>
       {children}
     </div>
   );

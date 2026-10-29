@@ -15,15 +15,20 @@ export function AppLayout() {
 
   return (
     <div css={styles.layout}>
+      <a href='#main-content' css={styles.skipLink}>
+        본문으로 건너뛰기
+      </a>
       <AppNav />
       <div css={[styles.content, user?.isAdmin && styles.adminSpace]}>
         <AppHeader />
-        <RouteErrorBoundary>
-          {/* 지연 로딩하는 화면(관리)의 코드를 받는 동안 표시. 받기 실패 시 ErrorBoundary가 새로고침을 안내한다 */}
-          <Suspense fallback={<Spin />}>
-            <Outlet />
-          </Suspense>
-        </RouteErrorBoundary>
+        <main id='main-content' tabIndex={-1} css={styles.main}>
+          <RouteErrorBoundary>
+            {/* 지연 로딩하는 화면(관리)의 코드를 받는 동안 표시. 받기 실패 시 ErrorBoundary가 새로고침을 안내한다 */}
+            <Suspense fallback={<Spin />}>
+              <Outlet />
+            </Suspense>
+          </RouteErrorBoundary>
+        </main>
         <footer css={styles.footer}>
           <Text tone='secondary'>제작자: 늘흰</Text>
         </footer>

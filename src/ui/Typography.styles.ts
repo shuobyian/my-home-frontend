@@ -3,33 +3,34 @@ import { css } from "@emotion/react";
 export const styles = {
   title: css`
     margin: 0 0 0.5em;
-    font-weight: 600;
+    font-weight: var(--ui-font-weight-semibold);
+    letter-spacing: -0.025em;
     color: var(--ui-color-text);
   `,
 
   h1: css`
-    font-size: 38px;
-    line-height: 1.2;
+    font-size: var(--ui-font-size-4xl);
+    line-height: var(--ui-line-height-tight);
   `,
 
   h2: css`
-    font-size: 30px;
-    line-height: 1.27;
+    font-size: var(--ui-font-size-3xl);
+    line-height: var(--ui-line-height-tight);
   `,
 
   h3: css`
-    font-size: 24px;
-    line-height: 1.33;
+    font-size: var(--ui-font-size-2xl);
+    line-height: var(--ui-line-height-heading);
   `,
 
   h4: css`
-    font-size: 20px;
-    line-height: 1.4;
+    font-size: var(--ui-font-size-xl);
+    line-height: var(--ui-line-height-heading);
   `,
 
   h5: css`
-    font-size: 16px;
-    line-height: 1.5;
+    font-size: var(--ui-font-size-md);
+    line-height: var(--ui-line-height-heading);
   `,
 
   paragraph: css`
@@ -37,7 +38,7 @@ export const styles = {
   `,
 
   strong: css`
-    font-weight: 600;
+    font-weight: var(--ui-font-weight-semibold);
   `,
 
   secondary: css`

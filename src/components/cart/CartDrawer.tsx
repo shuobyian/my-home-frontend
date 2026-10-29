@@ -39,7 +39,7 @@ export function CartDrawer({ scope, open, onClose }: CartDrawerProps) {
           flexDirection: "column",
           justifyContent: "space-between",
           height: "100%",
-          padding: "10px",
+          gap: "var(--ui-space-4)",
           overflow: "auto",
         }}
       >
@@ -52,12 +52,12 @@ export function CartDrawer({ scope, open, onClose }: CartDrawerProps) {
                 {CART_SOURCE_LABEL[source]} · 재료비{" "}
                 {formatGold(item.totalPrice)}
               </Text>
-              <Stack justify='space-between'>
+              <Stack justify='space-between' wrap>
                 <Stack>
                   <Button onClick={() => decrement(key)}>-</Button>
                   <NumberInput
                     aria-label={`${item.name} 수량`}
-                    style={{ width: 90 }}
+                    style={{ width: "calc(var(--ui-control-height) * 2)" }}
                     align='center'
                     value={count}
                     min={1}

@@ -5,13 +5,15 @@ import { useCart } from "@/state/cart";
 import { Button, CartIcon } from "@/ui";
 
 const countStyle: CSSProperties = {
-  minWidth: 20,
-  padding: "0 6px",
+  minWidth: "var(--ui-badge-size)",
+  padding: "0 var(--ui-space-1-5)",
   fontSize: "var(--ui-font-size-sm)",
-  lineHeight: "20px",
+  fontWeight: "var(--ui-font-weight-semibold)",
+  fontVariantNumeric: "tabular-nums",
+  lineHeight: "var(--ui-badge-size)",
   color: "var(--ui-color-text-inverse)",
-  background: "var(--ui-color-danger)",
-  borderRadius: 10,
+  background: "var(--ui-color-primary)",
+  borderRadius: "var(--ui-radius-full)",
 };
 
 // 장바구니 버튼. 담긴 수량을 버튼 안에 보여 주고 누르면 장바구니(서랍)를 연다.

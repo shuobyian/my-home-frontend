@@ -6,13 +6,13 @@ export const styles = {
     flex-direction: column;
     gap: var(--ui-space-2);
     align-items: center;
-    padding: var(--ui-space-4) 0;
+    padding: var(--ui-space-6) var(--ui-space-4);
     color: var(--ui-color-text-secondary);
     text-align: center;
   `,
 
   emptyImage: css`
-    font-size: 40px;
+    font-size: var(--ui-space-7);
     line-height: 1;
     color: var(--ui-color-border);
   `,
@@ -22,14 +22,14 @@ export const styles = {
     flex-direction: column;
     gap: var(--ui-space-2);
     align-items: center;
-    padding: 48px var(--ui-space-6);
+    padding: var(--ui-space-8) var(--ui-space-6);
     text-align: center;
   `,
 
   resultIcon: css`
     margin-bottom: var(--ui-space-4);
-    font-size: 72px;
-    font-weight: 700;
+    font-size: var(--ui-space-9);
+    font-weight: var(--ui-font-weight-bold);
     line-height: 1;
   `,
 
@@ -47,9 +47,9 @@ export const styles = {
 
   resultTitle: css`
     margin: 0;
-    font-size: 24px;
-    font-weight: 600;
-    line-height: 1.33;
+    font-size: var(--ui-font-size-2xl);
+    font-weight: var(--ui-font-weight-semibold);
+    line-height: var(--ui-line-height-heading);
   `,
 
   resultDescription: css`
@@ -70,7 +70,7 @@ export const styles = {
     align-items: flex-start;
     padding: var(--ui-space-2) var(--ui-space-3);
     background: var(--ui-color-error-bg);
-    border: 1px solid var(--ui-color-error-border);
+    border: var(--ui-border-width) solid var(--ui-color-error-border);
     border-radius: var(--ui-radius-lg);
   `,
 
@@ -88,6 +88,6 @@ export const styles = {
   // 설명이 있을 때 제목. 원래 .alertWithDescription .alertTitle이라 제목 요소에 같은 조건으로 붙인다
   alertTitleWithDescription: css`
     margin-bottom: var(--ui-space-1);
-    font-size: 16px;
+    font-size: var(--ui-font-size-md);
   `,
 };

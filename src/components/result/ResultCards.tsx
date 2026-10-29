@@ -28,66 +28,75 @@ export function ResultCards({
   const [detail, setDetail] = useState<Result>();
 
   return (
-    <Spin spinning={loading}>
-      {contents.length === 0 ? (
-        // 불러오는 동안에는 '데이터 없음'을 숨기고 회전 표시가 놓일 자리만 남긴다
-        <div style={loading ? { visibility: "hidden" } : undefined}>
-          <Empty />
-        </div>
-      ) : (
-        <ul aria-label='결과 목록' css={styles.grid}>
-          {contents.map((result) => (
-            <li key={result.id} css={styles.card}>
-              <ItemImage name={result.name} variant='cover' />
-              <div css={styles.body}>
-                <ResultCardBody result={result} owned={owned} />
-                <div css={styles.actions}>
-                  <Button
-                    aria-label={`${result.name} 상세`}
-                    aria-haspopup='dialog'
-                    onClick={() => setDetail(result)}
-                  >
-                    상세
-                  </Button>
-                  {onAdd && (
+    <section aria-label='제작 물품'>
+      <div css={styles.heading}>
+        <Title level={2}>제작 물품</Title>
+        <span css={styles.count}>
+          {loading ? "조회 중" : `${contents.length}개`}
+        </span>
+      </div>
+      <Spin spinning={loading}>
+        {contents.length === 0 ? (
+          // 불러오는 동안에는 '데이터 없음'을 숨기고 회전 표시가 놓일 자리만 남긴다
+          <div style={loading ? { visibility: "hidden" } : undefined}>
+            <Empty description='조건에 맞는 물품이 없습니다. 검색어와 필터를 확인해 주세요.' />
+          </div>
+        ) : (
+          <ul aria-label='결과 목록' css={styles.grid}>
+            {contents.map((result) => (
+              <li key={result.id} css={styles.card}>
+                <ItemImage name={result.name} variant='cover' />
+                <div css={styles.body}>
+                  <ResultCardBody result={result} owned={owned} />
+                  <div css={styles.actions}>
                     <Button
-                      icon={<CartIcon />}
-                      aria-label={`${result.name} 담기`}
-                      onClick={() => onAdd(result)}
+                      aria-label={`${result.name} 상세`}
+                      aria-haspopup='dialog'
+                      onClick={() => setDetail(result)}
                     >
-                      담기
+                      상세
                     </Button>
-                  )}
+                    {onAdd && (
+                      <Button
+                        css={styles.add}
+                        icon={<CartIcon />}
+                        aria-label={`${result.name} 담기`}
+                        onClick={() => onAdd(result)}
+                      >
+                        담기
+                      </Button>
+                    )}
+                  </div>
                 </div>
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
-      <Modal
-        open={!!detail}
-        title={detail?.name}
-        width={1040}
-        onClose={() => setDetail(undefined)}
-        footer={
-          detail &&
-          onAdd && (
-            <Button
-              variant='primary'
-              icon={<CartIcon />}
-              onClick={() => {
-                onAdd(detail);
-                setDetail(undefined);
-              }}
-            >
-              장바구니에 담기
-            </Button>
-          )
-        }
-      >
-        {detail && <ResultDetail result={detail} owned={owned} />}
-      </Modal>
-    </Spin>
+              </li>
+            ))}
+          </ul>
+        )}
+        <Modal
+          open={!!detail}
+          title={detail?.name}
+          width={1040}
+          onClose={() => setDetail(undefined)}
+          footer={
+            detail &&
+            onAdd && (
+              <Button
+                variant='primary'
+                icon={<CartIcon />}
+                onClick={() => {
+                  onAdd(detail);
+                  setDetail(undefined);
+                }}
+              >
+                장바구니에 담기
+              </Button>
+            )
+          }
+        >
+          {detail && <ResultDetail result={detail} owned={owned} />}
+        </Modal>
+      </Spin>
+    </section>
   );
 }
 
@@ -103,7 +112,7 @@ function ResultCardBody({ result, owned }: ResultCardBodyProps) {
   return (
     <>
       <div>
-        <Title level={5} style={{ margin: 0 }}>
+        <Title level={3} css={styles.name}>
           {result.name}
         </Title>
         <Text tone='secondary'>

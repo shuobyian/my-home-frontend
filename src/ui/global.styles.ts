@@ -1,7 +1,8 @@
 import { css } from "@emotion/react";
+import { tokenDeclarations } from "./tokens";
 
 // UIProvider가 <Global>로 한 번 넣는다.
-// - :root: 디자인 토큰. 컴포넌트와 화면은 값 대신 이 변수를 쓴다.
+// - :root: tokens.ts의 디자인 토큰. 컴포넌트와 화면은 값 대신 이 변수를 쓴다.
 //   상태 글자색(success·warning·danger·info)은 흰 배경과 4.5:1 이상 대비가 나는 값이다.
 //   bg-layout을 바꾸면 index.html의 첫 화면 색도 바꾼다.
 // - a: 기본 파란 밑줄 대신 주 색으로
@@ -9,65 +10,7 @@ import { css } from "@emotion/react";
 // - .ui-sr-only: 화면에서는 숨기고 스크린 리더에는 읽힌다
 export const globalStyles = css`
   :root {
-    --ui-color-primary: #5c3572;
-    --ui-color-primary-hover: #75508a;
-    --ui-color-primary-active: #462657;
-    --ui-color-primary-bg: #f4eff7;
-
-    --ui-color-text: rgba(0, 0, 0, 0.88);
-    --ui-color-text-secondary: rgba(0, 0, 0, 0.65);
-    --ui-color-text-placeholder: rgba(0, 0, 0, 0.4);
-    --ui-color-text-disabled: rgba(0, 0, 0, 0.25);
-    --ui-color-text-inverse: #fff;
-
-    --ui-color-success: #237804;
-    --ui-color-warning: #ad6800;
-    --ui-color-danger: #cf1322;
-    --ui-color-danger-hover: #f5222d;
-    --ui-color-info: #0958d9;
-    --ui-color-error-bg: #fff2f0;
-    --ui-color-error-border: #ffccc7;
-    --ui-color-warning-bg: #fffbe6;
-
-    --ui-color-bg-container: #fff;
-    --ui-color-bg-layout: #f5f5f5;
-    --ui-color-bg-disabled: rgba(0, 0, 0, 0.04);
-    --ui-color-fill-alter: #fafafa;
-    --ui-color-border: #d9d9d9;
-    --ui-color-border-secondary: #f0f0f0;
-    --ui-color-mask: rgba(0, 0, 0, 0.45);
-
-    --ui-space-1: 4px;
-    --ui-space-2: 8px;
-    --ui-space-3: 12px;
-    --ui-space-4: 16px;
-    --ui-space-5: 24px;
-    --ui-space-6: 32px;
-
-    --ui-radius-sm: 4px;
-    --ui-radius: 6px;
-    --ui-radius-lg: 8px;
-    --ui-radius-xl: 10px;
-
-    --ui-font-family:
-      -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-      "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", "Helvetica Neue",
-      Arial, sans-serif;
-    --ui-font-family-code:
-      source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
-    --ui-font-size: 14px;
-    --ui-font-size-sm: 12px;
-    --ui-line-height: 1.5715;
-
-    --ui-control-height: 32px;
-    --ui-focus-ring: 0 0 0 2px rgba(92, 53, 114, 0.2);
-
-    --ui-shadow:
-      0 6px 16px rgba(0, 0, 0, 0.08), 0 3px 6px -4px rgba(0, 0, 0, 0.12),
-      0 9px 28px 8px rgba(0, 0, 0, 0.05);
-    --ui-z-overlay: 1000;
-    --ui-z-toast: 1100;
-    --ui-motion: 0.2s ease;
+    ${tokenDeclarations}
   }
 
   *,
@@ -115,8 +58,8 @@ export const globalStyles = css`
   }
 
   :focus-visible {
-    outline: 2px solid var(--ui-color-primary);
-    outline-offset: 2px;
+    outline: var(--ui-focus-width) solid var(--ui-color-primary);
+    outline-offset: var(--ui-focus-width);
   }
 
   .ui-sr-only {

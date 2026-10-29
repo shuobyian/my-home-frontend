@@ -1,19 +1,19 @@
 import { css } from "@emotion/react";
 
 export const styles = {
-  // 목록용 40px 원형
+  // 목록용 원형 이미지
   avatar: css`
     display: inline-flex;
     flex: none;
     align-items: center;
     justify-content: center;
-    width: 40px;
-    height: 40px;
+    width: var(--ui-avatar-size);
+    height: var(--ui-avatar-size);
     overflow: hidden;
-    font-size: 24px;
+    font-size: var(--ui-icon-size-lg);
     color: var(--ui-color-text-inverse);
     vertical-align: middle;
-    border-radius: 50%;
+    border-radius: var(--ui-radius-full);
 
     & img {
       display: block;
@@ -33,7 +33,7 @@ export const styles = {
     width: 100%;
     aspect-ratio: 3 / 2;
     overflow: hidden;
-    font-size: 64px;
+    font-size: var(--ui-cover-icon-size);
     color: var(--ui-color-text-inverse);
 
     & img {
@@ -47,7 +47,8 @@ export const styles = {
 
   // 사진을 불러오지 못했을 때. avatar·cover 뒤에 둔다
   fallback: css`
-    background: var(--ui-color-text-disabled);
+    color: var(--ui-color-primary);
+    background: var(--ui-color-primary-bg);
   `,
 
   // 좁은 화면에서는 칸 폭에 맞춰 줄어든다

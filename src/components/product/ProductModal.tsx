@@ -429,7 +429,7 @@ export function ProductModal({
           </div>
         </div>
         {newMarketNames.length > 0 && (
-          <Stack vertical gap={4}>
+          <Stack vertical gap='var(--ui-space-1)'>
             <Text strong>시세에 없는 새 재료</Text>
             <Text tone='secondary'>
               오타가 아니라 새 재료라면 시세를 입력하세요. 저장할 때 시세에 함께

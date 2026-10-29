@@ -13,7 +13,7 @@ import fs from "node:fs";
 import globals from "globals";
 import tseslint from "typescript-eslint";
 
-const TEST_FILES = ["src/**/*.test.{ts,tsx}", "src/test/**"];
+const TEST_FILES = ["src/**/*.test.{ts,tsx}", "src/test/**", "tests/**"];
 
 // 레이어 경계(README의 폴더 구조 참고). 화면 → 서버 상태 → API 순으로만 의존한다.
 

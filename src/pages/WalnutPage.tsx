@@ -37,7 +37,7 @@ export function WalnutPage() {
   };
 
   return (
-    <Stack vertical gap={24}>
+    <Stack vertical gap='var(--ui-space-5)'>
       <WalnutGuide
         action={
           <Button onClick={() => navigate(ROUTES.EXPERIENCE)}>

@@ -35,8 +35,8 @@ export const styles = {
   `,
 
   label: css`
-    padding-bottom: 6px;
-    font-weight: 500;
+    padding-bottom: var(--ui-space-1-5);
+    font-weight: var(--ui-font-weight-medium);
   `,
 
   // inlineField 안에서 label 뒤에 둔다. 짧은 라벨(별표 포함 두세 글자)끼리는 컨트롤 왼쪽 끝이 맞도록 최소 폭을 준다
@@ -69,10 +69,10 @@ export const styles = {
     align-items: center;
     width: 100%;
     height: var(--ui-control-height);
-    padding: 0 11px;
+    padding: 0 var(--ui-control-padding-x);
     color: var(--ui-color-text);
     background: var(--ui-color-bg-container);
-    border: 1px solid var(--ui-color-border);
+    border: var(--ui-border-width) solid var(--ui-color-border);
     border-radius: var(--ui-radius);
     transition:
       border-color var(--ui-motion),
@@ -124,7 +124,7 @@ export const styles = {
   textArea: css`
     display: block;
     height: auto;
-    padding: 4px 11px;
+    padding: var(--ui-space-2) var(--ui-control-padding-x);
     resize: vertical;
 
     &:focus {
@@ -149,15 +149,19 @@ export const styles = {
     flex: none;
     align-items: center;
     justify-content: center;
+    width: var(--ui-space-6);
+    height: var(--ui-space-6);
     padding: 0;
     margin-left: var(--ui-space-1);
     color: var(--ui-color-text-secondary);
     cursor: pointer;
     background: none;
     border: 0;
+    border-radius: var(--ui-radius-sm);
 
     &:hover {
       color: var(--ui-color-text);
+      background: var(--ui-color-bg-hover);
     }
 
     &:disabled {
@@ -207,10 +211,10 @@ export const styles = {
     display: flex;
     flex: none;
     align-items: center;
-    padding: 0 11px;
+    padding: 0 var(--ui-control-padding-x);
     white-space: nowrap;
     background: var(--ui-color-fill-alter);
-    border: 1px solid var(--ui-color-border);
+    border: var(--ui-border-width) solid var(--ui-color-border);
     border-left: 0;
     border-radius: 0 var(--ui-radius) var(--ui-radius) 0;
   `,
@@ -220,13 +224,15 @@ export const styles = {
     display: block;
     width: 100%;
     height: var(--ui-control-height);
-    padding: 0 30px 0 11px;
+    padding: 0 calc(var(--ui-control-padding-x) * 2 + var(--ui-icon-size-sm)) 0
+      var(--ui-control-padding-x);
     color: var(--ui-color-text);
     cursor: pointer;
     background: var(--ui-color-bg-container)
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-opacity='.45' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
-      no-repeat right 11px center / 12px 12px;
-    border: 1px solid var(--ui-color-border);
+      no-repeat right var(--ui-control-padding-x) center /
+      var(--ui-icon-size-sm) var(--ui-icon-size-sm);
+    border: var(--ui-border-width) solid var(--ui-color-border);
     border-radius: var(--ui-radius);
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -270,7 +276,7 @@ export const styles = {
   segmented: css`
     display: inline-flex;
     max-width: 100%;
-    padding: 2px;
+    padding: var(--ui-space-0-5);
     vertical-align: top;
     background: var(--ui-color-bg-layout);
     border-radius: var(--ui-radius);
@@ -278,7 +284,7 @@ export const styles = {
 
   // invalid와 함께 붙는다
   segmentedInvalid: css`
-    box-shadow: inset 0 0 0 1px var(--ui-color-danger);
+    box-shadow: inset 0 0 0 var(--ui-border-width) var(--ui-color-danger);
   `,
 
   // selected·segmentDisabled는 이 뒤에 둔다.
@@ -300,8 +306,8 @@ export const styles = {
     }
 
     & > input:focus + span {
-      outline: 2px solid var(--ui-color-primary);
-      outline-offset: 1px;
+      outline: var(--ui-focus-width) solid var(--ui-color-primary);
+      outline-offset: var(--ui-border-width);
     }
 
     & > input:focus:not(:focus-visible) + span {
@@ -312,18 +318,16 @@ export const styles = {
   segmentLabel: css`
     display: flex;
     align-items: center;
-    min-height: 28px;
-    padding: 0 11px;
+    min-height: calc(var(--ui-control-height) - var(--ui-space-0-5) * 2);
+    padding: 0 var(--ui-control-padding-x);
+    font-weight: var(--ui-font-weight-medium);
     border-radius: inherit;
   `,
 
   selected: css`
     color: var(--ui-color-text);
     background: var(--ui-color-bg-container);
-    box-shadow:
-      0 1px 2px rgba(0, 0, 0, 0.03),
-      0 1px 6px -1px rgba(0, 0, 0, 0.02),
-      0 2px 4px rgba(0, 0, 0, 0.02);
+    box-shadow: var(--ui-shadow-segmented);
   `,
 
   segmentDisabled: css`

@@ -55,10 +55,13 @@ function ProfileForm({ user }: { user: User }) {
 
   return (
     <Panel style={{ maxWidth: 480, padding: "var(--ui-space-5)" }}>
-      <Stack gap={16} style={{ marginBottom: "var(--ui-space-5)" }}>
+      <Stack
+        gap='var(--ui-space-4)'
+        style={{ marginBottom: "var(--ui-space-5)" }}
+      >
         <Avatar name={user.nickname} size={56} />
         <Stack vertical gap={0} style={{ minWidth: 0 }}>
-          <Text strong style={{ fontSize: 18 }}>
+          <Text strong style={{ fontSize: "var(--ui-font-size-lg)" }}>
             {user.nickname}
           </Text>
           <Text tone='secondary'>

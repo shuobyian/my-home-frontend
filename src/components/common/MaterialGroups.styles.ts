@@ -6,20 +6,21 @@ import { css } from "@emotion/react";
 // 입력칸마다 테두리가 있어 카드에는 상자를 두지 않고, 묶음마다 흰 바탕과 테두리로 구분한다
 export const styles = {
   columns: css`
-    column-width: 180px;
-    column-gap: var(--ui-space-3);
+    column-width: var(--ui-material-column-width);
+    column-gap: var(--ui-space-4);
   `,
 
   column: css`
     break-inside: avoid;
-    margin-bottom: var(--ui-space-3);
+    margin-bottom: var(--ui-space-4);
     display: flex;
     flex-direction: column;
     gap: var(--ui-space-3);
     padding: var(--ui-space-4);
     background: var(--ui-color-bg-container);
-    border: 1px solid var(--ui-color-border);
+    border: 1px solid var(--ui-color-border-secondary);
     border-radius: var(--ui-radius-lg);
+    box-shadow: var(--ui-shadow-sm);
   `,
 
   list: css`

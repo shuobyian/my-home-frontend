@@ -1,4 +1,5 @@
 import { css } from "@emotion/react";
+import { breakpoints } from "@/ui";
 import { NAV_BAR_SPACE } from "./AppNav.styles";
 
 export const styles = {
@@ -6,18 +7,18 @@ export const styles = {
   // 768px 미만은 아래 메뉴 막대(관리자는 그 옆의 관리자 메뉴 버튼) 위에 뜬다.
   button: css`
     position: fixed;
-    right: 16px;
+    right: var(--ui-page-gutter);
     bottom: calc(env(safe-area-inset-bottom) + ${NAV_BAR_SPACE});
-    z-index: 10;
-    width: 44px;
-    height: 44px;
-    font-size: 20px;
+    z-index: var(--ui-z-nav);
+    width: var(--ui-nav-item-size);
+    height: var(--ui-nav-item-size);
+    font-size: var(--ui-icon-size);
     border-radius: 50%;
-    box-shadow: var(--ui-shadow);
+    box-shadow: var(--ui-shadow-md);
 
-    @media (min-width: 768px) {
-      right: 24px;
-      bottom: 24px;
+    @media (min-width: ${breakpoints.tablet}) {
+      right: var(--ui-space-5);
+      bottom: var(--ui-space-5);
     }
   `,
 };
