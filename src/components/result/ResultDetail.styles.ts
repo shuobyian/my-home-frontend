@@ -14,6 +14,7 @@ export const styles = {
 
     & > dd {
       margin: 0;
+      font-variant-numeric: tabular-nums;
     }
   `,
 
@@ -42,7 +43,7 @@ export const styles = {
   material: css`
     padding: 0 var(--ui-space-2);
     font-size: var(--ui-font-size-sm);
-    line-height: 22px;
+    line-height: calc(var(--ui-badge-size) + var(--ui-space-1));
     color: var(--ui-color-primary);
     background: var(--ui-color-primary-bg);
     border-radius: var(--ui-radius-sm);

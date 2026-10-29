@@ -9,14 +9,15 @@ export const styles = {
     align-items: center;
     justify-content: center;
     height: var(--ui-control-height);
-    padding: 0 15px;
+    padding: 0 var(--ui-button-padding-x);
+    font-weight: var(--ui-font-weight-medium);
     line-height: 1;
     color: var(--ui-color-text);
     white-space: nowrap;
     cursor: pointer;
     user-select: none;
     background: var(--ui-color-bg-container);
-    border: 1px solid var(--ui-color-border);
+    border: var(--ui-border-width) solid var(--ui-color-border);
     border-radius: var(--ui-radius);
     transition:
       color var(--ui-motion),
@@ -25,7 +26,7 @@ export const styles = {
 
     &[aria-busy="true"] {
       cursor: progress;
-      opacity: 0.65;
+      opacity: var(--ui-opacity-busy);
     }
 
     &:disabled {
@@ -39,6 +40,7 @@ export const styles = {
   default: css`
     &:hover:not(:disabled) {
       color: var(--ui-color-primary-hover);
+      background: var(--ui-color-bg-hover);
       border-color: var(--ui-color-primary-hover);
     }
 
@@ -82,6 +84,11 @@ export const styles = {
     &:hover:not(:disabled) {
       color: var(--ui-color-text-inverse);
       background: var(--ui-color-danger-hover);
+    }
+
+    &:active:not(:disabled) {
+      background: var(--ui-color-danger-hover);
+      border-color: var(--ui-color-danger-hover);
     }
   `,
 

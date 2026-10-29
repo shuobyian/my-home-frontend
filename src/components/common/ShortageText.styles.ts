@@ -5,6 +5,7 @@ export const styles = {
   shortage: css`
     font-size: var(--ui-font-size-sm);
     font-weight: normal;
+    font-variant-numeric: tabular-nums;
     color: var(--ui-color-text-secondary);
     white-space: nowrap;
   `,

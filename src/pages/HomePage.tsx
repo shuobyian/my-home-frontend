@@ -40,7 +40,7 @@ export function HomePage() {
   };
 
   return (
-    <Stack vertical>
+    <Stack vertical gap='var(--ui-page-gap)'>
       <Guide
         title='물품 이름으로 기초 재료를 찾아볼 수 있습니다.'
         action={<CartButton scope='home' />}

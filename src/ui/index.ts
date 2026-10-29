@@ -27,6 +27,8 @@ export type {
   TableSelection,
 } from "./Table";
 export { Paragraph, Text, Title } from "./Typography";
+export { breakpoints, designTokens } from "./tokens";
+export type { DesignTokenName } from "./tokens";
 export { UIProvider, useDialogs, useToast } from "./UIProvider";
 export { useForm } from "./useForm";
 export type { FormErrors } from "./useForm";

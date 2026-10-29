@@ -4,13 +4,17 @@ export const styles = {
   // 넓으면 두 칸, 좁으면 한 칸으로 쌓는다
   sections: css`
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    grid-template-columns: repeat(
+      auto-fit,
+      minmax(min(100%, var(--ui-card-min-width)), 1fr)
+    );
     gap: var(--ui-space-3);
   `,
 
   section: css`
-    padding: var(--ui-space-3);
+    padding: var(--ui-space-4);
     background: var(--ui-color-bg-container);
+    border: 1px solid var(--ui-color-border-secondary);
     border-radius: var(--ui-radius-lg);
   `,
 
@@ -46,12 +50,12 @@ export const styles = {
   chip: css`
     padding: 0 var(--ui-space-2);
     font-size: var(--ui-font-size-sm);
-    font-weight: 600;
-    line-height: 22px;
+    font-weight: var(--ui-font-weight-semibold);
+    line-height: calc(var(--ui-badge-size) + var(--ui-space-1));
     color: var(--ui-color-primary);
     white-space: nowrap;
     background: var(--ui-color-primary-bg);
-    border-radius: 999px;
+    border-radius: var(--ui-radius-full);
   `,
 
   link: css`
@@ -59,6 +63,6 @@ export const styles = {
     gap: var(--ui-space-1);
     align-items: center;
     align-self: flex-start;
-    font-weight: 600;
+    font-weight: var(--ui-font-weight-semibold);
   `,
 };

@@ -122,10 +122,10 @@ Vercel 무료(Hobby) 플랜에 올립니다. 설정은 `vercel.json`에 있습�
 
 ## 디자인 시스템 (`src/ui/`)
 
-UI 라이브러리 없이 앱에 필요한 컴포넌트만 직접 만들어 씁니다. 설계와 결정 근거는 [`claudedocs/design-system-plan.md`](claudedocs/design-system-plan.md)에 있습니다.
+UI 라이브러리 없이 앱에 필요한 컴포넌트만 직접 만들어 씁니다. 현재 토큰과 사용법은 [`claudedocs/design-system.md`](claudedocs/design-system.md), 초기 설계 근거는 [`claudedocs/design-system-plan.md`](claudedocs/design-system-plan.md)에 있습니다.
 
 - 화면 코드는 `import { Button, Table, useToast } from "@/ui"`처럼 배럴에서만 가져옵니다.
-- 색·간격·모서리 등은 `src/ui/global.styles.ts`의 CSS 변수(`var(--ui-color-primary)` 등)로 쓰고, 값을 직접 적지 않습니다.
+- 색·간격·모서리·글자·컨트롤·그림자·모션은 `src/ui/tokens.ts`에서 정의하고 `global.styles.ts`가 CSS 변수로 적용합니다. 화면은 `var(--ui-color-primary)` 같은 의미·컴포넌트 토큰을 쓰며, `Stack`의 `gap`도 CSS 변수를 받습니다.
 - 스타일은 emotion의 css prop으로 씁니다. `<Name>.styles.ts`에 `` css`...` ``로 두고 `css={[styles.a, cond && styles.b]}`처럼 조합합니다. 배열은 클래스 하나로 합쳐져 뒤 항목이 이기지만, 최상위 선언은 앞 항목의 `&:hover`·`@media` 같은 중첩 규칙을 이기지 못합니다. 템플릿 안의 `/* */` 주석은 번들에 그대로 남으므로, 주석은 템플릿 밖에 `//`로 답니다.
 - 앱 최상단의 `UIProvider`가 토스트(`useToast`)와 확인 대화상자(`useDialogs`)를 제공합니다. 이 훅을 쓰는 컴포넌트를 테스트할 때는 `<UIProvider>`로 감쌉니다.
 - 폼은 `useForm`(값·검증) + `Field`(라벨·도움말·오류 연결) + 입력 컴포넌트로 만듭니다.

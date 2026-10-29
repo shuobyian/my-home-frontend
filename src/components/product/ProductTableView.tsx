@@ -108,7 +108,7 @@ export function ProductTableView({
         {toolbarExtra}
       </Stack>
       <hr />
-      <Stack vertical gap={10}>
+      <Stack vertical gap='var(--ui-space-3)'>
         {onSearch && (
           <SearchBar
             placeholder='물품 이름'

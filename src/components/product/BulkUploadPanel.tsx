@@ -44,7 +44,7 @@ function Section({
   children?: ReactNode;
 }) {
   return (
-    <Stack vertical gap={4}>
+    <Stack vertical gap='var(--ui-space-1)'>
       <Stack wrap>
         <Text tone={tone}>{title}</Text>
         {action}
@@ -101,7 +101,7 @@ export function BulkUploadPanel({
 
   return (
     <Panel>
-      <Stack vertical gap={10}>
+      <Stack vertical gap='var(--ui-space-3)'>
         <Text strong>추가할 새 물품 {formatNumber(toAdd.length)}개</Text>
         {missingMarkets.length > 0 && (
           <Section

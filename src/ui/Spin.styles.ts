@@ -13,15 +13,15 @@ export const styles = {
     width: 1em;
     height: 1em;
     vertical-align: -0.125em;
-    border: 2px solid currentColor;
+    border: var(--ui-focus-width) solid currentColor;
     border-right-color: transparent;
-    border-radius: 50%;
+    border-radius: var(--ui-radius-full);
     animation: ${spin} 0.75s linear infinite;
   `,
 
   // spinner 뒤에 합쳐져야 border-width가 이긴다
   large: css`
-    font-size: 32px;
+    font-size: var(--ui-space-6);
     color: var(--ui-color-primary);
     border-width: 3px;
   `,
@@ -29,7 +29,7 @@ export const styles = {
   standalone: css`
     display: flex;
     justify-content: center;
-    padding: 40px 0;
+    padding: var(--ui-space-7) 0;
   `,
 
   container: css`
@@ -56,15 +56,15 @@ export const styles = {
   `,
 
   // 내용이 화면보다 길어도 보이는 곳의 세로 가운데에 머문다(내용 영역 밖으로는 나가지 않는다).
-  // 28px은 지름(회전 표시 32px + 안쪽 여백)의 절반
+  // 회전 표시와 안쪽 여백을 합친 높이의 절반을 화면 가운데에서 뺀다
   floating: css`
     position: sticky;
-    top: calc(50% - 28px);
-    bottom: calc(50% - 28px);
+    top: calc(50% - var(--ui-space-6) / 2 - var(--ui-space-3));
+    bottom: calc(50% - var(--ui-space-6) / 2 - var(--ui-space-3));
     display: flex;
-    padding: 12px;
+    padding: var(--ui-space-3);
     background: var(--ui-color-bg-container);
-    border-radius: 50%;
-    box-shadow: var(--ui-shadow);
+    border-radius: var(--ui-radius-full);
+    box-shadow: var(--ui-shadow-md);
   `,
 };

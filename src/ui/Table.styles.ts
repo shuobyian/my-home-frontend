@@ -4,6 +4,7 @@ export const styles = {
   scroll: css`
     overflow-x: auto;
     background: var(--ui-color-bg-container);
+    border: var(--ui-border-width) solid var(--ui-color-border-secondary);
     border-radius: var(--ui-radius-lg);
   `,
 
@@ -19,12 +20,14 @@ export const styles = {
       padding: var(--ui-space-4);
       text-align: left;
       overflow-wrap: break-word;
-      border-bottom: 1px solid var(--ui-color-border-secondary);
+      border-bottom: var(--ui-border-width) solid
+        var(--ui-color-border-secondary);
     }
 
     & > thead > tr > th {
-      font-weight: 600;
-      background: var(--ui-color-fill-alter);
+      font-weight: var(--ui-font-weight-semibold);
+      color: var(--ui-color-text-secondary);
+      background: var(--ui-color-bg-hover);
     }
   `,
 
@@ -69,26 +72,26 @@ export const styles = {
 
     &:focus-visible > td {
       box-shadow:
-        inset 0 2px var(--ui-color-primary),
-        inset 0 -2px var(--ui-color-primary);
+        inset 0 var(--ui-focus-width) var(--ui-color-primary),
+        inset 0 calc(-1 * var(--ui-focus-width)) var(--ui-color-primary);
     }
 
     &:focus-visible > td:first-child {
       box-shadow:
-        inset 2px 0 var(--ui-color-primary),
-        inset 0 2px var(--ui-color-primary),
-        inset 0 -2px var(--ui-color-primary);
+        inset var(--ui-focus-width) 0 var(--ui-color-primary),
+        inset 0 var(--ui-focus-width) var(--ui-color-primary),
+        inset 0 calc(-1 * var(--ui-focus-width)) var(--ui-color-primary);
     }
 
     &:focus-visible > td:last-child {
       box-shadow:
-        inset -2px 0 var(--ui-color-primary),
-        inset 0 2px var(--ui-color-primary),
-        inset 0 -2px var(--ui-color-primary);
+        inset calc(-1 * var(--ui-focus-width)) 0 var(--ui-color-primary),
+        inset 0 var(--ui-focus-width) var(--ui-color-primary),
+        inset 0 calc(-1 * var(--ui-focus-width)) var(--ui-color-primary);
     }
 
     &:focus-visible > td:only-child {
-      box-shadow: inset 0 0 0 2px var(--ui-color-primary);
+      box-shadow: inset 0 0 0 var(--ui-focus-width) var(--ui-color-primary);
     }
   `,
 
@@ -127,14 +130,14 @@ export const styles = {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    width: 18px;
-    height: 18px;
+    width: var(--ui-space-5);
+    height: var(--ui-space-5);
     padding: 0;
-    font-size: 12px;
+    font-size: var(--ui-font-size-sm);
     vertical-align: middle;
     cursor: pointer;
     background: var(--ui-color-bg-container);
-    border: 1px solid var(--ui-color-border);
+    border: var(--ui-border-width) solid var(--ui-color-border);
     border-radius: var(--ui-radius-sm);
     transition:
       color var(--ui-motion),
@@ -160,7 +163,7 @@ export const styles = {
   sortIcon: css`
     display: inline-flex;
     flex-direction: column;
-    font-size: 8px;
+    font-size: calc(var(--ui-icon-size-sm) / 2);
     line-height: 1.1;
     color: var(--ui-color-text-disabled);
   `,
@@ -184,19 +187,19 @@ export const styles = {
     justify-content: center;
     min-width: var(--ui-control-height);
     height: var(--ui-control-height);
-    padding: 0 6px;
+    padding: 0 var(--ui-space-1-5);
     cursor: pointer;
     background: transparent;
-    border: 1px solid transparent;
+    border: var(--ui-border-width) solid transparent;
     border-radius: var(--ui-radius);
     transition: background-color var(--ui-motion);
 
     &:hover:not(:disabled) {
-      background: var(--ui-color-bg-layout);
+      background: var(--ui-color-bg-hover);
     }
 
     &[aria-current="page"] {
-      font-weight: 600;
+      font-weight: var(--ui-font-weight-semibold);
       color: var(--ui-color-primary);
       background: var(--ui-color-bg-container);
       border-color: var(--ui-color-primary);

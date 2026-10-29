@@ -57,7 +57,7 @@ const columns: TableColumn<ProblemRow>[] = [
     key: "message",
     width: 400,
     render: ({ problem: { message, hint } }) => (
-      <Stack vertical gap={2}>
+      <Stack vertical gap='var(--ui-space-0-5)'>
         <span>{message}</span>
         {hint && <Text tone='secondary'>{hint}</Text>}
       </Stack>
@@ -82,7 +82,7 @@ export function ProblemTable({ problems, renderActions }: ProblemTableProps) {
           key: "actions",
           width: 220,
           render: ({ problem }: ProblemRow) => (
-            <Stack wrap gap={4}>
+            <Stack wrap gap='var(--ui-space-1)'>
               {renderActions(problem)}
             </Stack>
           ),

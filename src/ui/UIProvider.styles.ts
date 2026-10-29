@@ -3,7 +3,7 @@ import { css, keyframes } from "@emotion/react";
 const toastIn = keyframes`
   from {
     opacity: 0;
-    transform: translateY(-8px);
+    transform: translateY(calc(-1 * var(--ui-space-2)));
   }
 `;
 
@@ -26,10 +26,13 @@ export const styles = {
     display: flex;
     align-items: center;
     max-width: 100%;
-    padding: 9px var(--ui-space-3);
+    gap: var(--ui-space-2);
+    min-height: var(--ui-control-height);
+    padding: var(--ui-space-3) var(--ui-space-4);
     background: var(--ui-color-bg-container);
+    border: var(--ui-border-width) solid var(--ui-color-border-secondary);
     border-radius: var(--ui-radius-lg);
-    box-shadow: var(--ui-shadow);
+    box-shadow: var(--ui-shadow-md);
     pointer-events: auto;
     animation: ${toastIn} var(--ui-motion);
   `,
@@ -37,7 +40,6 @@ export const styles = {
   icon: css`
     display: inline-flex;
     flex: none;
-    margin-right: var(--ui-space-2);
     vertical-align: -0.125em;
   `,
 

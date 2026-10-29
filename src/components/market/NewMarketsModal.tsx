@@ -124,7 +124,7 @@ export function NewMarketsModal({
           저장하면 이 재료를 쓰는 물품의 결과도 새 시세로 계산됩니다.
         </Text>
         {values.rows.map((row, index) => (
-          <Stack key={row.original} vertical gap={4}>
+          <Stack key={row.original} vertical gap='var(--ui-space-1)'>
             <FieldRow>
               <Field
                 label={`${row.original} 이름`}

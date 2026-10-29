@@ -19,7 +19,7 @@ export function Guide({ title, action, steps, children }: GuideProps) {
       <span css={styles.icon}>
         <InfoIcon />
       </span>
-      <Title level={4} css={styles.title}>
+      <Title level={2} css={styles.title}>
         {title}
       </Title>
       {action && <div css={styles.action}>{action}</div>}

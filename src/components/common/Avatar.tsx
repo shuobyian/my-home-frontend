@@ -12,7 +12,7 @@ export function Avatar({ name, size }: { name: string; size: number }) {
         width: size,
         height: size,
         fontSize: size * 0.45,
-        fontWeight: 600,
+        fontWeight: "var(--ui-font-weight-semibold)",
         color: "var(--ui-color-text-inverse)",
         background: "var(--ui-color-primary)",
         borderRadius: "50%",

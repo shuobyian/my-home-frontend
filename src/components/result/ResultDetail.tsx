@@ -20,8 +20,8 @@ export function ResultDetail({ result, owned }: ResultDetailProps) {
   const lacking = owned ? sumShortagePrice(result.materials, owned) : 0;
 
   return (
-    <Stack gap={24} align='flex-start' wrap>
-      <Stack vertical gap={16} style={{ flex: "1 1 320px" }}>
+    <Stack gap='var(--ui-space-5)' align='flex-start' wrap>
+      <Stack vertical gap='var(--ui-space-4)' style={{ flex: "1 1 320px" }}>
         <ItemImage name={result.name} variant='detail' />
         <dl css={styles.info}>
           <dt>{requiresAffinity(result) ? "필요 미미 호감도" : "필요 레벨"}</dt>
