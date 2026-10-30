@@ -2,6 +2,8 @@ import { ROUTES } from "@/app/routes";
 import {
   BackpackIcon,
   BoxIcon,
+  FlagIcon,
+  HistoryIcon,
   HomeIcon,
   SlidersIcon,
   SpreadsheetIcon,
@@ -25,6 +27,8 @@ export const USER_MENU: readonly MenuItem[] = [
   { label: "홈", to: ROUTES.HOME, icon: <HomeIcon />, end: true },
   { label: "호두작", to: ROUTES.WALNUT, icon: <WalnutIcon /> },
   { label: "시세 조작 모드", to: ROUTES.FREE, icon: <SlidersIcon /> },
+  // 목록은 누구나 보고, 쓰기 화면은 로그인하지 않았으면 로그인으로 보낸다
+  { label: "제보 게시판", to: ROUTES.REPORT, icon: <FlagIcon /> },
 ];
 
 // 로그인한 회원에게만 보이는 메뉴(누구나 쓰는 메뉴 바로 아래). 화면은 로그인하지 않았으면 로그인으로 보낸다.
@@ -43,4 +47,5 @@ export const ADMIN_MENU: readonly MenuItem[] = [
   { label: "물품 리스트", to: ROUTES.MANAGE_PRODUCT, icon: <BoxIcon /> },
   { label: "시세 리스트", to: ROUTES.MANAGE_MARKET, icon: <TrendingUpIcon /> },
   { label: "데이터 점검", to: ROUTES.MANAGE_CHECK, icon: <WarningIcon /> },
+  { label: "활동 로그", to: ROUTES.MANAGE_LOG, icon: <HistoryIcon /> },
 ];

@@ -1,5 +1,6 @@
 import { AppLayout } from "@/app/AppLayout";
 import {
+  ActivityLogPage,
   CatalogCheckPage,
   ManageHomePage,
   MarketManagePage,
@@ -16,6 +17,9 @@ import { HomePage } from "@/pages/HomePage";
 import { InventoryPage } from "@/pages/InventoryPage";
 import { NotFoundPage } from "@/pages/NotFoundPage";
 import { ProfilePage } from "@/pages/ProfilePage";
+import { ReportDetailPage } from "@/pages/ReportDetailPage";
+import { ReportFormPage } from "@/pages/ReportFormPage";
+import { ReportListPage } from "@/pages/ReportListPage";
 import { WalnutPage } from "@/pages/WalnutPage";
 import { Route, Routes } from "react-router";
 
@@ -38,6 +42,10 @@ export function AppRoutes() {
         />
         <Route path={ROUTES.INVENTORY} element={<InventoryPage />} />
         <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+        <Route path={ROUTES.REPORT} element={<ReportListPage />} />
+        <Route path={ROUTES.REPORT_NEW} element={<ReportFormPage />} />
+        <Route path={ROUTES.REPORT_DETAIL} element={<ReportDetailPage />} />
+        <Route path={ROUTES.REPORT_EDIT} element={<ReportFormPage />} />
         <Route path={ROUTES.LOGIN} element={<AuthPage mode='login' />} />
         <Route path={ROUTES.SIGNUP} element={<AuthPage mode='signup' />} />
         <Route element={<RequireAdmin />}>
@@ -45,6 +53,7 @@ export function AppRoutes() {
           <Route path={ROUTES.MANAGE_PRODUCT} element={<ProductManagePage />} />
           <Route path={ROUTES.MANAGE_MARKET} element={<MarketManagePage />} />
           <Route path={ROUTES.MANAGE_CHECK} element={<CatalogCheckPage />} />
+          <Route path={ROUTES.MANAGE_LOG} element={<ActivityLogPage />} />
         </Route>
         <Route path='*' element={<NotFoundPage />} />
       </Route>

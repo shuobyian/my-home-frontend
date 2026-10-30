@@ -13,4 +13,6 @@ export const ENDPOINTS = {
   AUTH_LOGOUT: "/auth/logout",
   AUTH_ME: "/auth/me",
   INVENTORY: "/inventory",
+  REPORT: "/report",
+  LOG: "/log",
 } as const;

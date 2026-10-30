@@ -24,3 +24,13 @@ export function formatNumber(number?: number | null) {
 export function formatGold(number: number) {
   return `${formatNumber(number)}골드`;
 }
+
+const dateTimeFormat = new Intl.DateTimeFormat("ko-KR", {
+  dateStyle: "short",
+  timeStyle: "short",
+});
+
+// 서버 시각(ISO 8601)을 이 기기 시간대의 날짜·시각으로
+export function formatDateTime(iso: string) {
+  return dateTimeFormat.format(new Date(iso));
+}

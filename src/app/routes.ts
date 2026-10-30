@@ -9,10 +9,16 @@ export const ROUTES = {
   CALCULATION: "/calculation",
   INVENTORY: "/inventory",
   PROFILE: "/profile",
+  REPORT: "/report",
+  REPORT_NEW: "/report/new",
+  // generatePath로 id를 채운다
+  REPORT_DETAIL: "/report/:id",
+  REPORT_EDIT: "/report/:id/edit",
   LOGIN: "/login",
   SIGNUP: "/signup",
   MANAGE: "/manage",
   MANAGE_PRODUCT: "/manage/product",
   MANAGE_MARKET: "/manage/market",
   MANAGE_CHECK: "/manage/check",
+  MANAGE_LOG: "/manage/log",
 } as const;

@@ -1,8 +1,16 @@
 import {
+  ActivityAction,
+  ActivityActionType,
   Category,
   CategoryType,
+  ChangeTarget,
+  ChangeTargetType,
   MarketGroup,
   MarketGroupType,
+  ReportKind,
+  ReportKindType,
+  ReportStatus,
+  ReportStatusType,
   Tool,
   ToolType,
 } from "@/types/enums";
@@ -60,3 +68,46 @@ export const MARKET_GROUP_OPTIONS = Object.values(MarketGroupType).map(
 export function getToolLabel(tool: Tool) {
   return TOOL_LABEL[tool] ?? "";
 }
+
+export const REPORT_KIND_LABEL: Record<ReportKind, string> = {
+  [ReportKindType.DATA]: "잘못된 수치·정보",
+  [ReportKindType.BUG]: "버그",
+};
+
+export const REPORT_STATUS_LABEL: Record<ReportStatus, string> = {
+  [ReportStatusType.OPEN]: "접수",
+  [ReportStatusType.RESOLVED]: "반영",
+  [ReportStatusType.REJECTED]: "반려",
+};
+
+export const CHANGE_TARGET_LABEL: Record<ChangeTarget, string> = {
+  [ChangeTargetType.EXPERIENCE]: "레벨 경험치",
+  [ChangeTargetType.MARKET]: "시세",
+  [ChangeTargetType.PRODUCT]: "물품",
+  [ChangeTargetType.MATERIAL]: "물품 재료",
+};
+
+export const ACTIVITY_ACTION_LABEL: Record<ActivityAction, string> = {
+  [ActivityActionType.SIGNUP]: "회원가입",
+  [ActivityActionType.LOGIN]: "로그인",
+  [ActivityActionType.LOGIN_FAILED]: "로그인 실패",
+  [ActivityActionType.LOGOUT]: "로그아웃",
+  [ActivityActionType.PROFILE_UPDATE]: "닉네임 변경",
+  [ActivityActionType.PASSWORD_CHANGE]: "비밀번호 변경",
+  [ActivityActionType.WITHDRAW]: "회원 탈퇴",
+  [ActivityActionType.REPORT_CREATE]: "제보 작성",
+  [ActivityActionType.REPORT_UPDATE]: "제보 수정",
+  [ActivityActionType.REPORT_DELETE]: "제보 삭제",
+  [ActivityActionType.REPORT_ANSWER]: "제보 처리",
+};
+
+const toOptions = <V extends string>(labels: Record<V, string>) =>
+  (Object.keys(labels) as V[]).map((value) => ({
+    value,
+    label: labels[value],
+  }));
+
+export const REPORT_KIND_OPTIONS = toOptions(REPORT_KIND_LABEL);
+export const REPORT_STATUS_OPTIONS = toOptions(REPORT_STATUS_LABEL);
+export const CHANGE_TARGET_OPTIONS = toOptions(CHANGE_TARGET_LABEL);
+export const ACTIVITY_ACTION_OPTIONS = toOptions(ACTIVITY_ACTION_LABEL);
