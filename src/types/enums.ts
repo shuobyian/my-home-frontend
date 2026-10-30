@@ -39,3 +39,45 @@ export const MarketGroupType = {
 } as const;
 export type MarketGroup =
   (typeof MarketGroupType)[keyof typeof MarketGroupType];
+
+// 제보 게시판. 값은 서버(my-home-backend apps/reports/models.py)와 같아야 한다(이름은 domain/labels.ts)
+export const ReportKindType = {
+  DATA: "DATA",
+  BUG: "BUG",
+} as const;
+export type ReportKind = (typeof ReportKindType)[keyof typeof ReportKindType];
+
+export const ReportStatusType = {
+  OPEN: "OPEN",
+  RESOLVED: "RESOLVED",
+  REJECTED: "REJECTED",
+} as const;
+export type ReportStatus =
+  (typeof ReportStatusType)[keyof typeof ReportStatusType];
+
+// 바꿀 값이 가리키는 데이터. 대상마다 바꿀 수 있는 값은 domain/report.ts에 있다
+export const ChangeTargetType = {
+  EXPERIENCE: "EXPERIENCE",
+  MARKET: "MARKET",
+  PRODUCT: "PRODUCT",
+  MATERIAL: "MATERIAL",
+} as const;
+export type ChangeTarget =
+  (typeof ChangeTargetType)[keyof typeof ChangeTargetType];
+
+// 활동 로그 종류. 값은 서버(my-home-backend apps/logs/models.py Action)와 같아야 한다
+export const ActivityActionType = {
+  SIGNUP: "SIGNUP",
+  LOGIN: "LOGIN",
+  LOGIN_FAILED: "LOGIN_FAILED",
+  LOGOUT: "LOGOUT",
+  PROFILE_UPDATE: "PROFILE_UPDATE",
+  PASSWORD_CHANGE: "PASSWORD_CHANGE",
+  WITHDRAW: "WITHDRAW",
+  REPORT_CREATE: "REPORT_CREATE",
+  REPORT_UPDATE: "REPORT_UPDATE",
+  REPORT_DELETE: "REPORT_DELETE",
+  REPORT_ANSWER: "REPORT_ANSWER",
+} as const;
+export type ActivityAction =
+  (typeof ActivityActionType)[keyof typeof ActivityActionType];

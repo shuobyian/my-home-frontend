@@ -1,5 +1,6 @@
 import { WalnutParams } from "@/types/experience";
 import { ProductSearchParams } from "@/types/product";
+import { ActivityLogSearchParams, ReportSearchParams } from "@/types/report";
 import { CalculatorRequest, ResultSearchParams } from "@/types/result";
 
 // 쿼리 키를 한곳에 모은다. 물품·시세·결과는 서버에서 함께 맞춰지므로
@@ -46,4 +47,17 @@ export const inventoryKeys = {
 export const catalogKeys = {
   all: ["catalog"] as const,
   check: ["catalog", "check"] as const,
+};
+
+export const reportKeys = {
+  all: ["report"] as const,
+  // 조건과 상관없이 모든 목록(무효화용)
+  lists: ["report", "list"] as const,
+  list: (params: ReportSearchParams) => [...reportKeys.lists, params] as const,
+  detail: (id: number) => [...reportKeys.all, "detail", id] as const,
+};
+
+export const logKeys = {
+  all: ["log"] as const,
+  list: (params: ActivityLogSearchParams) => [...logKeys.all, params] as const,
 };

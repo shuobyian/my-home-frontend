@@ -6,6 +6,7 @@ const loadManageHome = () => import("@/pages/manage/ManageHomePage");
 const loadProductManage = () => import("@/pages/manage/ProductManagePage");
 const loadMarketManage = () => import("@/pages/manage/MarketManagePage");
 const loadCatalogCheck = () => import("@/pages/manage/CatalogCheckPage");
+const loadActivityLog = () => import("@/pages/manage/ActivityLogPage");
 
 export const ManageHomePage = lazy(() =>
   loadManageHome().then((m) => ({ default: m.ManageHomePage }))
@@ -19,6 +20,9 @@ export const MarketManagePage = lazy(() =>
 export const CatalogCheckPage = lazy(() =>
   loadCatalogCheck().then((m) => ({ default: m.CatalogCheckPage }))
 );
+export const ActivityLogPage = lazy(() =>
+  loadActivityLog().then((m) => ({ default: m.ActivityLogPage }))
+);
 
 // 관리자 확인 뒤 관리 화면 코드를 미리 받아 둔다. 화면 이동이 transition으로 처리되어
 // 처음 여는 관리 메뉴는 코드를 받는 동안 아무 반응이 없기 때문이다.
@@ -29,5 +33,6 @@ export function preloadManagePages() {
     loadProductManage,
     loadMarketManage,
     loadCatalogCheck,
+    loadActivityLog,
   ].forEach((load) => load().catch(() => {}));
 }
