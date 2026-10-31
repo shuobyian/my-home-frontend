@@ -7,7 +7,13 @@ import { useCurrentUser } from "@/state/auth";
 import { ReportStatus } from "@/types/enums";
 import { Report, ReportSearchParams } from "@/types/report";
 import { useState } from "react";
-import { generatePath, useNavigate } from "react-router";
+import {
+  createPath,
+  generatePath,
+  Navigate,
+  useLocation,
+  useNavigate,
+} from "react-router";
 import {
   Button,
   FlagIcon,
@@ -60,15 +66,28 @@ const columns: TableColumn<Report>[] = [
   },
 ];
 
-// 제보 게시판: 버그나 잘못된 수치·정보를 알린다. 목록은 누구나 보고, 쓰기는 회원만 한다
+// 제보 게시판: 버그나 잘못된 수치·정보를 알린다. 로그인한 회원만 쓰고 보며,
+// 회원에게는 자기 제보만, 관리자에게는 모든 제보가 보인다
 export function ReportListPage() {
   const user = useCurrentUser();
+  const location = useLocation();
   const navigate = useNavigate();
   const [params, setParams] = useState<ReportSearchParams>({
     page: 0,
     size: 20,
   });
-  const reports = useReportsQuery(params);
+  const reports = useReportsQuery(user?.id, params);
+
+  // 로그인하면 이 화면으로 돌아온다
+  if (!user) {
+    return (
+      <Navigate
+        to={ROUTES.LOGIN}
+        state={{ from: createPath(location) }}
+        replace
+      />
+    );
+  }
 
   return (
     <Stack vertical>
@@ -79,10 +98,11 @@ export function ReportListPage() {
             버그나 잘못된 수치·정보를 알려주세요. 어느 값이 얼마여야 하는지
             적으면 관리자가 확인해 반영합니다.
           </Text>
+          {!user.isAdmin && (
+            <Text tone='secondary'>내가 쓴 제보만 보입니다.</Text>
+          )}
         </Stack>
         <Stack>
-          {!user && <Text tone='secondary'>로그인하면 쓸 수 있습니다.</Text>}
-          {/* 로그인하지 않았으면 작성 화면이 로그인으로 보낸다 */}
           <Button
             variant='primary'
             icon={<FlagIcon />}

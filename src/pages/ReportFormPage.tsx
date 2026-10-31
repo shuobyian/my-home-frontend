@@ -74,14 +74,14 @@ export function ReportFormPage() {
     );
   }
   return id === undefined ? (
-    <NewReport />
+    <NewReport userId={user.id} />
   ) : (
     <EditReport id={Number(id)} userId={user.id} />
   );
 }
 
-function NewReport() {
-  const save = useCreateReportMutation();
+function NewReport({ userId }: { userId: number }) {
+  const save = useCreateReportMutation(userId);
   return (
     <ReportEditor
       title='제보하기'
@@ -99,8 +99,8 @@ function NewReport() {
 }
 
 function EditReport({ id, userId }: { id: number; userId: number }) {
-  const report = useReportQuery(id);
-  const save = useUpdateReportMutation(id);
+  const report = useReportQuery(userId, id);
+  const save = useUpdateReportMutation(userId, id);
 
   if (report.isError) {
     return (
