@@ -49,12 +49,15 @@ export const catalogKeys = {
   check: ["catalog", "check"] as const,
 };
 
+// 회원은 자기 제보만, 관리자는 모든 제보를 받으므로 회원 id를 키에 넣는다
 export const reportKeys = {
   all: ["report"] as const,
   // 조건과 상관없이 모든 목록(무효화용)
   lists: ["report", "list"] as const,
-  list: (params: ReportSearchParams) => [...reportKeys.lists, params] as const,
-  detail: (id: number) => [...reportKeys.all, "detail", id] as const,
+  list: (userId: number | undefined, params: ReportSearchParams) =>
+    [...reportKeys.lists, userId, params] as const,
+  detail: (userId: number | undefined, id: number) =>
+    [...reportKeys.all, "detail", userId, id] as const,
 };
 
 export const logKeys = {

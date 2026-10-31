@@ -26,6 +26,7 @@ function renderPage() {
         <MemoryRouter initialEntries={["/report/3"]}>
           <Routes>
             <Route path={ROUTES.REPORT_DETAIL} element={<ReportDetailPage />} />
+            <Route path={ROUTES.LOGIN} element={<p>로그인 화면</p>} />
           </Routes>
         </MemoryRouter>
       </UIProvider>
@@ -63,16 +64,22 @@ beforeEach(() => {
 });
 
 describe("ReportDetailPage", () => {
+  it("로그인하지 않았으면 로그인으로 보낸다", async () => {
+    api.fetchReport.mockResolvedValue(report);
+    renderPage();
+
+    expect(await screen.findByText("로그인 화면")).toBeInTheDocument();
+    expect(api.fetchReport).not.toHaveBeenCalled();
+  });
+
   it("바꿀 값을 쓸 때 값과 바른 값으로 보여 준다", async () => {
+    saveAuthSession(createSession({}, member));
     api.fetchReport.mockResolvedValue(report);
     renderPage();
 
     expect(await screen.findByText("90레벨 경험치")).toBeInTheDocument();
     expect(screen.getByText("9,500,000")).toBeInTheDocument();
     expect(screen.getByText("10,000,000")).toBeInTheDocument();
-    // 로그인하지 않았으면 읽기만 한다
-    expect(button("수정")).not.toBeInTheDocument();
-    expect(button("삭제")).not.toBeInTheDocument();
   });
 
   it("쓴 사람은 접수 상태일 때만 고치고 지운다", async () => {
@@ -104,7 +111,8 @@ describe("ReportDetailPage", () => {
     expect(button("수정")).not.toBeInTheDocument();
   });
 
-  it("없는 제보는 안내한다", async () => {
+  it("없는 제보(남의 제보도 같다)는 안내한다", async () => {
+    saveAuthSession(createSession({}, member));
     api.fetchReport.mockRejectedValue(
       new MyHomeError({ message: "존재하지 않는 제보입니다.", status: 404 })
     );

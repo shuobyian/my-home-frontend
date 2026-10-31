@@ -11,10 +11,18 @@ import {
   useReportQuery,
 } from "@/queries/report";
 import { useCurrentUser } from "@/state/auth";
+import { User } from "@/types/auth";
 import { ReportStatusType } from "@/types/enums";
 import { Report } from "@/types/report";
 import { useState } from "react";
-import { generatePath, useNavigate, useParams } from "react-router";
+import {
+  createPath,
+  generatePath,
+  Navigate,
+  useLocation,
+  useNavigate,
+  useParams,
+} from "react-router";
 import {
   Alert,
   Button,
@@ -32,12 +40,25 @@ import {
   useToast,
 } from "@/ui";
 
-// 제보 상세. 쓴 사람은 접수 상태일 때 고치거나 지우고, 관리자는 처리(반영·반려)하거나 지운다
+// 제보 상세. 쓴 사람과 관리자만 본다(남의 제보는 서버가 404로 답한다).
+// 쓴 사람은 접수 상태일 때 고치거나 지우고, 관리자는 처리(반영·반려)하거나 지운다
 export function ReportDetailPage() {
   const id = Number(useParams().id);
+  const user = useCurrentUser();
+  const location = useLocation();
   const navigate = useNavigate();
-  const report = useReportQuery(id);
+  const report = useReportQuery(user?.id, id);
 
+  // 로그인하면 이 화면으로 돌아온다
+  if (!user) {
+    return (
+      <Navigate
+        to={ROUTES.LOGIN}
+        state={{ from: createPath(location) }}
+        replace
+      />
+    );
+  }
   if (report.isError) {
     const notFound = MyHomeError.from(report.error).status === 404;
     return (
@@ -54,19 +75,18 @@ export function ReportDetailPage() {
     );
   }
   if (!report.data) return <Spin />;
-  return <ReportDetail report={report.data} />;
+  return <ReportDetail report={report.data} user={user} />;
 }
 
-function ReportDetail({ report }: { report: Report }) {
-  const user = useCurrentUser();
+function ReportDetail({ report, user }: { report: Report; user: User }) {
   const navigate = useNavigate();
   const toast = useToast();
   const dialogs = useDialogs();
-  const remove = useDeleteReportMutation(report.id);
+  const remove = useDeleteReportMutation(user.id, report.id);
   const open = report.status === ReportStatusType.OPEN;
-  const mine = user !== null && report.author?.id === user.id;
+  const mine = report.author?.id === user.id;
   const canEdit = mine && open;
-  const canDelete = canEdit || Boolean(user?.isAdmin);
+  const canDelete = canEdit || user.isAdmin;
   // 서버의 작성·수정 시각은 저장할 때 조금 달라서 보이는 시각(분)으로 비교한다
   const createdAt = formatDateTime(report.createdAt);
   const updatedAt = formatDateTime(report.updatedAt);
@@ -144,15 +164,17 @@ function ReportDetail({ report }: { report: Report }) {
           </Paragraph>
         </Panel>
       )}
-      {user?.isAdmin && <AnswerForm key={report.updatedAt} report={report} />}
+      {user.isAdmin && (
+        <AnswerForm key={report.updatedAt} report={report} userId={user.id} />
+      )}
     </Stack>
   );
 }
 
 // 관리자 처리. 반영으로 바꿔도 데이터는 바뀌지 않으므로 관리 화면에서 따로 고친다
-function AnswerForm({ report }: { report: Report }) {
+function AnswerForm({ report, userId }: { report: Report; userId: number }) {
   const toast = useToast();
-  const answer = useAnswerReportMutation(report.id);
+  const answer = useAnswerReportMutation(userId, report.id);
   const [status, setStatus] = useState(report.status);
   const [text, setText] = useState(report.answer);
 
